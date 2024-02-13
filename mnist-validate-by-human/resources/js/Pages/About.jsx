@@ -1,5 +1,6 @@
+import PrimaryButton from '@/Components/PrimaryButton';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head } from '@inertiajs/react';
+import { Link, Head } from '@inertiajs/react';
 
 export default function About({ }) {
     return (
@@ -13,6 +14,16 @@ export default function About({ }) {
                 </div>
             </div>
         </div>
+
+        <PrimaryButton>
+            <Link
+                href={route('test')}
+                className="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+            >
+                Take the test
+            </Link>
+        </PrimaryButton>
         </GuestLayout>
+        
     );
 }
