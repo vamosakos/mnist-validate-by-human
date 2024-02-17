@@ -30,7 +30,7 @@ Route::get('/mnist-human-validation', function () {
 })->middleware(['guest'])->name('about');
 
 Route::get('/mnist-human-validation-test', function () {
-    return Inertia::render('Test');
+    return Inertia::render('Survey');
 })->middleware(['guest'])->name('test');
 
 Route::get('/dashboard', function () {
