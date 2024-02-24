@@ -1,29 +1,80 @@
-import PrimaryButton from '@/Components/PrimaryButton';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Link, Head } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { Head, Link } from '@inertiajs/react';
+import Modal from '@/Components/Modal';
 
-export default function About({ }) {
+export default function About() {
+    const [modalOpen, setModalOpen] = useState(false);
+
     return (
-        <GuestLayout>
-        <Head title="About" />
+        <div>
+            {/* Header */}
+            <header style={{ backgroundImage: 'url(/header.png)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: '0.9', height: '200px' }}>
+                <div className="container mx-auto flex justify-center items-center h-full text-white">
+                    <h1 className="text-7xl font-bold">MNIST Human Validation</h1>
+                </div>
+            </header>
 
-        <div className="py-12">
-            <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div className="p-6 text-gray-900">MNIST Human Validation</div>
+            {/* Main Content and Button Container */}
+            <div className="bg-gray-127 min-h-screen flex flex-col justify-center items-center py-">
+                {/* Main Content */}
+                <div className="container mx-auto bg-gray-194 rounded-lg p-12 text-center mb-6 flex flex-wrap">
+                    {/* Image */}
+                    <div className="w-full md:w-1/3 mb-2 md:mb-0">
+                        <img src="/content-img.png" alt="Content" className="w-80 h-80 rounded-3xl" />
+                    </div>
+                    
+                    {/* Text and Read more button */}
+                    <div className="w-full md:w-2/3 md:pl-6 flex flex-col justify-between">
+                        <div>
+                            <Head title="About" />
+                            {/* Highlighted and enlarged text */}
+                            <p className="text-3xl font-bold mb-6">About MNIST Images</p>
+                            {/* Regular text */}
+                            <p className="text-lg mb-6">MNIST is a dataset consisting of handwritten digits. It is commonly used for training various image processing systems. The images in MNIST are grayscale and 28x28 pixels in size. This dataset is widely used for training and testing in the field of machine learning and computer vision.</p>
+                        </div>
+                        
+                        {/* Read more button */}
+                        <div className="flex justify-end">
+                            <a href="https://en.wikipedia.org/wiki/MNIST_database" target="_blank" rel="noopener noreferrer" className="text-lg bg-gray-43 text-white rounded-full py-2 px-8 hover:bg-gray-127">
+                                Read more
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Button */}
+                <div className="bg-gray-127">
+                    <button
+                        className="text-xl bg-green-custom text-white rounded-full py-3 px-14 hover:bg-emerald-600"
+                        onClick={() => setModalOpen(true)}
+                    >
+                        Take the test
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <PrimaryButton>
-            <Link
-                href={route('test')}
-                className="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-            >
-                Take the test
-            </Link>
-        </PrimaryButton>
-        </GuestLayout>
-        
+            {/* Exit confirmation modal */}
+            <Modal show={modalOpen} onClose={() => setModalOpen(false)}>
+                <div className="p-6">
+                    <p>You will see 10 pictures, decide what number you see.</p>
+                    <p>Would you like to start?</p>
+                    <div className="mt-4 flex justify-center">
+                        <Link
+                            href={route('test')}
+                            className="bg-green-custom text-white rounded-full font-bold py-2 px-4 hover:bg-emerald-600 mr-4"
+                            onClick={() => setModalOpen(false)}
+                        >
+                            Yes
+                        </Link>
+                        <button
+                            className="bg-red-500 text-white rounded-full font-bold py-2 px-4 hover:bg-red-700 mr-4"
+                            onClick={() => setModalOpen(false)}
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+        </div>
     );
 }
