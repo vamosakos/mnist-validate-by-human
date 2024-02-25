@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import Modal from '@/Components/Modal';
+import ExitConfirmationPopup from '@/Popups/TakeTheTestPopup'; // Import the new component
+import StartPopup from '@/Popups/TakeTheTestPopup';
 
 export default function About() {
     const [modalOpen, setModalOpen] = useState(false);
@@ -54,27 +55,7 @@ export default function About() {
             </div>
 
             {/* Exit confirmation modal */}
-            <Modal show={modalOpen} onClose={() => setModalOpen(false)}>
-                <div className="p-6">
-                    <p>You will see 10 pictures, decide what number you see.</p>
-                    <p>Would you like to start?</p>
-                    <div className="mt-4 flex justify-center">
-                        <Link
-                            href={route('test')}
-                            className="bg-green-custom text-white rounded-full font-bold py-2 px-4 hover:bg-emerald-600 mr-4"
-                            onClick={() => setModalOpen(false)}
-                        >
-                            Yes
-                        </Link>
-                        <button
-                            className="bg-red-500 text-white rounded-full font-bold py-2 px-4 hover:bg-red-700 mr-4"
-                            onClick={() => setModalOpen(false)}
-                        >
-                            No
-                        </button>
-                    </div>
-                </div>
-            </Modal>
+            <StartPopup show={modalOpen} onClose={() => setModalOpen(false)} />
         </div>
     );
 }

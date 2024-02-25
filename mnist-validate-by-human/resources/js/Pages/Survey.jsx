@@ -3,7 +3,8 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSpinner, faBatteryHalf } from '@fortawesome/free-solid-svg-icons';
 import Modal from '@/Components/Modal';
-import FeedbackPopup from '@/Components/FeedbackPopup';
+import FeedbackPopup from '@/Popups/FeedbackPopup';
+import ExitConfirmationPopup from '@/Popups/ExitConfirmationPopup'; // Import the new component
 
 export default function Survey() {
     const [imageId, setImageId] = useState(null);
@@ -80,25 +81,16 @@ export default function Survey() {
     };
 
     const handleExitConfirmed = () => {
-        setShowExitModal(false);
         window.location.href = '/mnist-human-validation';
     };
 
     return (
         <div>
-            <Modal show={showExitModal} onClose={() => setShowExitModal(false)}>
-                <div className="p-6">
-                    <p>Are you sure you want to exit?</p>
-                    <div className="mt-4 flex justify-center">
-                        <button onClick={handleExitConfirmed} className="bg-green-custom text-white rounded-full font-bold py-2 px-4 hover:bg-emerald-600 mr-4">
-                            Yes
-                        </button>
-                        <button onClick={() => setShowExitModal(false)} className="bg-red-500 text-white rounded-full font-bold py-2 px-4 hover:bg-red-700 mr-4">
-                            No
-                        </button>
-                    </div>
-                </div>
-            </Modal>
+            <ExitConfirmationPopup
+                show={showExitModal}
+                onClose={() => setShowExitModal(false)}
+                onConfirm={handleExitConfirmed}
+            />
 
             <FeedbackPopup
                 show={showFeedbackPopup}
