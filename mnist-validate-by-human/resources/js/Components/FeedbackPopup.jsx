@@ -9,6 +9,8 @@ export default function FeedbackPopup({ show, onClose }) {
     const [email, setEmail] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [redirectCountdown, setRedirectCountdown] = useState(5); // Countdown before redirection
+    const [isSubmitting, setIsSubmitting] = useState(false); // State variable for button submission
+    const [isCountdownActive, setIsCountdownActive] = useState(false); // State variable for countdown activity
 
     const handleFeedbackChange = (event) => {
         setFeedbackText(event.target.value);
@@ -19,6 +21,13 @@ export default function FeedbackPopup({ show, onClose }) {
     };
 
     const handleSubmit = async () => {
+        if (isSubmitting || isCountdownActive) return; // Prevent multiple submissions
+        if (feedbackText.trim() === '') {
+            console.log('Please enter your feedback before submitting.');
+            return;
+        }
+        setIsSubmitting(true); // Disable the submit button
+    
         try {
             // Prepare data to send to the backend
             const feedbackData = {
@@ -26,8 +35,15 @@ export default function FeedbackPopup({ show, onClose }) {
                 email: email,
             };
     
-            // Send POST request to the backend
-            const response = await axios.post('/api/feedbacks', feedbackData);
+            // Get CSRF token from cookie
+            const csrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN')).split('=')[1];
+    
+            // Send POST request to the backend with CSRF token in headers
+            const response = await axios.post('/api/feedbacks', feedbackData, {
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            });
     
             // Check if the response is successful
             if (response.status === 201) {
@@ -42,10 +58,13 @@ export default function FeedbackPopup({ show, onClose }) {
         } catch (error) {
             console.error('Error submitting feedback:', error);
             // You can handle errors here, such as displaying an error message to the user
+        } finally {
+            setIsSubmitting(false); // Re-enable the submit button
         }
     };
 
     const startRedirectCountdown = () => {
+        setIsCountdownActive(true); // Set countdown activity to true
         const timer = setInterval(() => {
             setRedirectCountdown((prevCount) => prevCount - 1);
         }, 1000);
@@ -53,6 +72,7 @@ export default function FeedbackPopup({ show, onClose }) {
         // After 3 seconds, redirect to the main page
         setTimeout(() => {
             clearInterval(timer);
+            setIsCountdownActive(false); // Set countdown activity to false
             redirectToMainPage();
         }, 5000);
     };
@@ -110,6 +130,7 @@ export default function FeedbackPopup({ show, onClose }) {
                     <button
                         className="bg-green-custom text-white rounded-full font-bold py-2 px-4 hover:bg-emerald-600 mr-4"
                         onClick={handleSubmit}
+                        disabled={isSubmitting || isCountdownActive} // Disable button when submitting or countdown active
                     >
                         Submit
                     </button>
