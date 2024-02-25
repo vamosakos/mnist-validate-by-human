@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faSpinner, faBatteryHalf } from '@fortawesome/free-solid-svg-icons';
 import Modal from '@/Components/Modal';
+import FeedbackPopup from '@/Components/FeedbackPopup';
 
 export default function Survey() {
     const [imageId, setImageId] = useState(null);
@@ -10,26 +11,34 @@ export default function Survey() {
     const [imageBase64, setImageBase64] = useState(null);
     const [selectedNumber, setSelectedNumber] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [showExitModal, setShowExitModal] = useState(false); // State to control exit modal visibility
+    const [showExitModal, setShowExitModal] = useState(false);
+    const [imageCount, setImageCount] = useState(0);
+    const [surveyEnded, setSurveyEnded] = useState(false);
+    const [showFeedbackPopup, setShowFeedbackPopup] = useState(false); // State to control feedback popup visibility
+    const [nextButtonDisabled, setNextButtonDisabled] = useState(false); // State to disable next button after click
 
     useEffect(() => {
-        handleTakeTest(); // Automatically start the survey when the component mounts
+        handleTakeTest();
     }, []);
 
     const handleTakeTest = async () => {
         try {
             setLoading(true);
+            if (imageCount >= 3) {
+                setSurveyEnded(true);
+                setShowFeedbackPopup(true); // Show feedback popup when survey ends
+                setLoading(false);
+                return;
+            }
             const response = await axios.get('/api/generate-image');
             const { image_id, image_label, image_base64 } = response.data;
             setImageId(image_id);
             setImageLabel(image_label);
-            setImageBase64(image_base64);
-
-            const decodedImage = atob(image_base64);
             setImageBase64(`data:image/png;base64,${image_base64}`);
-
             setSelectedNumber(null);
             setLoading(false);
+            setImageCount(prevCount => prevCount + 1);
+            setNextButtonDisabled(false); // Re-enable next button for new image
         } catch (error) {
             console.error('Error taking the test:', error);
             setLoading(false);
@@ -61,22 +70,22 @@ export default function Survey() {
         } catch (error) {
             console.error('Error saving response:', error);
             setLoading(false);
+        } finally {
+            setNextButtonDisabled(true); // Disable next button after click
         }
     };
 
     const handleExit = () => {
-        setShowExitModal(true); // Open exit confirmation modal
+        setShowExitModal(true);
     };
 
     const handleExitConfirmed = () => {
-        setShowExitModal(false); // Close the modal
-        // Redirect to mnist-human-validation page
+        setShowExitModal(false);
         window.location.href = '/mnist-human-validation';
     };
 
     return (
         <div>
-            {/* Exit confirmation modal */}
             <Modal show={showExitModal} onClose={() => setShowExitModal(false)}>
                 <div className="p-6">
                     <p>Are you sure you want to exit?</p>
@@ -91,7 +100,11 @@ export default function Survey() {
                 </div>
             </Modal>
 
-            {/* Survey content */}
+            <FeedbackPopup
+                show={showFeedbackPopup}
+                onClose={() => setShowFeedbackPopup(false)}
+            />
+
             <div className="bg-gray-127 min-h-screen flex justify-center items-center">
                 <div className="container bg-gray-194 rounded-lg p-12 flex justify-center items-center relative">
                     <FontAwesomeIcon icon={faTimes} style={{ color: "#000000" }} className="absolute top-0 right-2 cursor-pointer fa-2x" onClick={handleExit} />
@@ -110,6 +123,7 @@ export default function Survey() {
                                                 className={`text-lg rounded-lg py-2 px-9 ${
                                                     selectedNumber === number ? 'bg-gray-127 text-white' : 'bg-gray-43 text-white'
                                                 } hover:bg-gray-127`}
+                                                disabled={surveyEnded}
                                             >
                                                 {number}
                                             </button>
@@ -119,16 +133,17 @@ export default function Survey() {
                                     ))}
                                 </div>
                                 <button
-                                    className={`text-lg bg-green-custom text-white rounded-full py-2 px-4 hover:bg-emerald-600 ${selectedNumber !== null && selectedNumber !== undefined ? '' : 'opacity-50 cursor-not-allowed'}`}
+                                    className={`text-lg bg-green-custom text-white rounded-full py-2 px-4 hover:bg-emerald-600 ${selectedNumber !== null && selectedNumber !== undefined && !surveyEnded ? '' : 'opacity-50 cursor-not-allowed'}`}
                                     onClick={handleNext}
-                                    disabled={selectedNumber === null || selectedNumber === undefined}
+                                    disabled={selectedNumber === null || selectedNumber === undefined || surveyEnded || nextButtonDisabled}
                                 >
-                                    {loading ? <FontAwesomeIcon icon={faRotateRight} spin size="lg" style={{color: "#ffffff",}} /> : "Next"}
+                                    {loading ? <FontAwesomeIcon icon={faSpinner} spin size="lg" style={{color: "#ffffff",}} /> : "Next"}
                                 </button>
                             </div>
                         </div>
                     ) : (
-                        <div className="text-center text-gray-900">
+                        <div className="text-center text-gray-900 text-lg">
+                            <FontAwesomeIcon icon={faBatteryHalf} beatFade size="2xl" style={{color: "#000000"}} />
                             <h1>Loading... Please wait.</h1>
                         </div>
                     )}
