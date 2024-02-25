@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Modal from '@/Components/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -17,16 +18,31 @@ export default function FeedbackPopup({ show, onClose }) {
         setEmail(event.target.value);
     };
 
-    const handleSubmit = () => {
-        // Handle submission of feedback and email (if provided)
-        console.log('Feedback:', feedbackText);
-        console.log('Email:', email);
-        // You can add logic here to send feedback to your backend or perform any other actions
-
-        // Display success message
-        setSuccessMessage('Thank you for your feedback!');
-        // Start countdown for redirection
-        startRedirectCountdown();
+    const handleSubmit = async () => {
+        try {
+            // Prepare data to send to the backend
+            const feedbackData = {
+                comment: feedbackText,
+                email: email,
+            };
+    
+            // Send POST request to the backend
+            const response = await axios.post('/api/feedbacks', feedbackData);
+    
+            // Check if the response is successful
+            if (response.status === 201) {
+                // Display success message
+                setSuccessMessage('Thank you for your feedback!');
+                // Start countdown for redirection
+                startRedirectCountdown();
+            } else {
+                // Handle errors
+                throw new Error('Failed to submit feedback');
+            }
+        } catch (error) {
+            console.error('Error submitting feedback:', error);
+            // You can handle errors here, such as displaying an error message to the user
+        }
     };
 
     const startRedirectCountdown = () => {

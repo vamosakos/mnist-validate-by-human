@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ResponseController;
+use App\Http\Controllers\FeedbackController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,5 +25,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/generate-image', [ImageController::class, 'generateImage']);
 
 Route::post('/save-response', [ResponseController::class, 'saveResponse']);
+
+Route::post('/feedbacks', [FeedbackController::class, 'store']);
+
 
 
