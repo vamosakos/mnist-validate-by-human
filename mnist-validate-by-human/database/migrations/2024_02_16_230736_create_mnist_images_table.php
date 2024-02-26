@@ -16,7 +16,7 @@ class CreateMnistImagesTable extends Migration
         Schema::create('mnist_images', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('image_id')->index();
-            $table->integer('image_label');
+            $table->integer('image_label')->index();
             $table->timestamps();
         });
     }

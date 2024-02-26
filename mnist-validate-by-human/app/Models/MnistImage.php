@@ -12,4 +12,9 @@ class MnistImage extends Model
     protected $table = 'mnist_images';
     
     protected $fillable = ['image_id', 'image_label'];
+
+    public function misidentifications()
+    {
+        return $this->hasMany(Misidentification::class, 'correct_label');
+    }
 }
