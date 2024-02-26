@@ -16,6 +16,7 @@ export default function Survey() {
     const [surveyEnded, setSurveyEnded] = useState(false);
     const [showFeedbackPopup, setShowFeedbackPopup] = useState(false); // State to control feedback popup visibility
     const [nextButtonDisabled, setNextButtonDisabled] = useState(false); // State to disable next button after click
+    const [numberButtonsDisabled, setNumberButtonsDisabled] = useState(false); // State to disable number buttons after "Next" button click
 
     useEffect(() => {
         handleTakeTest();
@@ -39,6 +40,7 @@ export default function Survey() {
             setLoading(false);
             setImageCount(prevCount => prevCount + 1);
             setNextButtonDisabled(false); // Re-enable next button for new image
+            setNumberButtonsDisabled(false);
         } catch (error) {
             console.error('Error taking the test:', error);
             setLoading(false);
@@ -72,6 +74,7 @@ export default function Survey() {
             setLoading(false);
         } finally {
             setNextButtonDisabled(true); // Disable next button after click
+            setNumberButtonsDisabled(true);
         }
     };
 
@@ -114,7 +117,7 @@ export default function Survey() {
                                                 className={`text-lg rounded-lg py-2 px-9 ${
                                                     selectedNumber === number ? 'bg-gray-127 text-white' : 'bg-gray-43 text-white'
                                                 } hover:bg-gray-127`}
-                                                disabled={surveyEnded}
+                                                disabled={surveyEnded || numberButtonsDisabled}
                                             >
                                                 {number}
                                             </button>
