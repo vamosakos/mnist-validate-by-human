@@ -26,11 +26,11 @@ Route::get('/', function () {
 });
 
 Route::get('/mnist-human-validation', function () {
-    return Inertia::render('About');
+    return Inertia::render('About/About');
 })->middleware(['guest'])->name('about');
 
 Route::get('/mnist-human-validation-test', function () {
-    return Inertia::render('Survey');
+    return Inertia::render('Survey/Survey');
 })->middleware(['guest'])->name('test');
 
 Route::get('/dashboard', function () {

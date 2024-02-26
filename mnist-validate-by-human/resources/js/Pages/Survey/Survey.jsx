@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSpinner, faBatteryHalf } from '@fortawesome/free-solid-svg-icons';
-import Modal from '@/Components/Modal';
 import FeedbackPopup from '@/Popups/FeedbackPopup';
 import ExitConfirmationPopup from '@/Popups/ExitConfirmationPopup'; // Import the new component
 
