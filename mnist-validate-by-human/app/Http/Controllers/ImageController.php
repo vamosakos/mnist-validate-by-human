@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MnistImage;
+use App\Models\ImageFrequency;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
 
@@ -29,6 +30,21 @@ class ImageController extends Controller
             $mnistImage = MnistImage::create([
                 'image_id' => $imageId,
                 'image_label' => $imageLabel,
+            ]);
+        }
+
+        // Update 'image_frequencies' table
+        $imageFrequency = ImageFrequency::where('image_id', $imageId)->first();
+
+        if ($imageFrequency) {
+            // If 'image_frequencies' record exists, increment the generation count
+            $imageFrequency->increment('generation_count');
+        } else {
+            // If 'image_frequencies' record does not exist, create a new record
+            ImageFrequency::create([
+                'image_id' => $imageId,
+                'generation_count' => 1, // Increment generation count when a new image is generated
+                'response_count' => 0,
             ]);
         }
     

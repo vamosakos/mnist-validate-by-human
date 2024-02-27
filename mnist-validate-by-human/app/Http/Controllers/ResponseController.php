@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Response;
 use App\Models\Misidentification;
 use App\Models\MnistImage;
+use App\Models\ImageFrequency;
 
 class ResponseController extends Controller
 {
@@ -18,6 +19,22 @@ class ResponseController extends Controller
         
         $response->save();
     
+
+        // Update 'image_frequencies' table
+        $imageFrequency = ImageFrequency::where('image_id', $response->image_id)->first();
+
+        if ($imageFrequency) {
+            // If 'image_frequencies' record exists, increment the response count
+            $imageFrequency->increment('response_count');
+        } else {
+            // If 'image_frequencies' record does not exist, create a new record
+            ImageFrequency::create([
+                'image_id' => $response->image_id,
+                'generation_count' => 1,
+                'response_count' => 1,
+            ]);
+        }
+
         // Check if the guest response is a misidentification
         $this->checkMisidentification($response);
     
