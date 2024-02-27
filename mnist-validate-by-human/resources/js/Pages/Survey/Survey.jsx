@@ -17,6 +17,7 @@ export default function Survey() {
     const [showFeedbackPopup, setShowFeedbackPopup] = useState(false); // State to control feedback popup visibility
     const [nextButtonDisabled, setNextButtonDisabled] = useState(false); // State to disable next button after click
     const [numberButtonsDisabled, setNumberButtonsDisabled] = useState(false); // State to disable number buttons after "Next" button click
+    const [progressBarVisible, setProgressBarVisible] = useState(false); // State to control progress bar visibility
 
     useEffect(() => {
         handleTakeTest();
@@ -39,6 +40,7 @@ export default function Survey() {
             setSelectedNumber(null);
             setLoading(false);
             setImageCount(prevCount => prevCount + 1);
+            setProgressBarVisible(true); // Set progress bar visible after first image is loaded
             setNextButtonDisabled(false); // Re-enable next button for new image
             setNumberButtonsDisabled(false);
         } catch (error) {
@@ -143,9 +145,11 @@ export default function Survey() {
                             <h1>Loading... Please wait.</h1>
                         </div>
                     )}
-                    <div className="container bg-gray-600 h-4 rounded mb-4 absolute bottom-0 left-0">
-                        <div className="bg-green-custom h-full" style={{ width: `${progressBarWidth}%` }}></div>
-                    </div>
+                    {progressBarVisible && (
+                        <div className="container bg-gray-600 h-4 rounded mb-4 absolute bottom-0 left-0">
+                            <div className="bg-green-custom h-full" style={{ width: `${progressBarWidth}%` }}></div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
