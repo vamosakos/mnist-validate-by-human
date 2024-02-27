@@ -86,6 +86,8 @@ export default function Survey() {
         window.location.href = '/mnist-human-validation';
     };
 
+    const progressBarWidth = (imageCount / 3) * 100; // Assuming there are 3 images to answer
+
     return (
         <div>
             <ExitConfirmationPopup
@@ -141,6 +143,9 @@ export default function Survey() {
                             <h1>Loading... Please wait.</h1>
                         </div>
                     )}
+                    <div className="container bg-gray-600 h-4 rounded mb-4 absolute bottom-0 left-0">
+                        <div className="bg-green-custom h-full" style={{ width: `${progressBarWidth}%` }}></div>
+                    </div>
                 </div>
             </div>
         </div>
