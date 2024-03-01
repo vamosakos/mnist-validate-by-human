@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatisticsController;
-use App\Http\Controllers\RecaptchaController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -50,9 +49,5 @@ Route::middleware('auth')->group(function () {
 Route::get('/csrf-token', function () {
     return response()->json(['csrfToken' => csrf_token()]);
 });
-
-Route::post('/recaptcha/verify', [RecaptchaController::class, 'verify'])->name('recaptcha.verify');
-
-
 
 require __DIR__.'/auth.php';
