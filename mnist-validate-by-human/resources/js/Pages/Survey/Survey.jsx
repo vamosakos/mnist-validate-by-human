@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSpinner, faBatteryHalf } from '@fortawesome/free-solid-svg-icons';
+import CaptchaPopup from '@/Popups/CaptchaPopup'; // Import the new CAPTCHA popup component
 import FeedbackPopup from '@/Popups/FeedbackPopup';
-import ExitConfirmationPopup from '@/Popups/ExitConfirmationPopup'; // Import the new component
-import ReCAPTCHA from "react-google-recaptcha";
+import ExitConfirmationPopup from '@/Popups/ExitConfirmationPopup';
 
 export default function Survey() {
     const [imageId, setImageId] = useState(null);
@@ -20,10 +20,12 @@ export default function Survey() {
     const [numberButtonsDisabled, setNumberButtonsDisabled] = useState(true); // Initially true to disable number buttons
     const [progressBarVisible, setProgressBarVisible] = useState(false); // State to control progress bar visibility
     const [captchaVerified, setCaptchaVerified] = useState(false); // State to track whether reCAPTCHA is verified
+    const [showCaptchaPopup, setShowCaptchaPopup] = useState(true); // State to control CAPTCHA popup visibility
 
     useEffect(() => {
         if (captchaVerified) {
             handleTakeTest();
+            setShowCaptchaPopup(false); // Once CAPTCHA is verified, hide the popup
         }
     }, [captchaVerified]);
 
@@ -101,6 +103,12 @@ export default function Survey() {
 
     return (
         <div>
+            <CaptchaPopup
+                show={showCaptchaPopup} // Show CAPTCHA popup initially
+                onClose={() => setShowCaptchaPopup(false)} // Close CAPTCHA popup
+                onCaptchaChange={handleCaptchaChange} // Handle CAPTCHA verification
+            />
+
             <ExitConfirmationPopup
                 show={showExitModal}
                 onClose={() => setShowExitModal(false)}
@@ -115,18 +123,8 @@ export default function Survey() {
             <div className="bg-gray-127 min-h-screen flex justify-center items-center">
                 <div className="container bg-gray-194 rounded-lg p-12 flex justify-center items-center relative">
                     <FontAwesomeIcon icon={faTimes} style={{ color: "#000000" }} className="absolute top-0 right-2 cursor-pointer fa-2x" onClick={handleExit} />
-                    {!captchaVerified && (
-                        <div className="text-center">
-                            <h1>To complete the test, please fill in the captcha.</h1>
-                            <ReCAPTCHA
-                                sitekey="6Le0v38pAAAAAJ8F0jvrasL3E1VcEm3ikoUk7Wm9"
-                                onChange={handleCaptchaChange}
-                            />
-                        </div>
-                    )}
                     {captchaVerified && (
                         <div>
-                            
                             <div className="text-center text-gray-900 text-lg">
                                 {/* Add your content here */}
                             </div>
