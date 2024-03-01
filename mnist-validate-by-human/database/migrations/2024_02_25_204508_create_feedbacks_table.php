@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('feedbacks', function (Blueprint $table) {
             $table->id();
             $table->string('comment');
-            $table->string('email')->nullable();
+            $table->string('session_id');
+            $table->foreign('session_id')->references('id')->on('sessions');
             $table->timestamps();
         });
     }

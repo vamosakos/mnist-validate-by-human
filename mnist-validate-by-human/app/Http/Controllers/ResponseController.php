@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use App\Models\Response;
 use App\Models\Misidentification;
 use App\Models\MnistImage;
@@ -16,6 +17,7 @@ class ResponseController extends Controller
         $response = new Response();
         $response->image_id = $request->input('image_id');
         $response->guest_response = $request->input('guest_response');
+        $response->session_id = $request->session()->getId();
         
         $response->save();
     

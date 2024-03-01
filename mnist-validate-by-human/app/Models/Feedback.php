@@ -13,6 +13,11 @@ class Feedback extends Model
 
     protected $fillable = [
         'comment',
-        'email',
+        'session_id'
     ];
+
+    public function session()
+    {
+        return $this->belongsTo(Session::class, 'session_id');
+    }
 }

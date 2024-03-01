@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('image_id'); // Match the data type of mnist_images' id
             $table->foreign('image_id')->references('image_id')->on('mnist_images')->onDelete('cascade');
             $table->integer('guest_response');
+            $table->string('session_id');
+            $table->foreign('session_id')->references('id')->on('sessions');
             $table->timestamps();
         });
     }

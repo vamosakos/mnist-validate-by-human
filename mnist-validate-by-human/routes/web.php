@@ -46,4 +46,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/statistics/number-frequencies', [StatisticsController::class, 'numberFrequencies'])->name('statistics.numberFrequencies');
 });
 
+Route::get('/csrf-token', function () {
+    return response()->json(['csrfToken' => csrf_token()]);
+});
+
 require __DIR__.'/auth.php';

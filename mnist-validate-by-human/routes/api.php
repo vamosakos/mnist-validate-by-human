@@ -24,9 +24,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/generate-image', [ImageController::class, 'generateImage']);
 
-Route::post('/save-response', [ResponseController::class, 'saveResponse']);
-
-Route::post('/feedbacks', [FeedbackController::class, 'store']);
-
+Route::group(['middleware' => ['web']], function () {
+    Route::post('/save-response', [ResponseController::class, 'saveResponse']);
+    Route::post('/feedbacks', [FeedbackController::class, 'store']);
+});
 
 

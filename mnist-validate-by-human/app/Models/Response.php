@@ -9,10 +9,15 @@ class Response extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['image_id', 'guest_response'];
+    protected $fillable = ['image_id', 'guest_response', 'session_id'];
 
     public function mnistImage()
     {
         return $this->belongsTo(MnistImage::class, 'image_id');
+    }
+
+    public function session()
+    {
+        return $this->belongsTo(Session::class, 'session_id');
     }
 }
