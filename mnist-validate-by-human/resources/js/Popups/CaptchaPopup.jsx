@@ -24,7 +24,7 @@ export default function CaptchaPopup({ show, onClose, onCaptchaChange }) {
 
 
                     </div>
-                    <h1>To complete the test, please fill in the captcha.</h1>
+                    <h1>To start the test, please fill out the captcha.</h1>
                     <div className="mx-auto" style={{ width: 'fit-content' }}>
                         <ReCAPTCHA
                             sitekey="6Le0v38pAAAAAJ8F0jvrasL3E1VcEm3ikoUk7Wm9"

@@ -11,6 +11,7 @@ export default function FeedbackPopup({ show, onClose }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isCountdownActive, setIsCountdownActive] = useState(false);
     const [csrfToken, setCsrfToken] = useState('');
+    const [charCount, setCharCount] = useState(0);
 
     useEffect(() => {
         // Fetch CSRF token on component mount
@@ -26,7 +27,9 @@ export default function FeedbackPopup({ show, onClose }) {
     }, []);
 
     const handleFeedbackChange = (event) => {
-        setFeedbackText(event.target.value);
+        const inputText = event.target.value;
+        setFeedbackText(inputText);
+        setCharCount(inputText.length);
     };
 
     const handleSubmit = async () => {
@@ -103,14 +106,19 @@ export default function FeedbackPopup({ show, onClose }) {
                     <FontAwesomeIcon icon={faStar} size="lg" style={{color: "#FFD43B",}} />
                 </div>
                 <div className="mb-4">
+                    <p className="text-center">Thank you for taking the test! If you have any comments or suggestions, please let us know.</p>
                     <label htmlFor="feedback-text" className="block mb-1">Your Feedback:</label>
                     <textarea
                         id="feedback-text"
                         rows={8}
+                        maxLength={250} // Ez adja meg a karakterkorlátot
                         className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-gray-700"
                         value={feedbackText}
                         onChange={handleFeedbackChange}
                     />
+                    <div className="flex justify-end mt-1 text-gray-500 text-sm">
+                        {charCount}/250
+                    </div>
                 </div>
                 <div className="text-center">
                     <form id="feedback-form" method="post" action="/api/feedbacks">

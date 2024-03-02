@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import ExitConfirmationPopup from '@/Popups/TakeTheTestPopup'; // Import the new component
 import StartPopup from '@/Popups/TakeTheTestPopup';
+import Footer from '@/Footer/Footer';
 
 export default function About() {
     const [modalOpen, setModalOpen] = useState(false);
@@ -11,7 +11,7 @@ export default function About() {
             {/* Header */}
             <header style={{ backgroundImage: 'url(/header.png)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: '0.9', height: '200px' }}>
                 <div className="container mx-auto flex justify-center items-center h-full text-white">
-                    <h1 className="text-7xl font-bold">MNIST Human Validation</h1>
+                    <h1 className="text-7xl font-bold">MNIST Validation By Human</h1>
                 </div>
             </header>
 
@@ -29,9 +29,11 @@ export default function About() {
                         <div>
                             <Head title="About" />
                             {/* Highlighted and enlarged text */}
-                            <p className="text-3xl font-bold mb-6">About MNIST Images</p>
+                            <p className="text-3xl font-bold mb-6">What is this?</p>
                             {/* Regular text */}
                             <p className="text-lg mb-6">MNIST is a dataset consisting of handwritten digits. It is commonly used for training various image processing systems. The images in MNIST are grayscale and 28x28 pixels in size. This dataset is widely used for training and testing in the field of machine learning and computer vision.</p>
+                            {/* Additional text for clarification */}
+                            <p className="text-lg mb-6">This website is developed as part of a thesis project, aiming to collect human responses for MNIST images. Your responses will be used for statistical analysis and research purposes.</p>
                         </div>
                         
                         {/* Read more button */}
@@ -56,6 +58,8 @@ export default function About() {
 
             {/* Exit confirmation modal */}
             <StartPopup show={modalOpen} onClose={() => setModalOpen(false)} />
+
+            <Footer />
         </div>
     );
 }
