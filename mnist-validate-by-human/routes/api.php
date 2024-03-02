@@ -29,4 +29,4 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('/feedbacks', [FeedbackController::class, 'store']);
 });
 
-
+Route::get('/identifications/count', [ResponseController::class, 'getIdentificationsCount']);

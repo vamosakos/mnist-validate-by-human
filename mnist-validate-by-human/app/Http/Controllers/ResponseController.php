@@ -69,4 +69,11 @@ class ResponseController extends Controller
             ]);
         }
     }
+
+    public function getIdentificationsCount()
+    {
+        $identificationsCount = Response::count();
+        return response()->json(['count' => $identificationsCount]);
+    }
+
 }
