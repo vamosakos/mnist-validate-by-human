@@ -12,6 +12,7 @@ export default function FeedbackPopup({ show, onClose }) {
     const [isCountdownActive, setIsCountdownActive] = useState(false);
     const [csrfToken, setCsrfToken] = useState('');
     const [charCount, setCharCount] = useState(0);
+    const [isDisabled, setIsDisabled] = useState(false); // Új állapot a letiltáshoz
 
     useEffect(() => {
         // Fetch CSRF token on component mount
@@ -39,6 +40,7 @@ export default function FeedbackPopup({ show, onClose }) {
             return;
         }
         setIsSubmitting(true);
+        setIsDisabled(true); // Letiltjuk a textarea mezőt
 
         try {
             const feedbackData = {
@@ -91,6 +93,7 @@ export default function FeedbackPopup({ show, onClose }) {
         if (!show) {
             setSuccessMessage('');
             setRedirectCountdown(5);
+            setIsDisabled(false); // Visszaállítjuk a textarea mező engedélyezését
         }
     }, [show]);
 
@@ -115,6 +118,7 @@ export default function FeedbackPopup({ show, onClose }) {
                         className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-gray-700"
                         value={feedbackText}
                         onChange={handleFeedbackChange}
+                        disabled={isDisabled} // Állítsuk be a disabled attribútumot
                     />
                     <div className="flex justify-end mt-1 text-gray-500 text-sm">
                         {charCount}/250
