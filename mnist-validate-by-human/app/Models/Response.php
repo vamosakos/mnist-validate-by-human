@@ -16,8 +16,4 @@ class Response extends Model
         return $this->belongsTo(MnistImage::class, 'image_id');
     }
 
-    public function session()
-    {
-        return $this->belongsTo(Session::class, 'session_id');
-    }
 }

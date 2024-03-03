@@ -18,13 +18,4 @@ class Session extends Model
         'last_activity'
     ];
 
-    public function responses()
-    {
-        return $this->hasMany(Response::class, 'session_id');
-    }
-
-    public function feedbacks()
-    {
-        return $this->hasMany(Feedback::class, 'session_id');
-    }
 }
