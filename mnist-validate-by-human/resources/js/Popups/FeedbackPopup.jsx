@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import DOMPurify from 'dompurify';
 import Modal from '@/Components/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -12,10 +13,10 @@ export default function FeedbackPopup({ show, onClose }) {
     const [isCountdownActive, setIsCountdownActive] = useState(false);
     const [csrfToken, setCsrfToken] = useState('');
     const [charCount, setCharCount] = useState(0);
-    const [isDisabled, setIsDisabled] = useState(false); // Új állapot a letiltáshoz
+    const [isDisabled, setIsDisabled] = useState(false);
+    const [dangerousContentDetected, setDangerousContentDetected] = useState(false); // Állapot az észlelt veszélyes tartalomhoz
 
     useEffect(() => {
-        // Fetch CSRF token on component mount
         const fetchCsrfToken = async () => {
             try {
                 const response = await axios.get('/csrf-token');
@@ -31,6 +32,14 @@ export default function FeedbackPopup({ show, onClose }) {
         const inputText = event.target.value;
         setFeedbackText(inputText);
         setCharCount(inputText.length);
+
+        // Tisztítsuk meg a beküldött tartalmat a DOMPurify segítségével és ellenőrizzük, hogy veszélyes-e
+        const sanitizedText = DOMPurify.sanitize(inputText);
+        if (sanitizedText !== inputText) {
+            setDangerousContentDetected(true);
+        } else {
+            setDangerousContentDetected(false);
+        }
     };
 
     const handleSubmit = async () => {
@@ -40,11 +49,12 @@ export default function FeedbackPopup({ show, onClose }) {
             return;
         }
         setIsSubmitting(true);
-        setIsDisabled(true); // Letiltjuk a textarea mezőt
+        setIsDisabled(true);
 
         try {
+            const sanitizedText = DOMPurify.sanitize(feedbackText);
             const feedbackData = {
-                comment: feedbackText
+                comment: sanitizedText
             };
 
             const response = await axios.post('/api/feedbacks', feedbackData, {
@@ -63,6 +73,7 @@ export default function FeedbackPopup({ show, onClose }) {
             console.error('Error submitting feedback:', error);
         } finally {
             setIsSubmitting(false);
+            setIsDisabled(false); // Engedélyezze újra a textarea-t és a submit gombot a kivétel kezelése után
         }
     };
 
@@ -93,7 +104,7 @@ export default function FeedbackPopup({ show, onClose }) {
         if (!show) {
             setSuccessMessage('');
             setRedirectCountdown(5);
-            setIsDisabled(false); // Visszaállítjuk a textarea mező engedélyezését
+            setIsDisabled(false);
         }
     }, [show]);
 
@@ -114,11 +125,11 @@ export default function FeedbackPopup({ show, onClose }) {
                     <textarea
                         id="feedback-text"
                         rows={8}
-                        maxLength={250} // Ez adja meg a karakterkorlátot
+                        maxLength={250}
                         className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-gray-700"
                         value={feedbackText}
                         onChange={handleFeedbackChange}
-                        disabled={isDisabled} // Állítsuk be a disabled attribútumot
+                        disabled={isDisabled}
                     />
                     <div className="flex justify-end mt-1 text-gray-500 text-sm">
                         {charCount}/250
@@ -131,7 +142,7 @@ export default function FeedbackPopup({ show, onClose }) {
                             type="button"
                             className="bg-green-custom text-white rounded-full font-bold py-2 px-4 hover:bg-emerald-600 mr-4"
                             onClick={handleSubmit}
-                            disabled={isSubmitting || isCountdownActive}
+                            disabled={isSubmitting || isCountdownActive || dangerousContentDetected} // Letiltás csak veszélyes tartalom észlelésekor
                         >
                             Submit
                         </button>
@@ -152,6 +163,11 @@ export default function FeedbackPopup({ show, onClose }) {
                                 Redirecting to the main page in {redirectCountdown} seconds...
                             </div>
                         )}
+                    </div>
+                )}
+                {dangerousContentDetected && (
+                    <div className="text-red-500 text-sm mt-4">
+                        Detected potentially dangerous content. Please review your input.
                     </div>
                 )}
             </div>

@@ -10,4 +10,8 @@ export default defineConfig({
         }),
         react(),
     ],
+    optimizeDeps: {
+        // Kikapcsoljuk az optimalizációt a DOMPurify függőségre
+        exclude: ['dompurify']
+    }
 });
