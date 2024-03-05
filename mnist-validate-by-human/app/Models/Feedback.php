@@ -16,8 +16,4 @@ class Feedback extends Model
         'session_id'
     ];
 
-    public function session()
-    {
-        return $this->belongsTo(Session::class, 'session_id');
-    }
 }

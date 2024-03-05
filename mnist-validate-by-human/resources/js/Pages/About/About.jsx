@@ -10,14 +10,6 @@ export default function About() {
     useEffect(() => {
         // Fetch identifications count initially
         fetchIdentificationsCountFromDatabase();
-
-        // Set up interval to fetch identifications count every 5 seconds
-        const intervalId = setInterval(() => {
-            fetchIdentificationsCountFromDatabase();
-        }, 5000);
-
-        // Cleanup interval on component unmount
-        return () => clearInterval(intervalId);
     }, []);
 
     const fetchIdentificationsCountFromDatabase = async () => {

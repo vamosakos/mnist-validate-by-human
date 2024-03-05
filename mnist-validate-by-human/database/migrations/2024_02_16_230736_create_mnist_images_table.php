@@ -17,6 +17,7 @@ class CreateMnistImagesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('image_id')->index();
             $table->integer('image_label')->index();
+            $table->longText('image_base64');
             $table->timestamps();
         });
     }

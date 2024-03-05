@@ -11,7 +11,7 @@ class MnistImage extends Model
 
     protected $table = 'mnist_images';
     
-    protected $fillable = ['image_id', 'image_label'];
+    protected $fillable = ['image_id', 'image_label', 'image_base64'];
 
     public function misidentifications()
     {
