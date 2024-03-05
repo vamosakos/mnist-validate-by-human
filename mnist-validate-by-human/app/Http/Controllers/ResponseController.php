@@ -18,6 +18,7 @@ class ResponseController extends Controller
         $response->image_id = $request->input('image_id');
         $response->guest_response = $request->input('guest_response');
         $response->session_id = $request->session()->getId();
+        $response->response_time = $request->input('response_time');
         
         $response->save();
     
