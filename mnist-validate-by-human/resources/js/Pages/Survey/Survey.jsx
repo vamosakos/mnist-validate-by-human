@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faSpinner, faBatteryHalf } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faSpinner, faBatteryHalf, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import CaptchaPopup from '@/Popups/CaptchaPopup';
 import FeedbackPopup from '@/Popups/FeedbackPopup';
 import ExitConfirmationPopup from '@/Popups/ExitConfirmationPopup';
@@ -21,7 +21,9 @@ export default function Survey() {
     const [progressBarVisible, setProgressBarVisible] = useState(false);
     const [captchaVerified, setCaptchaVerified] = useState(false);
     const [showCaptchaPopup, setShowCaptchaPopup] = useState(true);
-    const [startTime, setStartTime] = useState(null); // A start time mostantól a kép megjelenésekor lesz beállítva
+    const [startTime, setStartTime] = useState(null); 
+    const [timer, setTimer] = useState(null);
+    const [showWarning, setShowWarning] = useState(false); // Állapot a warning üzenet megjelenítéséhez
 
     useEffect(() => {
         if (captchaVerified) {
@@ -30,10 +32,29 @@ export default function Survey() {
         }
     }, [captchaVerified]);
 
+    useEffect(() => {
+        if (startTime) {
+            const timer = setTimeout(() => {
+                handleNext(); 
+            }, 30000);
+            setTimer(timer);
+            // Ha elindult a timer, akkor beállítjuk a showWarning állapotot false-ra
+            setShowWarning(false);
+        }
+    }, [startTime]);
+
+    useEffect(() => {
+        const warningTimer = setTimeout(() => {
+            setShowWarning(true); // Mindenképp megjeleníti a figyelmeztető üzenetet az utolsó 5 másodpercben
+        }, Math.max(0, startTime ? 25000 - (Date.now() - startTime.getTime()) : 0)); // Kiszámolja a maradék időt a startTime-hoz képest
+    
+        return () => clearTimeout(warningTimer); // Tisztítja a warningTimert az effect megszűnésekor
+    }, [startTime]);
+
     const handleTakeTest = async () => {
         try {
             if (loading) setLoading(false);
-            if (imageCount >= 3) {
+            if (imageCount >= 10) {
                 setSurveyEnded(true);
                 setShowFeedbackPopup(true);
                 return;
@@ -45,7 +66,7 @@ export default function Survey() {
             setImageLabel(image_label);
             setImageBase64(`data:image/png;base64,${image_base64}`);
             setSelectedNumber(null);
-            setStartTime(new Date()); // Az időmérés itt kezdődjön, amikor megjelenik a kép
+            setStartTime(new Date());
             setImageCount((prevCount) => prevCount + 1);
             setProgressBarVisible(true);
             setNextButtonDisabled(false);
@@ -63,25 +84,31 @@ export default function Survey() {
 
     const handleNext = async () => {
         try {
-            if (selectedNumber === null) {
-                console.log('Please select a number before proceeding.');
+            if (selectedNumber === null && startTime) { 
+                console.log('No response within the time limit.');
+                clearTimeout(timer); 
+                handleTakeTest();
                 return;
             }
 
-            const endTime = new Date();
-            const responseTime = endTime - startTime;
+            if (selectedNumber !== null) {
+                const endTime = new Date();
+                const responseTime = endTime - startTime;
 
-            setLoading(true);
-            const response = await axios.post('/api/save-response', {
-                image_id: imageId,
-                guest_response: selectedNumber,
-                response_time: responseTime,
-            });
-            console.log('Response from server:', response.data);
+                setLoading(true);
+                const response = await axios.post('/api/save-response', {
+                    image_id: imageId,
+                    guest_response: selectedNumber,
+                    response_time: responseTime,
+                });
+                console.log('Response from server:', response.data);
+            }
+
             handleTakeTest();
         } catch (error) {
-            console.error('Error saving response:', error);
+            console.error('Error handling next:', error);
         } finally {
+            clearTimeout(timer); 
             setNextButtonDisabled(true);
             setNumberButtonsDisabled(true);
         }
@@ -99,7 +126,7 @@ export default function Survey() {
         setCaptchaVerified(true);
     };
 
-    const progressBarWidth = (imageCount / 3) * 100;
+    const progressBarWidth = (imageCount / 10) * 100;
 
     return (
         <div>
@@ -138,68 +165,73 @@ export default function Survey() {
                     )}
                     {captchaVerified && imageBase64 && (
                         <div>
-                            <div className="text-center text-gray-900 text-lg">{/* Add your content here */}</div>
-                            <div>
-                                <div className="flex flex-col md:flex-row items-center">
-                                    <div className="image-container mb-8 md:mb-0 mr-4">
-                                        {imageBase64 && (
-                                            <img src={imageBase64} alt="MNIST Image" className="max-w-3/4 max-h-3/4" />
-                                        )}
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <div className="number-buttons grid grid-cols-3 gap-4 mb-8">
-                                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, null, 0].map((number) =>
-                                                number !== null ? (
-                                                    <button
-                                                        key={number}
-                                                        onClick={() => handleNumberSelection(number)}
-                                                        className={`text-lg rounded-lg py-2 px-9 ${
-                                                            selectedNumber === number
-                                                                ? 'bg-gray-127 text-white'
-                                                                : 'bg-gray-43 text-white'
-                                                        } hover:bg-gray-127`}
-                                                        disabled={surveyEnded || numberButtonsDisabled}
-                                                    >
-                                                        {number}
-                                                    </button>
-                                                ) : (
-                                                    <div key="empty"></div>
-                                                )
-                                            )}
-                                        </div>
-                                        <button
-                                            className={`text-lg bg-green-custom text-white rounded-full py-2 px-4 hover:bg-emerald-600 ${
-                                                selectedNumber !== null && selectedNumber !== undefined && !surveyEnded
-                                                    ? ''
-                                                    : 'opacity-50 cursor-not-allowed'
-                                            }`}
-                                            onClick={handleNext}
-                                            disabled={
-                                                selectedNumber === null || selectedNumber === undefined || surveyEnded || nextButtonDisabled
-                                            }
-                                        >
-                                            {loading ? (
-                                                <FontAwesomeIcon
-                                                    icon={faSpinner}
-                                                    spin
-                                                    size="lg"
-                                                    style={{ color: '#ffffff' }}
-                                                />
-                                            ) : (
-                                                'Next'
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-                                {progressBarVisible && (
-                                    <div className="container bg-gray-600 h-4 rounded mb-4 absolute bottom-0 left-0">
-                                        <div
-                                            className="bg-green-custom h-full"
-                                            style={{ width: `${progressBarWidth}%` }}
-                                        ></div>
+                            <div className="text-center text-gray-900 text-lg mb-4">
+                                {showWarning && (
+                                    <div className="bg-yellow-400 text-white rounded-md p-4">
+                                        <FontAwesomeIcon icon={faExclamationTriangle} beatFade size="2xl" className="mr-2" />
+                                        <span>Warning: Response time is almost up! Choose a number and click on the Next button.</span>
                                     </div>
                                 )}
                             </div>
+                            <div className="flex flex-col md:flex-row items-center">
+                                <div className="image-container mb-8 md:mb-0 mr-4">
+                                    {imageBase64 && (
+                                        <img src={imageBase64} alt="MNIST Image" className="max-w-3/4 max-h-3/4" />
+                                    )}
+                                </div>
+                                <div className="flex flex-col">
+                                    <div className="number-buttons grid grid-cols-3 gap-4 mb-8">
+                                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, null, 0].map((number) =>
+                                            number !== null ? (
+                                                <button
+                                                    key={number}
+                                                    onClick={() => handleNumberSelection(number)}
+                                                    className={`text-lg rounded-lg py-2 px-9 ${
+                                                        selectedNumber === number
+                                                            ? 'bg-gray-127 text-white'
+                                                            : 'bg-gray-43 text-white'
+                                                    } hover:bg-gray-127`}
+                                                    disabled={surveyEnded || numberButtonsDisabled}
+                                                >
+                                                    {number}
+                                                </button>
+                                            ) : (
+                                                <div key="empty"></div>
+                                            )
+                                        )}
+                                    </div>
+                                    <button
+                                        className={`text-lg bg-green-custom text-white rounded-full py-2 px-4 hover:bg-emerald-600 ${
+                                            selectedNumber !== null && selectedNumber !== undefined && !surveyEnded
+                                                ? ''
+                                                : 'opacity-50 cursor-not-allowed'
+                                        }`}
+                                        onClick={handleNext}
+                                        disabled={
+                                            selectedNumber === null || selectedNumber === undefined || surveyEnded || nextButtonDisabled
+                                        }
+                                    >
+                                        {loading ? (
+                                            <FontAwesomeIcon
+                                                icon={faSpinner}
+                                                spin
+                                                size="lg"
+                                                style={{ color: '#ffffff' }}
+                                            />
+                                        ) : (
+                                            'Next'
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                            {progressBarVisible && (
+                                <div className="container bg-gray-600 h-4 rounded mb-4 absolute bottom-0 left-0">
+                                    <div
+                                        className="bg-green-custom h-full"
+                                        style={{ width: `${progressBarWidth}%` }}
+                                    ></div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
