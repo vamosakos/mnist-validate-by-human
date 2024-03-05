@@ -26,6 +26,8 @@ Route::get('/', function () {
     ]);
 });
 
+Route::redirect('/', '/mnist-human-validation');
+
 Route::get('/mnist-human-validation', function () {
     return Inertia::render('About/About');
 })->middleware(['guest'])->name('about');
