@@ -9,7 +9,7 @@ class Response extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['image_id', 'guest_response', 'session_id'];
+    protected $fillable = ['image_id', 'guest_response', 'session_id', 'response_time'];
 
     public function mnistImage()
     {

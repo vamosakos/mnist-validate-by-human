@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('image_id')->references('image_id')->on('mnist_images')->onDelete('cascade');
             $table->integer('guest_response');
             $table->string('session_id');
+            $table->unsignedBigInteger('response_time')->nullable();
             $table->timestamps();
         });
     }
