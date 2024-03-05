@@ -1,12 +1,10 @@
+import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable.jsx';
+import NumberFrequenciesChart from '@/Components/NumberFrequenciesChart.jsx';
 
-const columns = [
-  'image_id',
-  'generation_count',
-  'response_count',
-];
+const columns = ['image_id', 'generation_count', 'response_count'];
 
 export default function All({ auth, numberFrequencies }) {
   const tableData = numberFrequencies.map((item) => ({
@@ -26,6 +24,7 @@ export default function All({ auth, numberFrequencies }) {
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <NumberFrequenciesChart numberFrequencies={numberFrequencies} />
             <DataTable data={tableData} columns={columns} />
           </div>
         </div>
