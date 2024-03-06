@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSpinner, faBatteryHalf, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -130,6 +131,7 @@ export default function Survey() {
 
     return (
         <div>
+            <Head title="Test" />
             <CaptchaPopup
                 show={showCaptchaPopup}
                 onClose={() => setShowCaptchaPopup(false)}
