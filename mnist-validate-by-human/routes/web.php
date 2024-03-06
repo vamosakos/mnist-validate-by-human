@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\OverviewController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -44,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/statistics/number-frequencies', [StatisticsController::class, 'numberFrequencies'])->name('statistics.numberFrequencies');
+    Route::get('/overview', [OverviewController::class, 'index'])->name('overview.index');
 });
 
 Route::get('/csrf-token', function () {

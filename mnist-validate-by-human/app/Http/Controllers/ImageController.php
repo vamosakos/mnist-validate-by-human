@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MnistImage;
 use App\Models\ImageFrequency;
+use App\Models\NumberFrequency;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
 
@@ -52,6 +53,20 @@ class ImageController extends Controller
                 'image_id' => $imageId,
                 'generation_count' => 1, // Increment generation count when a new image is generated
                 'response_count' => 0,
+            ]);
+        }
+
+        // Update 'number_frequencies' table
+        $numberFrequency = NumberFrequency::where('label', $imageLabel)->first();
+
+        if ($numberFrequency) {
+            // If 'number_frequencies' record exists, increment the count
+            $numberFrequency->increment('count');
+        } else {
+            // If 'number_frequencies' record does not exist, create a new record
+            NumberFrequency::create([
+                'label' => $imageLabel,
+                'count' => 1, // Increment count when a new image with the label is generated
             ]);
         }
 
