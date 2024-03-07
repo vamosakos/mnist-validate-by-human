@@ -25,6 +25,7 @@ export default function Survey() {
     const [startTime, setStartTime] = useState(null); 
     const [timer, setTimer] = useState(null);
     const [showWarning, setShowWarning] = useState(false); // Állapot a warning üzenet megjelenítéséhez
+    const [feedbackPopupVisible, setFeedbackPopupVisible] = useState(false);
 
     useEffect(() => {
         if (captchaVerified) {
@@ -52,12 +53,17 @@ export default function Survey() {
         return () => clearTimeout(warningTimer); // Tisztítja a warningTimert az effect megszűnésekor
     }, [startTime]);
 
+    useEffect(() => {
+        setShowWarning(!showFeedbackPopup && !feedbackPopupVisible);
+    }, [showFeedbackPopup, feedbackPopupVisible]);
+    
     const handleTakeTest = async () => {
         try {
             if (loading) setLoading(false);
             if (imageCount >= 10) {
                 setSurveyEnded(true);
                 setShowFeedbackPopup(true);
+                setFeedbackPopupVisible(true); // Feedback popup megjelenítése
                 return;
             }
             setLoading(true);
@@ -169,7 +175,7 @@ export default function Survey() {
                         <div>
                             <div className="text-center text-gray-900 text-lg mb-4">
                                 {showWarning && (
-                                    <div className="bg-yellow-400 text-white rounded-md p-4">
+                                    <div className="bg-yellow-400 text-black rounded-md p-4">
                                         <FontAwesomeIcon icon={faExclamationTriangle} beatFade size="2xl" className="mr-2" />
                                         <span>Warning: Response time is almost up! Choose a number and click on the Next button.</span>
                                     </div>
