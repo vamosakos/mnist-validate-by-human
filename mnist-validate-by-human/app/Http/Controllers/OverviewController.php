@@ -15,95 +15,38 @@ class OverviewController extends Controller
 {
     public function index()
     {
-        // Calculate the total generated images count
-        $totalGeneratedImages = ImageFrequency::sum('generation_count');
+        $totalGeneratedImages = $this->getTotalGeneratedImages();
+        $trainImagesCount = $this->getImagesCount(0, 59999);
+        $testImagesCount = $this->getImagesCount(60000, 69999);
 
-        // Calculate the count for train and test images
-        $trainImagesCount = ImageFrequency::whereBetween('image_id', [0, 59999])->sum('generation_count');
-        $testImagesCount = ImageFrequency::whereBetween('image_id', [60000, 69999])->sum('generation_count');
+        $totalResponses = $this->getTotalResponses();
+        $responsesFromTrain = $this->getResponsesCount(0, 59999);
+        $responsesFromTest = $this->getResponsesCount(60000, 69999);
 
-        // Calculate the total responses count
-        $totalResponses = ImageFrequency::sum('response_count');
+        $totalMisidentifications = $this->getTotalMisidentifications();
+        $misidentificationsFromTrain = $this->getMisidentificationsCount(0, 4);
+        $misidentificationsFromTest = $this->getMisidentificationsCount(5, 9);
 
-        // Calculate the count of responses from train and test images
-        $responsesFromTrain = ImageFrequency::whereBetween('image_id', [0, 59999])->sum('response_count');
-        $responsesFromTest = ImageFrequency::whereBetween('image_id', [60000, 69999])->sum('response_count');
+        $mostGeneratedImageId = $this->getMostGeneratedImageId();
+        $mostGeneratedImageCount = $this->getImageCount($mostGeneratedImageId);
+        $mostGeneratedImageData = $this->getImageData($mostGeneratedImageId);
 
-        // Calculate the total misidentifications count
-        $totalMisidentifications = Misidentification::sum('count');
+        $mostRespondedImageId = $this->getMostRespondedImageId();
+        $mostRespondedImageCount = $this->getImageCount($mostRespondedImageId);
+        $mostRespondedImageData = $this->getImageData($mostRespondedImageId);
 
-        // Calculate the count of misidentifications from train and test images
-        $misidentificationsFromTrain = Misidentification::whereBetween('correct_label', [0, 4])->sum('count');
-        $misidentificationsFromTest = Misidentification::whereBetween('correct_label', [5, 9])->sum('count');
+        $mostMisidentificatedImageId = $this->getMostMisidentificatedImageId();
+        $mostMisidentificatedImageCount = $this->getMisidentificatedImageCount($mostMisidentificatedImageId);
+        $mostMisidentificatedImageData = $this->getImageData($mostMisidentificatedImageId);
 
-        // Get the most generated image id
-        $mostGeneratedImageId = ImageFrequency::orderByDesc('generation_count')->value('image_id');
+        $mostGeneratedNumber = $this->getMostGeneratedNumber();
 
-        // Get the count of the most generated image
-        $mostGeneratedImageCount = ImageFrequency::where('image_id', $mostGeneratedImageId)
-        ->value('generation_count');
+        $mostMisidentifiedNumber = $this->getMostMisidentifiedNumber();
 
-         // Get the base64-encoded image data for the most generated image
-        $mostGeneratedImageData = MnistImage::where('image_id', $mostGeneratedImageId)->value('image_base64');
+        $averageResponseTime = $this->getAverageResponseTime();
 
-        // Get the most responsed image id
-        $mostRespondedImageId = ImageFrequency::orderByDesc('response_count')->value('image_id');
+        $averageResponsePerDay = $this->getAverageResponsePerDay();
 
-        // Get the count of responses for the most responded image
-        $mostRespondedImageCount = ImageFrequency::where('image_id', $mostRespondedImageId)->value('response_count');
-
-        // Get the base64-encoded image data for the most responsed image id
-        $mostRespondedImageData = MnistImage::where('image_id', $mostRespondedImageId)->value('image_base64');
-
-        // Get the most misidentifcated image id
-        $mostMisidentificatedImageId = Misidentification::orderByDesc('count')->value('image_id');
-
-        // Get the count of misidentifications for the most misidentified image
-        $mostMisidentificatedImageCount = Misidentification::where('image_id', $mostMisidentificatedImageId)->value('count');
-
-        // Get the base64-encoded image data for the most misidentificated image id
-        $mostMisidentificatedImageData = MnistImage::where('image_id', $mostMisidentificatedImageId)->value('image_base64');
-
-        // Get the most generated number
-        $mostGeneratedNumberResult = NumberFrequency::select('label')
-            ->orderByDesc('count')
-            ->limit(1)
-            ->first();
-
-        $mostGeneratedNumber = $mostGeneratedNumberResult ? $mostGeneratedNumberResult->label : null;
-
-        // Get the most misidentified number from the misidentifications table
-        $mostMisidentifiedNumberResult = Misidentification::select('correct_label')
-            ->groupBy('correct_label')
-            ->orderByDesc(DB::raw('SUM(count)'))
-            ->limit(1)
-            ->first();
-
-        $mostMisidentifiedNumber = $mostMisidentifiedNumberResult ? $mostMisidentifiedNumberResult->correct_label : null;
-
-        // Calculate the average response time in milliseconds
-        $averageResponseTimeInMilliseconds = Response::avg('response_time');
-
-        // Convert milliseconds to seconds
-        $averageResponseTimeInSeconds = $averageResponseTimeInMilliseconds / 1000;
-
-        // Round the average response time to 2 decimal places
-        $roundedAverageResponseTime = round($averageResponseTimeInSeconds, 2);
-
-        // Calculate the average response per day from image_frequencies table
-        $averageResponsePerDay = ImageFrequency::selectRaw('COUNT(DISTINCT DATE(created_at)) as day_count, SUM(response_count) as total_response_count')
-            ->first(); // Use first to get the result as an object
-
-        // Check if there are days to avoid division by zero
-        if ($averageResponsePerDay->day_count > 0) {
-            // Calculate the rounded average response per day
-            $roundedAverageResponsePerDay = round($averageResponsePerDay->total_response_count / $averageResponsePerDay->day_count, 2);
-        } else {
-            // Handle the case where there are no days
-            $roundedAverageResponsePerDay = 0.00;
-        }
-
-        // Pass the data to the Overview page
         $data = [
             'totalGeneratedImages' => $totalGeneratedImages,
             'trainImagesCount' => $trainImagesCount,
@@ -119,8 +62,8 @@ class OverviewController extends Controller
             'mostMisidentificatedImageId' => $mostMisidentificatedImageId,
             'mostGeneratedNumber' => $mostGeneratedNumber, 
             'mostMisidentifiedNumber' => $mostMisidentifiedNumber,
-            'averageResponseTime' => $roundedAverageResponseTime,
-            'averageResponsePerDay' => $roundedAverageResponsePerDay,
+            'averageResponseTime' => $averageResponseTime,
+            'averageResponsePerDay' => $averageResponsePerDay,
             'mostGeneratedImageData' => $mostGeneratedImageData,
             'mostRespondedImageData' => $mostRespondedImageData,
             'mostMisidentificatedImageData' => $mostMisidentificatedImageData,
@@ -131,5 +74,104 @@ class OverviewController extends Controller
         ];
 
         return Inertia::render('Overview/Overview', $data);
+    }
+
+    private function getTotalGeneratedImages()
+    {
+        return ImageFrequency::sum('generation_count');
+    }
+
+    private function getImagesCount($start, $end)
+    {
+        return ImageFrequency::whereBetween('image_id', [$start, $end])->sum('generation_count');
+    }
+
+    private function getTotalResponses()
+    {
+        return ImageFrequency::sum('response_count');
+    }
+
+    private function getResponsesCount($start, $end)
+    {
+        return ImageFrequency::whereBetween('image_id', [$start, $end])->sum('response_count');
+    }
+
+    private function getTotalMisidentifications()
+    {
+        return Misidentification::sum('count');
+    }
+
+    private function getMisidentificationsCount($start, $end)
+    {
+        return Misidentification::whereBetween('correct_label', [$start, $end])->sum('count');
+    }
+
+    private function getMostGeneratedImageId()
+    {
+        return ImageFrequency::orderByDesc('generation_count')->value('image_id');
+    }
+
+    private function getMostRespondedImageId()
+    {
+        return ImageFrequency::orderByDesc('response_count')->value('image_id');
+    }
+
+    private function getImageCount($imageId)
+    {
+        return ImageFrequency::where('image_id', $imageId)->value('generation_count');
+    }
+
+    private function getImageData($imageId)
+    {
+        return MnistImage::where('image_id', $imageId)->value('image_base64');
+    }
+
+    private function getMostMisidentificatedImageId()
+    {
+        return Misidentification::orderByDesc('count')->value('image_id');
+    }
+
+    private function getMisidentificatedImageCount($imageId)
+    {
+        return Misidentification::where('image_id', $imageId)->value('count');
+    }
+
+    private function getMostGeneratedNumber()
+    {
+        $result = NumberFrequency::select('label')
+            ->orderByDesc('count')
+            ->limit(1)
+            ->first();
+
+        return $result ? $result->label : null;
+    }
+
+    private function getMostMisidentifiedNumber()
+    {
+        $result = Misidentification::select('correct_label')
+            ->groupBy('correct_label')
+            ->orderByDesc(DB::raw('SUM(count)'))
+            ->limit(1)
+            ->first();
+
+        return $result ? $result->correct_label : null;
+    }
+
+    private function getAverageResponseTime()
+    {
+        $averageResponseTimeInMilliseconds = Response::avg('response_time');
+        return round($averageResponseTimeInMilliseconds / 1000, 2);
+    }
+
+    private function getAverageResponsePerDay()
+    {
+        $result = ImageFrequency::selectRaw('COUNT(DISTINCT DATE(created_at)) as day_count, SUM(response_count) as total_response_count')
+            ->first();
+
+        if ($result->day_count > 0) {
+            return round($result->total_response_count / $result->day_count, 2);
+        } else {
+            return 0.00;
+        }
     }
 }

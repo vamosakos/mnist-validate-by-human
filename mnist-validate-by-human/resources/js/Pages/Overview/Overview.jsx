@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
+
 export default function Overview({ auth,
      totalGeneratedImages,
      trainImagesCount,
@@ -51,28 +52,28 @@ export default function Overview({ auth,
 
       {/* Total Overview Section */}
       <div className="max-w-7xl mx-auto mb-8">
-        <h3 className="text-2xl font-semibold mb-4">Generation statistics</h3>
+        <h3 className="text-2xl font-semibold mb-4">Generation Statistics</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {/* Total Generated Images Card */}
-          <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('totalGeneratedImages') ? 'h-auto' : 'h-32'}`}>
-            <h3 className="text-lg font-semibold">Total Generated Images</h3>
-            <p className="text-xl font-bold">{totalGeneratedImages}</p>
-            {isCardExpanded('totalGeneratedImages') && (
-              <div>
-                <p className="text-sm">From Train Images: {trainImagesCount}</p>
-                <p className="text-sm">From Test Images: {testImagesCount}</p>
-              </div>
-            )}
-            <button
-              className="text-blue-500 underline mt-2"
-              onClick={() => toggleExpandedCard('totalGeneratedImages')}
-            >
-              {isCardExpanded('totalGeneratedImages') ? 'Show less' : 'Show more'}
-            </button>
-          </div>
+            {/* Total Generated Images Card */}
+            <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('totalGeneratedImages') ? 'h-auto' : 'h-32'}`}>
+              <h3 className="text-lg font-semibold">Total Generated Images</h3>
+              <p className="text-xl font-bold">{totalGeneratedImages}</p>
+              {isCardExpanded('totalGeneratedImages') && (
+                <div>
+                  <p className="text-sm">From Train Images: {trainImagesCount}</p>
+                  <p className="text-sm">From Test Images: {testImagesCount}</p>
+                </div>
+              )}
+              <button
+                className="text-blue-500 underline mt-2"
+                onClick={() => toggleExpandedCard('totalGeneratedImages')}
+              >
+                {isCardExpanded('totalGeneratedImages') ? 'Show less' : 'Show more'}
+              </button>
+            </div>
 
             {/* Most Generated Image Id Card */}
-            <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center${isCardExpanded('mostGeneratedImage') ? 'h-auto' : 'h-32'}`}>
+            <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostGeneratedImage') ? 'h-auto' : 'h-32'}`}>
                 <h3 className="text-lg font-semibold">Most Generated Image Id:</h3>
                 <p className="text-xl font-bold">{mostGeneratedImageId}</p>
                 {isCardExpanded('mostGeneratedImage') && (
@@ -98,7 +99,7 @@ export default function Overview({ auth,
 
             {/* Most Generated Image Id Card */}
             <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostGeneratedNumber') ? 'h-auto' : 'h-32'}`}>
-                <h3 className="text-lg font-semibold">Most Generated Label:</h3>
+                <h3 className="text-lg font-semibold">Most Generated Number:</h3>
                 <p className="text-xl font-bold">{mostGeneratedNumber}</p>
             </div>
 
@@ -154,7 +155,7 @@ export default function Overview({ auth,
 
             {/* Most Generated Image Id Card */}
             <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostMisidentificatedNumber') ? 'h-auto' : 'h-32'}`}>
-                <h3 className="text-lg font-semibold">Most Misidentificated Label:</h3>
+                <h3 className="text-lg font-semibold">Most Misidentificated Number:</h3>
                 <p className="text-xl font-bold">{mostMisidentifiedNumber}</p>
             </div>
 
