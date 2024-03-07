@@ -36,6 +36,20 @@ class ImageController extends Controller
             ]);
         }
 
+        // Update 'number_frequencies' table
+        $numberFrequency = NumberFrequency::where('label', $mnistImage->image_label)->first();
+
+        if ($numberFrequency) {
+            // If 'number_frequencies' record exists, increment the count
+            $numberFrequency->increment('count');
+        } else {
+            // If 'number_frequencies' record does not exist, create a new record
+            NumberFrequency::create([
+                'label' => $mnistImage->image_label,
+                'count' => 1, // Increment count when a new image with the label is generated
+            ]);
+        }
+
         // Return the image ID, label, and base64-encoded image to the frontend
         return response()->json([
             'image_id' => $mnistImage->image_id,
