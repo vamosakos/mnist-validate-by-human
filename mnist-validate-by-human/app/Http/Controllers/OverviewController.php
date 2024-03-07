@@ -113,7 +113,13 @@ class OverviewController extends Controller
 
     private function getMostRespondedImageId()
     {
-        return ImageFrequency::orderByDesc('response_count')->value('image_id');
+        $mostRespondedImageId = ImageFrequency::orderByDesc('response_count')->value('image_id');
+    
+        if ($mostRespondedImageId && ImageFrequency::where('image_id', $mostRespondedImageId)->value('response_count') == 0) {
+            $mostRespondedImageId = null;
+        }
+    
+        return $mostRespondedImageId;
     }
 
     private function getImageCount($imageId)

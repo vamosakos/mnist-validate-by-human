@@ -85,7 +85,7 @@ export default function Overview({ auth,
                                 className="mt-2"
                             />
                         )}
-                        <p className="mt-2">{mostGeneratedImageCount} times</p>
+                        <p className="mt-2">{mostGeneratedImageCount} time(s)</p>
                     </div>
                 )}
                 <button
@@ -142,7 +142,7 @@ export default function Overview({ auth,
                               className="mt-2"
                           />
                       )}
-                      <p className="mt-2">{mostMisidentificatedImageCount} times</p>
+                      <p className="mt-2">{mostMisidentificatedImageCount} time(s)</p>
                   </div>
               )}
               <button
@@ -198,7 +198,7 @@ export default function Overview({ auth,
                               className="mt-2"
                           />
                       )}
-                      <p className="mt-2">{mostRespondedImageCount} times</p>
+                      <p className="mt-2">{mostRespondedImageCount} time(s)</p>
                   </div>
               )}
               <button
