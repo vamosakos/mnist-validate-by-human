@@ -3,6 +3,7 @@ import base64
 import matplotlib.pyplot as plt
 from keras.datasets import mnist
 from io import BytesIO
+from datetime import datetime
 
 # Kapcsolódás a MySQL adatbázishoz
 mydb = mysql.connector.connect(
@@ -36,8 +37,9 @@ for i in range(100):
     image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
 
     # Adatok mentése az adatbázisba
-    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64) VALUES (%s, %s, %s)"
-    val = (i, label, image_base64)
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)"
+    val = (i, label, image_base64, now, now)  # created_at és updated_at beállítása az aktuális időre
     mycursor.execute(sql, val)
     mydb.commit()
 
@@ -63,8 +65,9 @@ for i in range(100):
     image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
 
     # Adatok mentése az adatbázisba
-    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64) VALUES (%s, %s, %s)"
-    val = (i + 60000, label, image_base64)  # Az indexek eltolása a train képek után
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)"
+    val = (i + 60000, label, image_base64, now, now)  # Az indexek eltolása a train képek után
     mycursor.execute(sql, val)
     mydb.commit()
 

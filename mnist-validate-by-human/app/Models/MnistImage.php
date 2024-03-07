@@ -13,8 +13,6 @@ class MnistImage extends Model
     
     protected $fillable = ['image_id', 'image_label', 'image_base64'];
 
-    public $timestamps = false;
-
     public function misidentifications()
     {
         return $this->hasMany(Misidentification::class, 'correct_label');
