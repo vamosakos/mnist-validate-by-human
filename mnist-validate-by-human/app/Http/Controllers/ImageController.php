@@ -6,10 +6,44 @@ use App\Models\MnistImage;
 use App\Models\ImageFrequency;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ImageController extends Controller
 {
     public function generateImage()
+    {
+        // Randomly select a record from the database
+        $mnistImage = MnistImage::inRandomOrder()->first();
+
+        // If no record found, return empty response
+        if (!$mnistImage) {
+            return response()->json([], 404);
+        }
+
+        // Update 'image_frequencies' table
+        $imageFrequency = ImageFrequency::where('image_id', $mnistImage->image_id)->first();
+
+        if ($imageFrequency) {
+            // If 'image_frequencies' record exists, increment the generation count
+            $imageFrequency->increment('generation_count');
+        } else {
+            // If 'image_frequencies' record does not exist, create a new record
+            ImageFrequency::create([
+                'image_id' => $mnistImage->image_id,
+                'generation_count' => 1, // Increment generation count when a new image is generated
+                'response_count' => 0,
+            ]);
+        }
+
+        // Return the image ID, label, and base64-encoded image to the frontend
+        return response()->json([
+            'image_id' => $mnistImage->image_id,
+            'image_label' => $mnistImage->image_label,
+            'image_base64' => $mnistImage->image_base64
+        ]);
+    }
+
+    public function generateImageOld()
     {
         // Execute the Python script to generate a random MNIST image ID, label, dataset type, and base64-encoded image
         chdir(base_path());
@@ -63,3 +97,4 @@ class ImageController extends Controller
         ]);
     }
 }
+
