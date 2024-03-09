@@ -40,6 +40,9 @@ class OverviewController extends Controller
         $mostMisidentificatedImageData = $this->getImageData($mostMisidentificatedImageId);
 
         $mostGeneratedNumber = $this->getMostGeneratedNumber();
+        $mostGeneratedNumberCount = $this->getMostGeneratedNumberCount();
+        
+        $mostMisidentifiedNumberCount = $this->getMostMisidentifiedNumberCount();
 
         $mostMisidentifiedNumber = $this->getMostMisidentifiedNumber();
 
@@ -70,6 +73,8 @@ class OverviewController extends Controller
             'mostGeneratedImageCount' => $mostGeneratedImageCount,
             'mostMisidentificatedImageCount' => $mostMisidentificatedImageCount,
             'mostRespondedImageCount' => $mostRespondedImageCount,
+            'mostMisidentifiedNumberCount' => $mostMisidentifiedNumberCount,
+            'mostGeneratedNumberCount' => $mostGeneratedNumberCount,
             // Add more data as needed for other sections
         ];
 
@@ -144,23 +149,30 @@ class OverviewController extends Controller
 
     private function getMostGeneratedNumber()
     {
-        $result = NumberFrequency::select('label')
-            ->orderByDesc('count')
-            ->limit(1)
-            ->first();
+        return NumberFrequency::orderByDesc('count')->value('label');
+    }
 
-        return $result ? $result->label : null;
+    private function getMostGeneratedNumberCount()
+    {
+        return NumberFrequency::selectRaw('label, SUM(count) as generated_count')
+            ->groupBy('label')
+            ->orderByDesc('generated_count')
+            ->value('generated_count');
     }
 
     private function getMostMisidentifiedNumber()
     {
-        $result = Misidentification::select('correct_label')
-            ->groupBy('correct_label')
+        return Misidentification::groupBy('correct_label')
             ->orderByDesc(DB::raw('SUM(count)'))
-            ->limit(1)
-            ->first();
-
-        return $result ? $result->correct_label : null;
+            ->value('correct_label');
+    }
+    
+    private function getMostMisidentifiedNumberCount()
+    {
+        return Misidentification::selectRaw('correct_label, SUM(count) as misidentified_count')
+            ->groupBy('correct_label')
+            ->orderByDesc('misidentified_count')
+            ->value('misidentified_count');
     }
 
     private function getAverageResponseTime()
@@ -180,4 +192,5 @@ class OverviewController extends Controller
             return 0.00;
         }
     }
+
 }
