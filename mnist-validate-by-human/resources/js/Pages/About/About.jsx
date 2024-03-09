@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import StartPopup from '@/Popups/TakeTheTestPopup';
 import Footer from '@/Footer/Footer';
+import Header from '@/Header/Header';
 
 export default function About() {
     const [modalOpen, setModalOpen] = useState(false);
@@ -25,11 +26,7 @@ export default function About() {
     return (
         <div>
             {/* Header */}
-            <header style={{ backgroundImage: 'url(/header.png)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: '0.9', height: '200px' }}>
-                <div className="container mx-auto flex justify-center items-center h-full text-white">
-                    <h1 className="text-7xl font-bold">MNIST Validation By Human</h1>
-                </div>
-            </header>
+            <Header />
 
             {/* Main Content and Button Container */}
             <div className="bg-gray-127 min-h-screen flex flex-col justify-center items-center py-">

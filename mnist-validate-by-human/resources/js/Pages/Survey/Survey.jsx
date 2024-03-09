@@ -6,6 +6,7 @@ import { faTimes, faSpinner, faBatteryHalf, faExclamationTriangle } from '@forta
 import CaptchaPopup from '@/Popups/CaptchaPopup';
 import FeedbackPopup from '@/Popups/FeedbackPopup';
 import ExitConfirmationPopup from '@/Popups/ExitConfirmationPopup';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Survey() {
     const [imageId, setImageId] = useState(null);
@@ -67,7 +68,12 @@ export default function Survey() {
                 return;
             }
             setLoading(true);
-            const response = await axios.get('/api/generate-image');
+            const clientToken = localStorage.getItem('clientToken') || generateClientToken(); // Generáljunk vagy olvassunk be egy "client token"-t
+            const response = await axios.get('/api/generate-image', {
+                headers: {
+                    'X-Client-Token': clientToken // Küldjük el a "client token"-t a fejlécben
+                }
+            });
             const { image_id, image_label, image_base64 } = response.data;
             setImageId(image_id);
             setImageLabel(image_label);
@@ -83,6 +89,17 @@ export default function Survey() {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Segédfüggvény a "client token" generálásához
+    const generateClientToken = () => {
+        const token = generateRandomToken(); // Implementáld a random token generálását
+        localStorage.setItem('clientToken', token); // Tárold el a "client token"-t a localStorage-ban
+        return token;
+    };
+
+    const generateRandomToken = () => {
+        return uuidv4();
     };
 
     const handleNumberSelection = (number) => {
