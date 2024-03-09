@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/generate-image', [ImageController::class, 'generateImage']);
+Route::get('/generate-image', [ImageController::class, 'generateRandomImage']);
 
 Route::group(['middleware' => ['web']], function () {
     Route::post('/save-response', [ResponseController::class, 'saveResponse']);

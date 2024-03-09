@@ -16,44 +16,19 @@ use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
-    public function generateImage()
+    public function generateRandomImage()
     {
         // Randomly select a record from the database
         $mnistImage = MnistImage::inRandomOrder()->first();
 
-        // If no record found, return empty response
+        // If no record found, return the case when no images are available
         if (!$mnistImage) {
-            return response()->json([], 404);
+            return response()->json(['error' => 'No images available'], 404);
         }
 
-        // Update 'image_frequencies' table
-        $imageFrequency = ImageFrequency::where('image_id', $mnistImage->image_id)->first();
-
-        if ($imageFrequency) {
-            // If 'image_frequencies' record exists, increment the generation count
-            $imageFrequency->increment('generation_count');
-        } else {
-            // If 'image_frequencies' record does not exist, create a new record
-            ImageFrequency::create([
-                'image_id' => $mnistImage->image_id,
-                'generation_count' => 1, // Increment generation count when a new image is generated
-                'response_count' => 0,
-            ]);
-        }
-
-        // Update 'number_frequencies' table
-        $numberFrequency = NumberFrequency::where('label', $mnistImage->image_label)->first();
-
-        if ($numberFrequency) {
-            // If 'number_frequencies' record exists, increment the count
-            $numberFrequency->increment('count');
-        } else {
-            // If 'number_frequencies' record does not exist, create a new record
-            NumberFrequency::create([
-                'label' => $mnistImage->image_label,
-                'count' => 1, // Increment count when a new image with the label is generated
-            ]);
-        }
+        // Update 'image_frequencies' and 'number_frequencies' tables
+        $this->updateImageFrequency($mnistImage->image_id);
+        $this->updateNumberFrequency($mnistImage->image_label);
 
         // Return the image ID, label, and base64-encoded image to the frontend
         return response()->json([
@@ -136,12 +111,55 @@ class ImageController extends Controller
         $this->updateImageFrequency($mnistImage->image_id);
         $this->updateNumberFrequency($mnistImage->image_label);
 
-        // Return the selected image to the frontend along with the unique ID
+        // Return the selected image to the frontend
         return response()->json([
             'image_id' => $mnistImage->image_id,
             'image_label' => $mnistImage->image_label,
             'image_base64' => $mnistImage->image_base64,
-            'unique_id' => $uniqueId
+        ]);
+    }
+
+    public function generateRandomTrainImages()
+    {
+        // Randomly select a record from the database where image_id is between 0 and 59999
+        $mnistImage = MnistImage::whereBetween('image_id', [0, 59999])->inRandomOrder()->first();
+    
+        // If no record found, return the case when no images are available
+        if (!$mnistImage) {
+            return response()->json(['error' => 'No images available'], 404);
+        }
+    
+        // Update 'image_frequencies' and 'number_frequencies' tables
+        $this->updateImageFrequency($mnistImage->image_id);
+        $this->updateNumberFrequency($mnistImage->image_label);
+    
+        // Return the image ID, label, and base64-encoded image to the frontend
+        return response()->json([
+            'image_id' => $mnistImage->image_id,
+            'image_label' => $mnistImage->image_label,
+            'image_base64' => $mnistImage->image_base64
+        ]);
+    }
+    
+    public function generateRandomTestImages()
+    {
+        // Randomly select a record from the database where image_id is between 60000 and 69999
+        $mnistImage = MnistImage::whereBetween('image_id', [60000, 69999])->inRandomOrder()->first();
+    
+        // If no record found, return the case when no images are available
+        if (!$mnistImage) {
+            return response()->json(['error' => 'No images available'], 404);
+        }
+    
+        // Update 'image_frequencies' and 'number_frequencies' tables
+        $this->updateImageFrequency($mnistImage->image_id);
+        $this->updateNumberFrequency($mnistImage->image_label);
+    
+        // Return the image ID, label, and base64-encoded image to the frontend
+        return response()->json([
+            'image_id' => $mnistImage->image_id,
+            'image_label' => $mnistImage->image_label,
+            'image_base64' => $mnistImage->image_base64
         ]);
     }
     
@@ -183,12 +201,10 @@ class ImageController extends Controller
     // Helper function to associate an image with a session
     private function associateImageWithSession($imageId, $uniqueId)
     {
-        DB::table('uuid_images')->insert([
-            'uuid' => $uniqueId,
-            'image_id' => $imageId,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+        $uuidImage = new UuidImage();
+        $uuidImage->uuid = $uniqueId;
+        $uuidImage->image_id = $imageId;
+        $uuidImage->save();
     }
 
 
