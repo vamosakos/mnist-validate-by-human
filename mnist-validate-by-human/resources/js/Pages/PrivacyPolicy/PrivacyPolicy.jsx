@@ -27,6 +27,8 @@ export default function PrivacyPolicy() {
                                 <strong>XSRF-TOKEN:</strong> Ez a cookie segít megvédeni a weboldalt a Cross-Site Request Forgery (CSRF) támadások ellen.
                                 <br/><br/>
                                 <strong>laravel_session:</strong> Ez a cookie tárolja az aktuális látogatásod során összegyűjtött információkat. Az érvényessége egy évre terjed, és nélkülözhetetlen az oldal biztonsága és funkcionalitása szempontjából.
+                                <br/><br/>
+                                <strong>Temporary UUID:</strong> Egy ideiglenes egyedi azonosítót generálunk minden látogató számára a tesztek kitöltése során. Az ideiglenes UUID segít biztosítani, hogy a vendégek ne kapjanak ugyanazt a képet többször. Az ideiglenes UUID-ket a látogatás végén töröljük.
                             </p>
                             <p className="text-xl mb-6">
                                 <strong>2. Adatkezelés célja</strong><br/>
