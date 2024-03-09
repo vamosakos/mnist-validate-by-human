@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 
-const NumberFrequenciesChart = ({ numberFrequencies }) => {
+const ImageFrequenciesChart = ({ imageFrequencies }) => {
   const [filteredId, setFilteredId] = useState(null);
 
-  // Filter numberFrequencies based on the entered image_id
+  // Filter imageFrequencies based on the entered image_id
   const filteredData = filteredId
-    ? numberFrequencies.filter((item) => item.image_id === parseInt(filteredId))
-    : numberFrequencies;
+    ? imageFrequencies.filter((item) => item.image_id === parseInt(filteredId))
+    : imageFrequencies;
 
   const data = {
     labels: filteredData.map((item) => item.image_id),
@@ -74,4 +74,4 @@ const NumberFrequenciesChart = ({ numberFrequencies }) => {
   );
 };
 
-export default NumberFrequenciesChart;
+export default ImageFrequenciesChart;

@@ -8,12 +8,12 @@ use Inertia\Inertia;
 
 class StatisticsController extends Controller
 {
-    public function numberFrequencies()
+    public function imageFrequencies()
     {
-        $numberFrequencies = ImageFrequency::all();
+        $imageFrequencies = ImageFrequency::all();
 
-        return Inertia::render('Statistics/NumberFrequencies', [
-            'numberFrequencies' => $numberFrequencies,
+        return Inertia::render('Statistics/ImageFrequencies', [
+            'imageFrequencies' => $imageFrequencies,
         ]);
     }
 }

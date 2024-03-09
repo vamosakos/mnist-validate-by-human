@@ -46,7 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/statistics/number-frequencies', [StatisticsController::class, 'numberFrequencies'])->name('statistics.numberFrequencies');
+    Route::get('/statistics/image-frequencies', [StatisticsController::class, 'imageFrequencies'])->name('statistics.imageFrequencies');
     Route::get('/overview', [OverviewController::class, 'index'])->name('overview.index');
 });
 

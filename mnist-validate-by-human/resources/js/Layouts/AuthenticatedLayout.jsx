@@ -27,7 +27,7 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink href={route('overview.index')} active={route().current('overview.index')}>
                                     Overview
                                 </NavLink>
-                                <NavLink href={route('statistics.numberFrequencies')} active={route().current('statistics.numberFrequencies')}>
+                                <NavLink href={route('statistics.imageFrequencies')} active={route().current('statistics.imageFrequencies')}>
                                     Statistics
                                 </NavLink>
                             </div>
