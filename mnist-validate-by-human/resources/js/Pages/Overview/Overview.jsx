@@ -26,7 +26,9 @@ export default function Overview({ auth,
      mostMisidentificatedImageData,
      mostGeneratedImageCount,
      mostMisidentificatedImageCount,
-     mostRespondedImageCount }) {
+     mostRespondedImageCount,
+     mostMisidentifiedNumberCount,
+     mostGeneratedNumberCount }) {
   const [expandedCards, setExpandedCards] = useState([]);
 
   const toggleExpandedCard = (card) => {
@@ -101,6 +103,8 @@ export default function Overview({ auth,
             <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostGeneratedNumber') ? 'h-auto' : 'h-32'}`}>
                 <h3 className="text-lg font-semibold">Most Generated Number:</h3>
                 <p className="text-xl font-bold">{mostGeneratedNumber}</p>
+                <p className="mt-2">{mostGeneratedNumberCount} time(s)</p>
+                
             </div>
 
         </div>
@@ -157,6 +161,7 @@ export default function Overview({ auth,
             <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostMisidentificatedNumber') ? 'h-auto' : 'h-32'}`}>
                 <h3 className="text-lg font-semibold">Most Misidentificated Number:</h3>
                 <p className="text-xl font-bold">{mostMisidentifiedNumber}</p>
+                <p className="mt-2">{mostMisidentifiedNumberCount} time(s)</p>
             </div>
 
         </div>
