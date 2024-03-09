@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/statistics/image-frequencies', [StatisticsController::class, 'imageFrequencies'])->name('statistics.imageFrequencies');
     Route::get('/overview', [OverviewController::class, 'index'])->name('overview.index');
+    Route::get('/get-image/{imageId}', [StatisticsController::class, 'getImageById'])->name('get-image');
 });
 
 Route::get('/csrf-token', function () {

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import ImageDetailPopup from '@/Popups/ImageDetailPopup';
 
 const DataTable = ({ data, columns }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'desc' });
   const [visibleRows, setVisibleRows] = useState(10);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -28,17 +30,25 @@ const DataTable = ({ data, columns }) => {
     setVisibleRows((prevVisibleRows) => prevVisibleRows + 10);
   };
 
+  const handleRowClick = (rowId) => {
+    setSelectedRow(rowId);
+  };
+
+  const handleClosePopup = () => {
+    setSelectedRow(null);
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto max-h-96">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 sticky top-0">
+          <thead className="text-xs uppercase bg-green-custom dark:bg-green-custom dark:text-gray-400 sticky top-0 text-center align-middle">
             <tr>
               {columns.map((columnName) => (
                 <th
                   key={columnName}
                   scope="col"
-                  className="px-6 py-3"
+                  className="cursor-pointer px-6 text-2xl py-3 text-white hover:bg-emerald-600 "
                   onClick={() => handleSort(columnName)}
                 >
                   {columnName}
@@ -52,10 +62,16 @@ const DataTable = ({ data, columns }) => {
             </tr>
           </thead>
           <tbody>
-            {visibleData.map((item) => (
-              <tr key={item.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+            {visibleData.map((item, index) => (
+              <tr
+                key={item.id}
+                className={`border-b dark:border-gray-700 cursor-pointer group hover:bg-gray-500 ${
+                  index % 2 === 0 ? 'bg-gray-127' : 'bg-gray-194'
+                }`}
+                onClick={() => handleRowClick(item.id)}
+              >
                 {columns.map((columnName) => (
-                  <td key={columnName} className="px-6 py-4">
+                  <td key={columnName} className="px-6 text-2xl py-4 text-black text-center align-middle">
                     {item[columnName]}
                   </td>
                 ))}
@@ -64,11 +80,17 @@ const DataTable = ({ data, columns }) => {
           </tbody>
         </table>
       </div>
-      {/* 'Show more' button outside the DataTable component */}
       {visibleRows < sortedData.length && (
-        <button className="mt-2 text-blue-500" onClick={handleShowMore}>
+        <button className="text-xl bg-green-custom text-white py-3 px-14 hover:bg-emerald-600" onClick={handleShowMore}>
           Show more
         </button>
+      )}
+      {selectedRow && (
+        <ImageDetailPopup
+          show={selectedRow !== null}
+          onClose={handleClosePopup}
+          rowData={sortedData.find((item) => item.id === selectedRow)}
+        />
       )}
     </div>
   );
