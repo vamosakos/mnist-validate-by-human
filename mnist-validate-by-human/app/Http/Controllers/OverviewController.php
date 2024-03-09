@@ -24,8 +24,8 @@ class OverviewController extends Controller
         $responsesFromTest = $this->getResponsesCount(60000, 69999);
 
         $totalMisidentifications = $this->getTotalMisidentifications();
-        $misidentificationsFromTrain = $this->getMisidentificationsCount(0, 4);
-        $misidentificationsFromTest = $this->getMisidentificationsCount(5, 9);
+        $misidentificationsFromTrain = $this->getMisidentificationsCount(0, 59999);
+        $misidentificationsFromTest = $this->getMisidentificationsCount(60000, 69999);
 
         $mostGeneratedImageId = $this->getMostGeneratedImageId();
         $mostGeneratedImageCount = $this->getImageCount($mostGeneratedImageId);
@@ -108,7 +108,7 @@ class OverviewController extends Controller
 
     private function getMisidentificationsCount($start, $end)
     {
-        return Misidentification::whereBetween('correct_label', [$start, $end])->sum('count');
+        return Misidentification::whereBetween('image_id', [$start, $end])->sum('count');
     }
 
     private function getMostGeneratedImageId()
