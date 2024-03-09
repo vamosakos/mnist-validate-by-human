@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\MnistImage;
 use App\Models\ImageFrequency;
 use App\Models\NumberFrequency;
+use App\Models\UuidImage;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+
 
 class ImageController extends Controller
 {
@@ -57,6 +62,135 @@ class ImageController extends Controller
             'image_base64' => $mnistImage->image_base64
         ]);
     }
+
+    public function generateWeightedRandomImage(Request $request)
+    {
+        // Get the unique ID from the request header
+        $uniqueId = $request->header('X-Client-Token');
+
+        // Select images with weights based on frequency
+        $mnistImage = MnistImage::leftJoin('image_frequencies', 'mnist_images.image_id', '=', 'image_frequencies.image_id')
+            ->select('mnist_images.*', DB::raw('COALESCE(image_frequencies.generation_count, 0) as generation_count'))
+            ->where('generation_count', '<', 5) // Azokat a képeket válassza ki, amelyeknek a generációszáma 5 alatt van
+            ->orderBy('generation_count', 'asc') // Növekvő sorrendben rendezze az alapján, hogy milyen gyakran jelennek meg
+            ->whereNotIn('mnist_images.image_id', function ($query) use ($uniqueId) {
+                $query->select('image_id')
+                    ->from('uuid_images')
+                    ->where('uuid', $uniqueId);
+            })
+            ->inRandomOrder() // Vegye figyelembe a véletlenszerű sorrendet
+            ->first();
+        
+        // Handle the case when no record is found
+        while (!$mnistImage || UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists()) {
+            $mnistImage = MnistImage::inRandomOrder()->first();
+        }
+    
+        // Associate the selected image with the current session
+        $this->associateImageWithSession($mnistImage->image_id, $uniqueId);
+
+        // Update 'image_frequencies' and 'number_frequencies' tables
+        $this->updateImageFrequency($mnistImage->image_id);
+        $this->updateNumberFrequency($mnistImage->image_label);
+    
+        // Return the selected image to the frontend
+        return response()->json([
+            'image_id' => $mnistImage->image_id,
+            'image_label' => $mnistImage->image_label,
+            'image_base64' => $mnistImage->image_base64
+        ]);
+    }    
+
+    public function generateMisidentificationWeightedImage(Request $request)
+    {
+        // Get the unique ID from the request header
+        $uniqueId = $request->header('X-Client-Token');
+        
+        // Select images with weights based on misidentifications
+        $mnistImage = MnistImage::leftJoin('misidentifications', 'mnist_images.image_id', '=', 'misidentifications.image_id')
+            ->select('mnist_images.*', DB::raw('COALESCE(misidentifications.count, 0) as misidentification_count'))
+            ->where('misidentifications.count', '>', 0)
+            ->orderBy('misidentification_count', 'desc')
+            ->whereNotIn('mnist_images.image_id', function ($query) use ($uniqueId) {
+                $query->select('image_id')
+                    ->from('uuid_images')
+                    ->where('uuid', $uniqueId);
+            })
+            ->inRandomOrder()
+            ->first();
+
+        // If no record is found or the selected image is already associated with the session, try again
+        while (!$mnistImage || UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists()) {
+            $mnistImage = MnistImage::inRandomOrder()->first();
+        }
+
+        // If still no record is found, handle the case when no images are available
+        if (!$mnistImage) {
+            return response()->json(['error' => 'No images available'], 404);
+        }
+
+        // Associate the selected image with the current session
+        $this->associateImageWithSession($mnistImage->image_id, $uniqueId);
+
+        // Update 'image_frequencies' and 'number_frequencies' tables
+        $this->updateImageFrequency($mnistImage->image_id);
+        $this->updateNumberFrequency($mnistImage->image_label);
+
+        // Return the selected image to the frontend along with the unique ID
+        return response()->json([
+            'image_id' => $mnistImage->image_id,
+            'image_label' => $mnistImage->image_label,
+            'image_base64' => $mnistImage->image_base64,
+            'unique_id' => $uniqueId
+        ]);
+    }
+    
+    private function updateImageFrequency($imageId)
+    {
+        // Update 'image_frequencies' table
+        $imageFrequency = ImageFrequency::where('image_id', $imageId)->first();
+
+        if ($imageFrequency) {
+            // If 'image_frequencies' record exists, increment the generation count
+            $imageFrequency->increment('generation_count');
+        } else {
+            // If 'image_frequencies' record does not exist, create a new record
+            ImageFrequency::create([
+                'image_id' => $imageId,
+                'generation_count' => 1, // Increment generation count when a new image is generated
+                'response_count' => 0,
+            ]);
+        }
+    }
+
+    private function updateNumberFrequency($label)
+    {
+        // Update 'number_frequencies' table
+        $numberFrequency = NumberFrequency::where('label', $label)->first();
+
+        if ($numberFrequency) {
+            // If 'number_frequencies' record exists, increment the count
+            $numberFrequency->increment('count');
+        } else {
+            // If 'number_frequencies' record does not exist, create a new record
+            NumberFrequency::create([
+                'label' => $label,
+                'count' => 1, // Increment count when a new image with the label is generated
+            ]);
+        }
+    }
+
+    // Helper function to associate an image with a session
+    private function associateImageWithSession($imageId, $uniqueId)
+    {
+        DB::table('uuid_images')->insert([
+            'uuid' => $uniqueId,
+            'image_id' => $imageId,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+    }
+
 
     public function generateImageOld()
     {
