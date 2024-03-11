@@ -18,40 +18,32 @@ export default function PrivacyPolicy() {
                             <Head title="Privacy Policy" />
                             <p className="text-4xl font-bold mb-6">Privacy Policy</p>
                             <p className="text-xl mb-6">
-                                Üdvözlünk a weboldalunkon! Az alábbiakban megtalálod az adatvédelmi gyakorlatunkat, amely magában foglalja az adatgyűjtés, -kezelés és -védelem részleteit. Kérjük, olvasd el ezt a dokumentumot figyelmesen, hogy megértsd, milyen adatokat gyűjtünk, és hogyan kezeljük azokat.
+                                Welcome to our website! Below you will find our privacy practices, which include details on data collection, handling, and protection. Please read this document carefully to understand what data we collect and how we manage it.
                             </p>
                             <p className="text-xl mb-6">
-                                <strong>1. Gyűjtött adatok</strong><br/>
-                                A weboldalunk látogatása során két fő típusú cookie-t használunk: XSRF-TOKEN és laravel_session. Ezek a cookie-k segítik az oldal biztonságát és funkcionalitását.
+                                <strong>1. Collected Data</strong><br/>
+                                We use three main types of cookies when visiting our website: XSRF-TOKEN, laravel_session, and UUID. These cookies help maintain the security and functionality of the site.
                                 <br/><br/>
-                                <strong>XSRF-TOKEN:</strong> Ez a cookie segít megvédeni a weboldalt a Cross-Site Request Forgery (CSRF) támadások ellen.
+                                <strong>XSRF-TOKEN:</strong> This cookie helps protect the website against Cross-Site Request Forgery (CSRF) attacks.
                                 <br/><br/>
-                                <strong>laravel_session:</strong> Ez a cookie tárolja az aktuális látogatásod során összegyűjtött információkat. Az érvényessége egy évre terjed, és nélkülözhetetlen az oldal biztonsága és funkcionalitása szempontjából.
+                                <strong>laravel_session:</strong> This cookie stores information collected during your current visit. Its validity extends for one year and is essential for the security and functionality of the site.
                                 <br/><br/>
-                                <strong>Temporary UUID:</strong> Egy ideiglenes egyedi azonosítót generálunk minden látogató számára a tesztek kitöltése során. Az ideiglenes UUID segít biztosítani, hogy a vendégek ne kapjanak ugyanazt a képet többször. Az ideiglenes UUID-ket a látogatás végén töröljük.
+                                <strong>UUID:</strong> We generate a temporary unique identifier for each visitor when filling out surveys. The temporary UUID helps ensure that guests do not receive the same image multiple times. Temporary UUIDs are deleted within an hour at the end of the visit.
                             </p>
                             <p className="text-xl mb-6">
-                                <strong>2. Adatkezelés célja</strong><br/>
-                                Az általunk gyűjtött adatokat kizárólag a weboldal biztonságának és funkcionalitásának javítására használjuk. Semmilyen személyes adatot nem értékesítünk vagy osztunk meg harmadik féllel.
+                                <strong>2. Purpose of Data Processing</strong><br/>
+                                The data we collect is used solely to improve the security and functionality of the website. We do not sell or share any personal data with third parties.
                             </p>
                             <p className="text-xl mb-6">
-                                <strong>3. Felhasználói jogok</strong><br/>
-                                Felhasználóként jogod van kérvényezni az általunk tárolt személyes adatokhoz való hozzáférést, módosítást vagy törlést. Kérjük, vedd fel velünk a kapcsolatot az alábbi elérhetőségeken, ha bármilyen adatkezelési kérdésed vagy kéréseid vannak.
+                                <strong>3. Cookie Management</strong><br/>
+                                Cookies can generally be managed in your browser settings. However, please note that disabling or deleting cookies may affect the functionality and security of the site.
                             </p>
                             <p className="text-xl mb-6">
-                                <strong>4. Cookie-k kezelése</strong><br/>
-                                A cookie-kat általában a böngésző beállításaiban lehet kezelni. Azonban megjegyezzük, hogy a cookie-k letiltása vagy törlése befolyásolhatja az oldal funkcionalitását és biztonságát.
+                                <strong>4. Acceptance</strong><br/>
+                                By using our site and accepting cookies, you consent to the data processing practices described by us.
                             </p>
                             <p className="text-xl mb-6">
-                                <strong>5. Elfogadás</strong><br/>
-                                Az oldalunk használatával és a cookie-k elfogadásával beleegyezel az általunk leírt adatkezelési gyakorlatokba.
-                            </p>
-                            <p className="text-xl mb-6">
-                                <strong>Kapcsolat</strong><br/>
-                                Ha kérdéseid vagy észrevételeid vannak az adatvédelmi gyakorlatunkkal kapcsolatban, kérjük, lépj kapcsolatba velünk az alábbi elérhetőségeken: [email cím vagy elérhetőség].
-                            </p>
-                            <p className="text-xl mb-6">
-                                Ez az adatvédelmi nyilatkozat 2024. március 8-án lépett életbe, és fenntartjuk a jogot a módosításokra, amennyiben szükségesnek találjuk.
+                                This privacy policy took effect on March 8, 2024, and we reserve the right to make modifications if deemed necessary.
                             </p>
                         </div>
                     </div>

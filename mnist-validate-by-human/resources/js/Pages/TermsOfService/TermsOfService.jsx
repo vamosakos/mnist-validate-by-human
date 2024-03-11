@@ -18,16 +18,16 @@ export default function TermsOfService() {
                             <Head title="Terms of Service" />
                             <p className="text-4xl font-bold mb-6">Terms of Service</p>
                             <p className="text-xl mb-6">
-                                Üdvözlünk az oldalunkon! Kérjük, olvasd el az alábbi feltételeket, mielőtt folytatnád az oldal használatát.
+                                Welcome to our website! Please read the following terms before continuing to use the site.
                             </p>
                             <p className="text-xl mb-6">
-                                Az oldalunk egy teszt- és felmérőoldal, amelynek eredményeit statisztikai elemzésekhez és kutatásokhoz használjuk fel.
+                                Our website is a testing and survey platform, and the results obtained are used for statistical analysis and research purposes.
                             </p>
                             <p className="text-xl mb-6">
-                                A felhasználók kizárólag az oldalunk által meghatározott módon használhatják az oldalt, és tilos a kereskedelmi tevékenység az oldalon.
+                                Visitors may only use the website in the manner specified by us, and any commercial or unethical activities are prohibited.
                             </p>
                             <p className="text-xl mb-6">
-                                Fenntartjuk a jogot, hogy bármikor módosítsuk vagy frissítsük a jelen feltételeket. A módosításokról értesítést küldünk, és az új feltételek az értesítés közzétételét követően lépnek életbe.
+                                We reserve the right to modify or update these terms at any time.
                             </p>
                         </div>
                     </div>
