@@ -32,10 +32,18 @@ export default function FeedbackPopup({ show, onClose }) {
         const inputText = event.target.value;
         setFeedbackText(inputText);
         setCharCount(inputText.length);
-
+    
         // Tisztítsuk meg a beküldött tartalmat a DOMPurify segítségével és ellenőrizzük, hogy veszélyes-e
         const sanitizedText = DOMPurify.sanitize(inputText);
         if (sanitizedText !== inputText) {
+            setDangerousContentDetected(true);
+        } else {
+            setDangerousContentDetected(false);
+        }
+    
+        // Ellenőrizze, tartalmaz-e URL-t vagy linket a bemenet
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        if (urlRegex.test(inputText)) {
             setDangerousContentDetected(true);
         } else {
             setDangerousContentDetected(false);
