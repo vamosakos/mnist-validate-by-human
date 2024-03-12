@@ -47,13 +47,19 @@ export default function Survey() {
     }, [startTime]);
 
     useEffect(() => {
-        const warningTimer = setTimeout(() => {
-            setShowWarning(true); // Mindenképp megjeleníti a figyelmeztető üzenetet az utolsó 5 másodpercben
-        }, Math.max(0, startTime ? 25000 - (Date.now() - startTime.getTime()) : 0)); // Kiszámolja a maradék időt a startTime-hoz képest
+        setShowWarning(false); // Alapértelmezésben ne jelenjen meg a figyelmeztetés
     
-        return () => clearTimeout(warningTimer); // Tisztítja a warningTimert az effect megszűnésekor
-    }, [startTime]);
-
+        if (!showFeedbackPopup && !feedbackPopupVisible) { // Ha nincs megjelenítve a feedback popup, és a felhasználó még nem nyomta meg a Submit gombot
+            const warningTimer = setTimeout(() => {
+                setShowWarning(true); // Mindenképp megjeleníti a figyelmeztető üzenetet az utolsó 5 másodpercben
+            }, Math.max(0, startTime ? 25000 - (Date.now() - startTime.getTime()) : 0)); // Kiszámolja a maradék időt a startTime-hoz képest
+    
+            return () => clearTimeout(warningTimer); // Tisztítja a warningTimert az effect megszűnésekor
+        } else if (showFeedbackPopup && !feedbackPopupVisible) { // Ha a felhasználó már beküldte a visszajelzést, de még mindig látszik a figyelmeztetés
+            setShowWarning(false); // Ne jelenjen meg a figyelmeztetés
+        }
+    }, [startTime, showFeedbackPopup, feedbackPopupVisible]);
+    
     useEffect(() => {
         setShowWarning(!showFeedbackPopup && !feedbackPopupVisible);
     }, [showFeedbackPopup, feedbackPopupVisible]);
