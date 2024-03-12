@@ -1,15 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 
-const ImageFrequenciesChart = ({ imageFrequencies }) => {
+const ImageFrequenciesChart = ({ imageFrequencies, filteredId }) => {
   const [chartView, setChartView] = useState('all'); // 'all', 'top10_response', 'top10_generation', or 'top10_misidentifications'
+
+  useEffect(() => {
+    // Reset chart view when filtered ID changes
+    setChartView('all');
+  }, [filteredId]);
 
   const handleChartViewChange = (view) => {
     setChartView(view);
   };
 
   let filteredData = [...imageFrequencies]; // Create a copy of the original data
+
+  if (filteredId !== null) {
+    // Filter data by the selected image ID
+    filteredData = filteredData.filter(item => item.image_id === filteredId);
+  }
 
   switch (chartView) {
     case 'top10_response':
