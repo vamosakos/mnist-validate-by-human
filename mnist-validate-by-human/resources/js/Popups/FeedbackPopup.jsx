@@ -14,7 +14,8 @@ export default function FeedbackPopup({ show, onClose }) {
     const [csrfToken, setCsrfToken] = useState('');
     const [charCount, setCharCount] = useState(0);
     const [isDisabled, setIsDisabled] = useState(false);
-    const [dangerousContentDetected, setDangerousContentDetected] = useState(false); // Állapot az észlelt veszélyes tartalomhoz
+    const [dangerousContentDetected, setDangerousContentDetected] = useState(false); 
+    const [urlDetected, setUrlDetected] = useState(false); // Állapot az észlelt URL-ekhez
 
     useEffect(() => {
         const fetchCsrfToken = async () => {
@@ -29,27 +30,35 @@ export default function FeedbackPopup({ show, onClose }) {
     }, []);
 
     const handleFeedbackChange = (event) => {
-        const inputText = event.target.value;
-        setFeedbackText(inputText);
-        setCharCount(inputText.length);
+        let inputText = event.target.value;
     
-        // Tisztítsuk meg a beküldött tartalmat a DOMPurify segítségével és ellenőrizzük, hogy veszélyes-e
+        // Töröljük az URL-eket a szövegből
+        inputText = inputText.replace(/(https?:\/\/[^\s]+)/g, '');
+    
+        // Töröljük a veszélyes tartalmat is
         const sanitizedText = DOMPurify.sanitize(inputText);
+    
+        setFeedbackText(sanitizedText);
+        setCharCount(sanitizedText.length);
+    
+        // Ellenőrizzük, tartalmaz-e még mindig URL-t vagy linket a bemenet
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        if (urlRegex.test(sanitizedText)) {
+            setUrlDetected(true); // Ha találtunk URL-t, állítsuk az állapotot
+            setIsDisabled(true); // Tiltsuk le a küldés gombot
+        } else {
+            setUrlDetected(false);
+            setIsDisabled(false);
+        }
+    
+        // Ellenőrizzük, tartalmaz-e veszélyes tartalmat
         if (sanitizedText !== inputText) {
             setDangerousContentDetected(true);
         } else {
             setDangerousContentDetected(false);
         }
-    
-        // Ellenőrizze, tartalmaz-e URL-t vagy linket a bemenet
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        if (urlRegex.test(inputText)) {
-            setDangerousContentDetected(true);
-        } else {
-            setDangerousContentDetected(false);
-        }
     };
-
+    
     const handleSubmit = async () => {
         if (isSubmitting || isCountdownActive) return;
         if (feedbackText.trim() === '') {
@@ -81,7 +90,7 @@ export default function FeedbackPopup({ show, onClose }) {
             console.error('Error submitting feedback:', error);
         } finally {
             setIsSubmitting(false);
-            setIsDisabled(false); // Engedélyezze újra a textarea-t és a submit gombot a kivétel kezelése után
+            setIsDisabled(false); 
         }
     };
 
@@ -150,7 +159,7 @@ export default function FeedbackPopup({ show, onClose }) {
                             type="button"
                             className="bg-green-custom text-white rounded-full font-bold py-2 px-4 hover:bg-emerald-600 mr-4"
                             onClick={handleSubmit}
-                            disabled={isSubmitting || isCountdownActive || dangerousContentDetected} // Letiltás csak veszélyes tartalom észlelésekor
+                            disabled={isSubmitting || isCountdownActive || dangerousContentDetected || urlDetected} // Tiltsuk le a gombot, ha veszélyes tartalom vagy URL van
                         >
                             Submit
                         </button>
@@ -173,9 +182,9 @@ export default function FeedbackPopup({ show, onClose }) {
                         )}
                     </div>
                 )}
-                {dangerousContentDetected && (
+                {(dangerousContentDetected || urlDetected) && (
                     <div className="text-red-500 text-sm mt-4">
-                        Detected potentially dangerous content. Please review your input.
+                        Detected potentially dangerous content or URL. Please review your input.
                     </div>
                 )}
             </div>
