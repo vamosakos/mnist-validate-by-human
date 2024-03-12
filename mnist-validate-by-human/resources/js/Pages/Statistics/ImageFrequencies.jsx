@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable.jsx';
 import ImageFrequenciesChart from '@/Components/ImageFrequenciesChart.jsx';
+import ImageFrequenciesPieChart from '@/Components/ImageFrequenciesPieChart.jsx';
 
 const columns = ['image_id', 'generation_count', 'response_count'];
 
@@ -23,8 +24,15 @@ export default function All({ auth, imageFrequencies }) {
 
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <ImageFrequenciesChart imageFrequencies={imageFrequencies} />
+          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg flex flex-wrap">
+            <div className="w-1/4 px-4">
+              <ImageFrequenciesPieChart imageFrequencies={imageFrequencies} />
+            </div>
+            <div className="w-1/2 px-4">
+              <ImageFrequenciesChart imageFrequencies={imageFrequencies} />
+            </div>
+          </div>
+          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-8">
             <DataTable data={tableData} columns={columns} />
           </div>
         </div>

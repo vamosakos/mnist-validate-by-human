@@ -4,14 +4,41 @@ import 'chart.js/auto';
 
 const ImageFrequenciesChart = ({ imageFrequencies }) => {
   const [filteredId, setFilteredId] = useState(null);
+  const [chartView, setChartView] = useState('all'); // 'all', 'top10_response', 'top10_generation', or 'top10_misidentifications'
 
-  // Filter imageFrequencies based on the entered image_id
-  const filteredData = filteredId
-    ? imageFrequencies.filter((item) => item.image_id === parseInt(filteredId))
-    : imageFrequencies;
+  const handleChartViewChange = (view) => {
+    setChartView(view);
+  };
+
+  // Sort imageFrequencies based on response count in descending order
+  const sortedByResponseCount = imageFrequencies.slice().sort((a, b) => b.response_count - a.response_count);
+
+  // Sort imageFrequencies based on generation count in descending order
+  const sortedByGenerationCount = imageFrequencies.slice().sort((a, b) => b.generation_count - a.generation_count);
+
+  // Sort imageFrequencies based on misidentifications count in descending order
+  const sortedByMisidentificationsCount = imageFrequencies.slice().sort((a, b) => b.misidentifications_count - a.misidentifications_count);
+
+  let filteredData;
+  switch (chartView) {
+    case 'top10_response':
+      filteredData = sortedByResponseCount.slice(0, 10);
+      break;
+    case 'top10_generation':
+      filteredData = sortedByGenerationCount.slice(0, 10);
+      break;
+    case 'top10_misidentifications':
+      filteredData = sortedByMisidentificationsCount.slice(0, 10);
+      break;
+    default:
+      filteredData = imageFrequencies;
+  }
+
+  // Extract image IDs from filtered data and sort them in increasing order
+  const filteredImageIds = Array.from(new Set(filteredData.map((item) => item.image_id))).sort((a, b) => a - b);
 
   const data = {
-    labels: filteredData.map((item) => item.image_id),
+    labels: filteredImageIds, // Set labels to only include filtered image IDs in increasing order
     datasets: [
       {
         label: 'Response Count',
@@ -27,6 +54,13 @@ const ImageFrequenciesChart = ({ imageFrequencies }) => {
         borderColor: 'rgba(255, 99, 132, 1)',
         borderWidth: 1,
       },
+      {
+        label: 'Misidentifications Count',
+        data: filteredData.map((item) => item.misidentifications_count || 0),
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1,
+      },
     ],
   };
 
@@ -35,29 +69,17 @@ const ImageFrequenciesChart = ({ imageFrequencies }) => {
     setFilteredId(event.target.value);
   };
 
-  const options = {
-    scales: {
-      x: {
-        type: 'linear',
-        position: 'bottom',
-        title: {
-          display: true,
-          text: 'Image ID',
-        },
-      },
-      y: {
-        type: 'linear',
-        position: 'left',
-        title: {
-          display: true,
-          text: 'Count',
-        },
-      },
-    },
-  };
-
   return (
     <div>
+      {/* Dropdown menu to choose display option */}
+      <label htmlFor="displayOption">Display Option: </label>
+      <select id="displayOption" onChange={(e) => handleChartViewChange(e.target.value)}>
+        <option value="all">All Counts</option>
+        <option value="top10_response">Top 10 Response Count</option>
+        <option value="top10_generation">Top 10 Generation Count</option>
+        <option value="top10_misidentifications">Top 10 Misidentifications Count</option>
+      </select>
+
       {/* Search field for image_id */}
       <label htmlFor="imageId">Filter by Image ID: </label>
       <input
@@ -69,7 +91,7 @@ const ImageFrequenciesChart = ({ imageFrequencies }) => {
       />
 
       {/* Display the filtered chart */}
-      <Bar data={data} options={options} />
+      <Bar data={data} />
     </div>
   );
 };
