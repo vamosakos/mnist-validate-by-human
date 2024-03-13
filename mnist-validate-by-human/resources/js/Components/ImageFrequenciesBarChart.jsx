@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 
-const ImageFrequenciesChart = ({ imageFrequencies, filteredId }) => {
+const ImageFrequenciesBarChart = ({ imageFrequencies, filteredId }) => {
   const [chartView, setChartView] = useState('all'); // 'all', 'top10_response', 'top10_generation', or 'top10_misidentifications'
 
   useEffect(() => {
@@ -80,20 +80,22 @@ const ImageFrequenciesChart = ({ imageFrequencies, filteredId }) => {
   };
 
   return (
-    <div>
+    <div className="relative">
       {/* Dropdown menu to choose display option */}
-      <label htmlFor="displayOption">Display Option: </label>
-      <select id="displayOption" onChange={(e) => handleChartViewChange(e.target.value)}>
+      <label htmlFor="displayOption" className="block text-xl font-medium text-gray-700 mb-2">Display Option: </label>
+      <select
+        id="displayOption"
+        onChange={(e) => handleChartViewChange(e.target.value)}
+        className="w-full border-gray-300 rounded-md">
         <option value="all">All Counts</option>
         <option value="top10_response">Top 10 Response Count</option>
         <option value="top10_generation">Top 10 Generation Count</option>
         <option value="top10_misidentifications">Top 10 Misidentifications Count</option>
       </select>
-
       {/* Display the filtered chart */}
       <Bar data={data} />
     </div>
   );
 };
 
-export default ImageFrequenciesChart;
+export default ImageFrequenciesBarChart;

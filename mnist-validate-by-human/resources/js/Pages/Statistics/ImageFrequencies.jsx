@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable.jsx';
-import ImageFrequenciesChart from '@/Components/ImageFrequenciesChart.jsx';
-import OverallImageFrequenciesPieChart from '@/Components/OverallImageFrequenciesPieChart.jsx'; // Update the import
+import ImageFrequenciesBarChart from '@/Components/ImageFrequenciesBarChart.jsx';
 import ImageFrequenciesPieChart from '@/Components/ImageFrequenciesPieChart.jsx';
 
 const columns = ['image_id', 'generation_count', 'response_count'];
@@ -35,7 +34,7 @@ export default function All({ auth, imageFrequencies }) {
             <div className="w-1/4 px-4">
               <div>
                 {/* Search field */}
-                <label htmlFor="searchInput" className="block text-sm font-medium text-gray-700">Search by ID:</label>
+                <label htmlFor="searchInput" className="block text-xl font-medium text-gray-700">Search by ID:</label>
                 <input
                   type="text"
                   name="searchInput"
@@ -45,10 +44,12 @@ export default function All({ auth, imageFrequencies }) {
                   onChange={handleFilterChange}
                 />
               </div>
-              <OverallImageFrequenciesPieChart imageFrequencies={imageFrequencies} filteredId={filteredId} /> {/* Pass filteredId */}
+              <ImageFrequenciesPieChart imageFrequencies={imageFrequencies} filteredId={filteredId} /> {/* Pass filteredId */}
             </div>
             <div className="w-1/2 px-4">
-              <ImageFrequenciesChart imageFrequencies={imageFrequencies} filteredId={filteredId} /> {/* Pass filteredId */}
+              <div className="chart-container" style={{ width: '150%', height: '550px' }}>
+                <ImageFrequenciesBarChart imageFrequencies={imageFrequencies} filteredId={filteredId} /> {/* Pass filteredId */}
+              </div>
             </div>
           </div>
           <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-8">
