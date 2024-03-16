@@ -183,11 +183,14 @@ class OverviewController extends Controller
 
     private function getAverageResponsePerDay()
     {
-        $result = ImageFrequency::selectRaw('COUNT(DISTINCT DATE(created_at)) as day_count, SUM(response_count) as total_response_count')
-            ->first();
-
-        if ($result->day_count > 0) {
-            return round($result->total_response_count / $result->day_count, 2);
+        $firstDate = ImageFrequency::orderBy('created_at', 'asc')->value('created_at');
+        $lastDate = now(); // Aktuális dátum
+        
+        $totalDays = $lastDate->diffInDays($firstDate) + 1; // Összes nap száma
+        $totalResponses = ImageFrequency::sum('response_count'); // Összes válaszszám
+        
+        if ($totalDays > 0) {
+            return round($totalResponses / $totalDays, 2);
         } else {
             return 0.00;
         }
