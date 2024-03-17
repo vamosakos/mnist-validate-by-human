@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
+import ImageDetailPopup from '@/Popups/ImageDetailPopup';
 
 
 export default function Overview({ auth,
@@ -60,42 +61,29 @@ export default function Overview({ auth,
             <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('totalGeneratedImages') ? 'h-auto' : 'h-32'}`}>
               <h3 className="text-lg font-semibold">Total Generated Images</h3>
               <p className="text-xl font-bold">{totalGeneratedImages}</p>
-              {isCardExpanded('totalGeneratedImages') && (
-                <div>
-                  <p className="text-sm">From Train Images: {trainImagesCount}</p>
-                  <p className="text-sm">From Test Images: {testImagesCount}</p>
-                </div>
-              )}
-              <button
-                className="text-blue-500 underline mt-2"
-                onClick={() => toggleExpandedCard('totalGeneratedImages')}
-              >
-                {isCardExpanded('totalGeneratedImages') ? 'Show less' : 'Show more'}
-              </button>
+              <p className="text-sm">From Train Images: {trainImagesCount}</p>
+              <p className="text-sm">From Test Images: {testImagesCount}</p>
+
             </div>
 
             {/* Most Generated Image Id Card */}
             <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostGeneratedImage') ? 'h-auto' : 'h-32'}`}>
                 <h3 className="text-lg font-semibold">Most Generated Image Id:</h3>
                 <p className="text-xl font-bold">{mostGeneratedImageId}</p>
+                <p className="mt-2">{mostGeneratedImageCount} time(s)</p>
                 {isCardExpanded('mostGeneratedImage') && (
                     <div className="flex flex-col items-center">
-                        {mostGeneratedImageData && (
-                            <img
-                                src={`data:image/png;base64,${mostGeneratedImageData}`}
-                                alt="Most Generated Image"
-                                className="mt-2"
-                            />
-                        )}
-                        <p className="mt-2">{mostGeneratedImageCount} time(s)</p>
+                        <ImageDetailPopup show={true} onClose={() => toggleExpandedCard('mostGeneratedImage')} rowData={{ image_id: mostGeneratedImageId }}/>
                     </div>
                 )}
-                <button
-                    className="text-blue-500 underline mt-2"
-                    onClick={() => toggleExpandedCard('mostGeneratedImage')}
-                >
-                    {isCardExpanded('mostGeneratedImage') ? 'Show less' : 'Show more'}
-                </button>
+                {!isCardExpanded('mostGeneratedImage') && (
+                    <button
+                        className="text-blue-500 underline mt-2"
+                        onClick={() => toggleExpandedCard('mostGeneratedImage')}
+                    >
+                        Show image
+                    </button>
+                )}
             </div>
 
 
@@ -119,42 +107,29 @@ export default function Overview({ auth,
             <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('totalMisidentifications') ? 'h-auto' : 'h-32'}`}>
               <h3 className="text-lg font-semibold">Total Misidentifications</h3>
               <p className="text-xl font-bold">{totalMisidentifications}</p>
-              {isCardExpanded('totalMisidentifications') && (
-                <div>
-                  <p className="text-sm">From Train Images: {misidentificationsFromTrain}</p>
-                  <p className="text-sm">From Test Images: {misidentificationsFromTest}</p>
-                </div>
-              )}
-              <button
-                className="text-blue-500 underline mt-2"
-                onClick={() => toggleExpandedCard('totalMisidentifications')}
-              >
-                {isCardExpanded('totalMisidentifications') ? 'Show less' : 'Show more'}
-              </button>
+              <p className="text-sm">From Train Images: {misidentificationsFromTrain}</p>
+              <p className="text-sm">From Test Images: {misidentificationsFromTest}</p>
+
             </div>
 
             {/* Most Misidentificated Image Id Card */}
             <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostMisidentificatedImage') ? 'h-auto' : 'h-32'}`}>
                 <h3 className="text-lg font-semibold">Most Misidentificated Image Id:</h3>
                 <p className="text-xl font-bold">{mostMisidentificatedImageId}</p>
+                <p className="mt-2">{mostMisidentificatedImageCount} time(s)</p>
                 {isCardExpanded('mostMisidentificatedImage') && (
                   <div className="flex flex-col items-center">
-                      {mostMisidentificatedImageData && (
-                          <img
-                              src={`data:image/png;base64,${mostMisidentificatedImageData}`}
-                              alt="Most Generated Image"
-                              className="mt-2"
-                          />
-                      )}
-                      <p className="mt-2">{mostMisidentificatedImageCount} time(s)</p>
+                    <ImageDetailPopup show={true} onClose={() => toggleExpandedCard('mostMisidentificatedImage')} rowData={{ image_id: mostMisidentificatedImageId }}/>
                   </div>
-              )}
-              <button
-                  className="text-blue-500 underline mt-2"
-                  onClick={() => toggleExpandedCard('mostMisidentificatedImage')}
-              >
-                  {isCardExpanded('mostMisidentificatedImage') ? 'Show less' : 'Show more'}
-              </button>
+               )}
+               {!isCardExpanded('mostMisidentificatedImage') && (
+                   <button
+                       className="text-blue-500 underline mt-2"
+                       onClick={() => toggleExpandedCard('mostMisidentificatedImage')}
+                   >
+                       Show image
+                   </button>
+               )}
             </div>
 
             {/* Most Generated Image Id Card */}
@@ -176,42 +151,29 @@ export default function Overview({ auth,
             <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('totalResponses') ? 'h-auto' : 'h-32'}`}>
               <h3 className="text-lg font-semibold">Total Responses</h3>
               <p className="text-xl font-bold">{totalResponses}</p>
-              {isCardExpanded('totalResponses') && (
-                <div>
-                  <p className="text-sm">From Train Images: {responsesFromTrain}</p>
-                  <p className="text-sm">From Test Images: {responsesFromTest}</p>
-                </div>
-              )}
-              <button
-                className="text-blue-500 underline mt-2"
-                onClick={() => toggleExpandedCard('totalResponses')}
-              >
-                {isCardExpanded('totalResponses') ? 'Show less' : 'Show more'}
-              </button>
+              <p className="text-sm">From Train Images: {responsesFromTrain}</p>
+              <p className="text-sm">From Test Images: {responsesFromTest}</p>
+
             </div>
 
             {/* Most Responded Image Id Card */}
             <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostRespondedImage') ? 'h-auto' : 'h-32'}`}>
                 <h3 className="text-lg font-semibold">Most Responded Image Id:</h3>
                 <p className="text-xl font-bold">{mostRespondedImageId}</p>
+                <p className="mt-2">{mostRespondedImageCount} time(s)</p>
                 {isCardExpanded('mostRespondedImage') && (
-                  <div className="flex flex-col items-center">
-                      {mostRespondedImageData && (
-                          <img
-                              src={`data:image/png;base64,${mostRespondedImageData}`}
-                              alt="Most Generated Image"
-                              className="mt-2"
-                          />
-                      )}
-                      <p className="mt-2">{mostRespondedImageCount} time(s)</p>
-                  </div>
-              )}
-              <button
-                  className="text-blue-500 underline mt-2"
-                  onClick={() => toggleExpandedCard('mostRespondedImage')}
-              >
-                  {isCardExpanded('mostRespondedImage') ? 'Show less' : 'Show more'}
-              </button>
+                    <div className="flex flex-col items-center">
+                        <ImageDetailPopup show={true} onClose={() => toggleExpandedCard('mostRespondedImage')} rowData={{ image_id: mostRespondedImageId }}/>
+                    </div>
+                )}
+                {!isCardExpanded('mostRespondedImage') && (
+                    <button
+                        className="text-blue-500 underline mt-2"
+                        onClick={() => toggleExpandedCard('mostRespondedImage')}
+                    >
+                        Show image
+                    </button>
+                )}
             </div>
 
             {/* Average response time Card */}
