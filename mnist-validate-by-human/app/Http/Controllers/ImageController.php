@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MnistImage;
 use App\Models\ImageFrequency;
 use App\Models\NumberFrequency;
+use App\Models\Misidentification;
 use App\Models\UuidImage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Response;
@@ -43,65 +44,107 @@ class ImageController extends Controller
         // Get the unique ID from the request header
         $uniqueId = $request->header('X-Client-Token');
 
+        // Find the maximum generation count
+        $maxGenerationCount = ImageFrequency::max('generation_count');
+
+        // Calculate the threshold for generation count
+        $threshold = ($maxGenerationCount > 0) ? ceil($maxGenerationCount / 2) : 0;
+
+        // Log the threshold value
+        \Illuminate\Support\Facades\Log::info("Threshold for generation count: $threshold");
+
         // Select images with weights based on frequency
-        $mnistImage = MnistImage::leftJoin('image_frequencies', 'mnist_images.image_id', '=', 'image_frequencies.image_id')
+        $aboveThresholdImages = MnistImage::leftJoin('image_frequencies', 'mnist_images.image_id', '=', 'image_frequencies.image_id')
             ->select('mnist_images.*', DB::raw('COALESCE(image_frequencies.generation_count, 0) as generation_count'))
-            ->where('generation_count', '<', 5) // Azokat a képeket válassza ki, amelyeknek a generációszáma 5 alatt van
-            ->orderBy('generation_count', 'asc') // Növekvő sorrendben rendezze az alapján, hogy milyen gyakran jelennek meg
+            ->where('generation_count', '<=', $threshold)
+            ->orderBy('generation_count', 'asc')
             ->whereNotIn('mnist_images.image_id', function ($query) use ($uniqueId) {
                 $query->select('image_id')
                     ->from('uuid_images')
                     ->where('uuid', $uniqueId);
             })
-            ->inRandomOrder() // Vegye figyelembe a véletlenszerű sorrendet
-            ->first();
-        
-        // Handle the case when no record is found
-        while (!$mnistImage || UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists()) {
-            $mnistImage = MnistImage::inRandomOrder()->first();
+            ->get();
+
+        // If there are images below or equals the treshold, select one randomly
+        if ($aboveThresholdImages->isNotEmpty()) {
+            $mnistImage = $aboveThresholdImages->random();
+        } else {
+            // If no such images, continue with the original logic
+            do {
+                $mnistImage = MnistImage::inRandomOrder()->first();
+            } while (UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists());
         }
-    
+
         // Associate the selected image with the current session
         $this->associateImageWithSession($mnistImage->image_id, $uniqueId);
 
         // Update 'image_frequencies' and 'number_frequencies' tables
         $this->updateImageFrequency($mnistImage->image_id);
         $this->updateNumberFrequency($mnistImage->image_label);
-    
+
+        // Log the selected image id
+        \Illuminate\Support\Facades\Log::info("Selected image id: $mnistImage->image_id");
+
         // Return the selected image to the frontend
         return response()->json([
             'image_id' => $mnistImage->image_id,
             'image_label' => $mnistImage->image_label,
             'image_base64' => $mnistImage->image_base64
         ]);
-    }    
+    }
 
     public function generateMisidentificationWeightedImage(Request $request)
     {
         // Get the unique ID from the request header
         $uniqueId = $request->header('X-Client-Token');
         
+        // Find the maximum misidentification count
+        $maxMisidentificationCount = Misidentification::max('count');
+
+        // Calculate the threshold for misidentification count
+        $threshold = ($maxMisidentificationCount > 0) ? ceil($maxMisidentificationCount / 2) : 0;
+
+        // Log the threshold value
+        \Illuminate\Support\Facades\Log::info("Threshold for misidentification count: $threshold");
+
         // Select images with weights based on misidentifications
-        $mnistImage = MnistImage::leftJoin('misidentifications', 'mnist_images.image_id', '=', 'misidentifications.image_id')
+        $aboveThresholdImages = MnistImage::leftJoin('misidentifications', 'mnist_images.image_id', '=', 'misidentifications.image_id')
             ->select('mnist_images.*', DB::raw('COALESCE(misidentifications.count, 0) as misidentification_count'))
-            ->where('misidentifications.count', '>', 0)
-            ->orderBy('misidentification_count', 'desc')
+            ->where('misidentifications.count', '>=', $threshold)
             ->whereNotIn('mnist_images.image_id', function ($query) use ($uniqueId) {
                 $query->select('image_id')
                     ->from('uuid_images')
                     ->where('uuid', $uniqueId);
             })
-            ->inRandomOrder()
-            ->first();
+            ->get();
 
-        // If no record is found or the selected image is already associated with the session, try again
-        while (!$mnistImage || UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists()) {
-            $mnistImage = MnistImage::inRandomOrder()->first();
+        // If there are images above or equals the treshold, select one randomly
+        if ($aboveThresholdImages->isNotEmpty()) {
+            $mnistImage = $aboveThresholdImages->random();
         }
 
-        // If still no record is found, handle the case when no images are available
-        if (!$mnistImage) {
-            return response()->json(['error' => 'No images available'], 404);
+        // If no record is found try to find a record with count below the threshold but above 0
+        if ($aboveThresholdImages->isEmpty()) {
+            $belowThresholdImages = MnistImage::leftJoin('misidentifications', 'mnist_images.image_id', '=', 'misidentifications.image_id')
+                ->select('mnist_images.*', DB::raw('COALESCE(misidentifications.count, 0) as misidentification_count'))
+                ->where('misidentifications.count', '>', 0)
+                ->where('misidentifications.count', '<', $threshold)
+                ->whereNotIn('mnist_images.image_id', function ($query) use ($uniqueId) {
+                    $query->select('image_id')
+                        ->from('uuid_images')
+                        ->where('uuid', $uniqueId);
+                })
+                ->get();
+
+            // If there are images below the threshold, select one randomly
+            if ($belowThresholdImages->isNotEmpty()) {
+                $mnistImage = $belowThresholdImages->random();
+            } else {
+                // If no such images, continue with the original logic
+                do {
+                    $mnistImage = MnistImage::inRandomOrder()->first();
+                } while (UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists());
+            }
         }
 
         // Associate the selected image with the current session
@@ -110,6 +153,9 @@ class ImageController extends Controller
         // Update 'image_frequencies' and 'number_frequencies' tables
         $this->updateImageFrequency($mnistImage->image_id);
         $this->updateNumberFrequency($mnistImage->image_label);
+
+        // Log the selected image id
+        \Illuminate\Support\Facades\Log::info("Selected image id: $mnistImage->image_id");
 
         // Return the selected image to the frontend
         return response()->json([
