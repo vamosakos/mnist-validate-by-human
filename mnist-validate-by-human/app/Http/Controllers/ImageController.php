@@ -17,8 +17,15 @@ use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
-    public function generateRandomImage()
+    public function generateRandomImage(Request $request)
     {
+        // Get the unique ID from the request header
+        $uniqueId = $request->header('X-Client-Token');
+
+        if (!$uniqueId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
         // Randomly select a record from the database
         $mnistImage = MnistImage::inRandomOrder()->first();
 
@@ -43,6 +50,10 @@ class ImageController extends Controller
     {
         // Get the unique ID from the request header
         $uniqueId = $request->header('X-Client-Token');
+
+        if (!$uniqueId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
         // Find the maximum generation count
         $maxGenerationCount = ImageFrequency::max('generation_count');
@@ -97,6 +108,10 @@ class ImageController extends Controller
     {
         // Get the unique ID from the request header
         $uniqueId = $request->header('X-Client-Token');
+
+        if (!$uniqueId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
         
         // Find the maximum misidentification count
         $maxMisidentificationCount = Misidentification::max('count');
