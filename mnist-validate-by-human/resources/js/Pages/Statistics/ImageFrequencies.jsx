@@ -33,10 +33,10 @@ export default function All({ auth, imageFrequencies }) {
       <div className="py-12">
         <div className="max-w-8xl mx-auto sm:px-6 lg:px-8">
           <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg flex flex-wrap">
-            <div className="w-1/4 px-4">
+            <div className="w-1/4 px-4 py-8">
               <div>
                 {/* Search field */}
-                <label htmlFor="searchInput" className="block text-xl font-medium text-gray-700">Search by ID:</label>
+                <label htmlFor="searchInput" className="font-semibold text-xl text-gray-800 leading-tight">Search by ID:</label>
                 <input
                   type="text"
                   name="searchInput"
@@ -50,8 +50,8 @@ export default function All({ auth, imageFrequencies }) {
               <ImageFrequenciesPieChart imageFrequencies={imageFrequencies} filteredId={filteredId} /> {/* Pass filteredId */}
               <ImageDisplay imageId={filteredId} />
             </div>
-            <div className="w-1/2 px-4">
-              <div className="chart-container" style={{ width: '150%', height: '800px' }}>
+            <div className="w-1/2 px-4 py-8">
+              <div className="chart-container" style={{ width: '140%', height: '700px' }}>
                 <ImageFrequenciesBarChart imageFrequencies={imageFrequencies} filteredId={filteredId} /> {/* Pass filteredId */}
               </div>
             </div>

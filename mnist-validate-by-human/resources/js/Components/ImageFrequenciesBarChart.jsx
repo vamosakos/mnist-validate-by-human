@@ -82,7 +82,7 @@ const ImageFrequenciesBarChart = ({ imageFrequencies, filteredId }) => {
   return (
     <div className="relative">
       {/* Dropdown menu to choose display option */}
-      <label htmlFor="displayOption" className="block text-xl font-medium text-gray-700 mb-2">Display Option: </label>
+      <label htmlFor="displayOption" className="font-semibold text-xl text-gray-800 leading-tight">Display Option: </label>
       <select
         id="displayOption"
         onChange={(e) => handleChartViewChange(e.target.value)}

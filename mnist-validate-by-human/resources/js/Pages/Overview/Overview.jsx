@@ -54,7 +54,7 @@ export default function Overview({ auth,
       <Head title="Overview" />
 
       {/* Total Overview Section */}
-      <div className="max-w-8xl mx-auto mb-8">
+      <div className="max-w-8xl mx-auto mb-8 lg:px-8">
         <h3 className="text-2xl font-semibold mb-4">Generation Statistics</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {/* Total Generated Images Card */}
@@ -99,7 +99,7 @@ export default function Overview({ auth,
       </div>
 
       {/* Image Statistics Section */}
-      <div className="max-w-8xl mx-auto mb-8">
+      <div className="max-w-8xl mx-auto mb-8 lg:px-8">
         <h3 className="text-2xl font-semibold mb-4">Misidentification Statistics</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
@@ -143,7 +143,7 @@ export default function Overview({ auth,
       </div>
 
       {/* Image Statistics Section */}
-      <div className="max-w-8xl mx-auto mb-8">
+      <div className="max-w-8xl mx-auto mb-8 lg:px-8">
         <h3 className="text-2xl font-semibold mb-4">Response Statistics</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
