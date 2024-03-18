@@ -11,16 +11,16 @@ use Illuminate\Support\Facades\Response;
 
 class StatisticsController extends Controller
 {
-    public function imageFrequencies()
+    private function fetchImageFrequencies($viewName)
     {
         $imageFrequencies = ImageFrequency::all();
-
+    
         // Fetch misidentifications count for each image
         $imageFrequencies->each(function ($frequency) {
             $frequency->misidentifications_count = Misidentification::where('image_id', $frequency->image_id)->sum('count');
         });
-
-        return Inertia::render('Statistics/ImageFrequencies', [
+    
+        return Inertia::render($viewName, [
             'imageFrequencies' => $imageFrequencies,
         ]);
     }
@@ -36,5 +36,15 @@ class StatisticsController extends Controller
         return Response::make(base64_decode($mnistImage->image_base64), 200, [
             'Content-Type' => 'image/png',
         ]);
+    }
+
+    public function imageFrequencies()
+    {
+        return $this->fetchImageFrequencies('Statistics/ImageFrequencies');
+    }
+
+    public function imageFrequenciesDataList()
+    {
+        return $this->fetchImageFrequencies('Statistics/ImageFrequenciesDataList');
     }
 }

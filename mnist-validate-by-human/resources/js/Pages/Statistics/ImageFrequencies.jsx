@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import DataTable from '@/Components/DataTable.jsx';
 import ImageFrequenciesBarChart from '@/Components/ImageFrequenciesBarChart.jsx';
 import ImageFrequenciesPieChart from '@/Components/ImageFrequenciesPieChart.jsx';
-
-const columns = ['image_id', 'generation_count', 'response_count'];
+import ImageDisplay from '@/Components/ImageDisplay';
 
 export default function All({ auth, imageFrequencies }) {
   const [filteredId, setFilteredId] = useState(null);
 
   const handleFilterChange = (event) => {
-    setFilteredId(event.target.value ? parseInt(event.target.value) : null);
+    const inputValue = event.target.value;
+    // Check if the input contains only numeric characters
+    if (/^\d*$/.test(inputValue)) {
+      setFilteredId(inputValue !== '' ? parseInt(inputValue) : null);
+    }
   };
 
   const tableData = imageFrequencies.map((item) => ({
@@ -29,7 +31,7 @@ export default function All({ auth, imageFrequencies }) {
       <Head title="Dashboard" />
 
       <div className="py-12">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div className="max-w-8xl mx-auto sm:px-6 lg:px-8">
           <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg flex flex-wrap">
             <div className="w-1/4 px-4">
               <div>
@@ -42,18 +44,17 @@ export default function All({ auth, imageFrequencies }) {
                   className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                   value={filteredId || ''}
                   onChange={handleFilterChange}
+                  pattern="[0-9]*" // Restricts input to numeric characters only
                 />
-              </div>
+              </div >
               <ImageFrequenciesPieChart imageFrequencies={imageFrequencies} filteredId={filteredId} /> {/* Pass filteredId */}
+              <ImageDisplay imageId={filteredId} />
             </div>
             <div className="w-1/2 px-4">
-              <div className="chart-container" style={{ width: '150%', height: '550px' }}>
+              <div className="chart-container" style={{ width: '150%', height: '800px' }}>
                 <ImageFrequenciesBarChart imageFrequencies={imageFrequencies} filteredId={filteredId} /> {/* Pass filteredId */}
               </div>
             </div>
-          </div>
-          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-8">
-            <DataTable data={tableData} columns={columns} />
           </div>
         </div>
       </div>

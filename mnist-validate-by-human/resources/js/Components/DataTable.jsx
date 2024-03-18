@@ -40,7 +40,7 @@ const DataTable = ({ data, columns }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto max-h-96">
+      <div className="flex-1 overflow-y-auto max-h-100">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs uppercase bg-green-custom dark:bg-green-custom dark:text-gray-400 sticky top-0 text-center align-middle">
             <tr>
@@ -48,7 +48,7 @@ const DataTable = ({ data, columns }) => {
                 <th
                   key={columnName}
                   scope="col"
-                  className="cursor-pointer px-6 text-2xl py-3 text-white hover:bg-emerald-600 "
+                  className="cursor-pointer px-6 text-2xl py-3 text-white hover:bg-emerald-600"
                   onClick={() => handleSort(columnName)}
                 >
                   {columnName}
