@@ -182,6 +182,13 @@ class ImageController extends Controller
 
     public function generateRandomTrainImages()
     {
+        // Get the unique ID from the request header
+        $uniqueId = $request->header('X-Client-Token');
+
+        if (!$uniqueId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
         // Randomly select a record from the database where image_id is between 0 and 59999
         $mnistImage = MnistImage::whereBetween('image_id', [0, 59999])->inRandomOrder()->first();
     
@@ -204,6 +211,13 @@ class ImageController extends Controller
     
     public function generateRandomTestImages()
     {
+        // Get the unique ID from the request header
+        $uniqueId = $request->header('X-Client-Token');
+
+        if (!$uniqueId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
         // Randomly select a record from the database where image_id is between 60000 and 69999
         $mnistImage = MnistImage::whereBetween('image_id', [60000, 69999])->inRandomOrder()->first();
     

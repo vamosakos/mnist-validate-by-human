@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('number_frequencies', function (Blueprint $table) {
             $table->id();
-            $table->integer('label')->index();
+            $table->integer('label');
             $table->integer('count')->default(0); // Default count value is 0
             $table->timestamps();
         });

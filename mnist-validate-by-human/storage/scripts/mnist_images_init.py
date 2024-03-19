@@ -37,8 +37,9 @@ for i in range(60000):
     image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
 
     # Adatok mentése az adatbázisba
-    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64) VALUES (%s, %s, %s)"
-    val = (i, label, image_base64)
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)"
+    val = (i, label, image_base64, now, now)  # Az indexek eltolása a train képek után
     mycursor.execute(sql, val)
     mydb.commit()
 
@@ -65,7 +66,7 @@ for i in range(10000):
 
     # Adatok mentése az adatbázisba
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64, created_at, updated_at) VALUES (%s, %s, %s)"
+    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)"
     val = (i + 60000, label, image_base64, now, now)  # Az indexek eltolása a train képek után
     mycursor.execute(sql, val)
     mydb.commit()
