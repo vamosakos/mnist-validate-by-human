@@ -58,7 +58,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/data-listing', [StatisticsController::class, 'imageFrequenciesDataList'])->name('statistics.imageFrequenciesDataList');
     Route::get('/overview', [OverviewController::class, 'index'])->name('overview.index');
     Route::get('/get-image/{imageId}', [StatisticsController::class, 'getImageById'])->name('get-image');
+    Route::get('/statistics/heatmap', [StatisticsController::class, 'generateHeatmap']);
+
+    
 });
+
+
+
 
 Route::get('/csrf-token', function () {
     return response()->json(['csrfToken' => csrf_token()]);

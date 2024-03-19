@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\ImageFrequency;
 use App\Models\MnistImage;
 use App\Models\Misidentification;
+use App\Models\Response;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Response as FacadeResponse;
+use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Log;
 
 class StatisticsController extends Controller
 {
@@ -33,7 +36,7 @@ class StatisticsController extends Controller
             return response()->json(['error' => 'Image not found.'], 404);
         }
 
-        return Response::make(base64_decode($mnistImage->image_base64), 200, [
+        return FacadeResponse::make(base64_decode($mnistImage->image_base64), 200, [
             'Content-Type' => 'image/png',
         ]);
     }
@@ -47,4 +50,57 @@ class StatisticsController extends Controller
     {
         return $this->fetchImageFrequencies('Statistics/ImageFrequenciesDataList');
     }
+
+    public function calculateLabelCounts()
+    {
+        $responses = Response::join('mnist_images', 'responses.image_id', '=', 'mnist_images.image_id')
+            ->select('mnist_images.image_label', 'responses.guest_response')
+            ->get();
+
+        $label_counts = [];
+
+        foreach ($responses as $response) {
+            $image_label = $response->image_label;
+            $guest_response = $response->guest_response;
+
+            if (!isset($label_counts[$image_label])) {
+                $label_counts[$image_label] = array_fill(0, 10, 0);
+            }
+
+            $label_counts[$image_label][$guest_response]++;
+        }
+
+        return $label_counts;
+    }
+
+    public function generateHeatmap()
+    {
+        // Data retrieval from the backend
+        $labelCounts = $this->calculateLabelCounts();
+    
+        // Data conversion to JSON format
+        $jsonData = json_encode($labelCounts, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    
+        // Logging of JSON data sent
+        Log::info('Sent JSON data: ' . $jsonData);
+    
+        // Path to the Python script
+        $scriptPath = base_path('storage/scripts/mnist_heatmap.py');
+    
+        // Executing the Python script with shell_exec and passing data in JSON format
+        $output = shell_exec("python $scriptPath \"$jsonData\"");
+    
+        // Log the response received from the Python script
+        Log::info('Received heatmap response: ' . $output);
+    
+        // Extract the base64-encoded image data from the Python script output
+        $heatmap_base64 = trim($output); // Remove any leading/trailing whitespace
+    
+        // Returning the base64-encoded image data
+        return response()->json(['heatmap_base64' => $heatmap_base64]);
+    }
+    
+    
+    
+
 }
