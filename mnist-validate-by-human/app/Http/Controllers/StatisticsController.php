@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Response as FacadeResponse;
 use Symfony\Component\Process\Process;
-use Illuminate\Support\Facades\Log;
 
 class StatisticsController extends Controller
 {
@@ -81,17 +80,11 @@ class StatisticsController extends Controller
         // Data conversion to JSON format
         $jsonData = json_encode($labelCounts, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     
-        // Logging of JSON data sent
-        Log::info('Sent JSON data: ' . $jsonData);
-    
         // Path to the Python script
         $scriptPath = base_path('storage/scripts/mnist_heatmap.py');
     
         // Executing the Python script with shell_exec and passing data in JSON format
         $output = shell_exec("python $scriptPath \"$jsonData\"");
-    
-        // Log the response received from the Python script
-        Log::info('Received heatmap response: ' . $output);
     
         // Extract the base64-encoded image data from the Python script output
         $heatmap_base64 = trim($output); // Remove any leading/trailing whitespace
