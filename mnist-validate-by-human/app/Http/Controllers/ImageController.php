@@ -26,8 +26,26 @@ class ImageController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Randomly select a record from the database
-        $mnistImage = MnistImage::inRandomOrder()->first();
+        // Mérjük az időt az operáció előtt
+        $startTime = microtime(true);
+
+        // Get all Mnist images
+        $allMnistImages = MnistImage::all();
+
+        // Shuffle the array of records
+        $shuffledImages = $allMnistImages->shuffle();
+
+        // Get the first image from the selected array
+        $mnistImage = $shuffledImages->first();
+
+        // Mérjük az időt az operáció után
+        $endTime = microtime(true);
+
+        // Kiszámoljuk az eltelt időt másodpercekben
+        $executionTime = ($endTime - $startTime);
+
+        // Logoljuk az eltelt időt
+        \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
 
         // If no record found, return the case when no images are available
         if (!$mnistImage) {
@@ -65,9 +83,10 @@ class ImageController extends Controller
         \Illuminate\Support\Facades\Log::info("Threshold for generation count: $threshold");
 
         // Select images with weights based on frequency
-        $aboveThresholdImages = MnistImage::leftJoin('image_frequencies', 'mnist_images.image_id', '=', 'image_frequencies.image_id')
+        $belowThresholdImages = MnistImage::leftJoin('image_frequencies', 'mnist_images.image_id', '=', 'image_frequencies.image_id')
             ->select('mnist_images.*', DB::raw('COALESCE(image_frequencies.generation_count, 0) as generation_count'))
-            ->where('generation_count', '<=', $threshold)
+            ->where('generation_count', '<', $threshold)
+            ->orWhereNull('generation_count') // ahol a generation_count NULL vagy 0
             ->orderBy('generation_count', 'asc')
             ->whereNotIn('mnist_images.image_id', function ($query) use ($uniqueId) {
                 $query->select('image_id')
@@ -76,13 +95,23 @@ class ImageController extends Controller
             })
             ->get();
 
+        // Log the count of belowThresholdImages
+        \Illuminate\Support\Facades\Log::info("Number of below threshold images: " . $belowThresholdImages->count());
+
         // If there are images below or equals the treshold, select one randomly
-        if ($aboveThresholdImages->isNotEmpty()) {
-            $mnistImage = $aboveThresholdImages->random();
+        if ($belowThresholdImages->isNotEmpty()) {
+            $mnistImage = $belowThresholdImages->random();
         } else {
             // If no such images, continue with the original logic
             do {
-                $mnistImage = MnistImage::inRandomOrder()->first();
+                // Get all Mnist images
+                $allMnistImages = MnistImage::all();
+
+                // Shuffle the array of records
+                $shuffledImages = $allMnistImages->shuffle();
+
+                // Get the first image from the selected array
+                $mnistImage = $shuffledImages->first();
             } while (UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists());
         }
 
@@ -157,7 +186,14 @@ class ImageController extends Controller
             } else {
                 // If no such images, continue with the original logic
                 do {
-                    $mnistImage = MnistImage::inRandomOrder()->first();
+                    // Get all Mnist images
+                    $allMnistImages = MnistImage::all();
+
+                    // Shuffle the array of records
+                    $shuffledImages = $allMnistImages->shuffle();
+
+                    // Get the first image from the selected array
+                    $mnistImage = $shuffledImages->first();
                 } while (UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists());
             }
         }
@@ -169,9 +205,6 @@ class ImageController extends Controller
         $this->updateImageFrequency($mnistImage->image_id);
         $this->updateNumberFrequency($mnistImage->image_label);
 
-        // Log the selected image id
-        \Illuminate\Support\Facades\Log::info("Selected image id: $mnistImage->image_id");
-
         // Return the selected image to the frontend
         return response()->json([
             'image_id' => $mnistImage->image_id,
@@ -180,7 +213,7 @@ class ImageController extends Controller
         ]);
     }
 
-    public function generateRandomTrainImages()
+    public function generateRandomTrainImages(Request $request)
     {
         // Get the unique ID from the request header
         $uniqueId = $request->header('X-Client-Token');
@@ -189,9 +222,15 @@ class ImageController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Randomly select a record from the database where image_id is between 0 and 59999
-        $mnistImage = MnistImage::whereBetween('image_id', [0, 59999])->inRandomOrder()->first();
-    
+        // Get all Mnist images
+        $allMnistImages = MnistImage::whereBetween('image_id', [0, 59999])->get();
+
+        // Shuffle the array of records
+        $shuffledImages = $allMnistImages->shuffle();
+
+        // Get the first image from the selected array
+        $mnistImage = $shuffledImages->first();
+
         // If no record found, return the case when no images are available
         if (!$mnistImage) {
             return response()->json(['error' => 'No images available'], 404);
@@ -209,7 +248,7 @@ class ImageController extends Controller
         ]);
     }
     
-    public function generateRandomTestImages()
+    public function generateRandomTestImages(Request $request)
     {
         // Get the unique ID from the request header
         $uniqueId = $request->header('X-Client-Token');
@@ -218,9 +257,15 @@ class ImageController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Randomly select a record from the database where image_id is between 60000 and 69999
-        $mnistImage = MnistImage::whereBetween('image_id', [60000, 69999])->inRandomOrder()->first();
-    
+        // Get all Mnist images
+        $allMnistImages = MnistImage::whereBetween('image_id', [60000, 69999])->get();
+
+        // Shuffle the array of records
+        $shuffledImages = $allMnistImages->shuffle();
+
+        // Get the first image from the selected array
+        $mnistImage = $shuffledImages->first();
+
         // If no record found, return the case when no images are available
         if (!$mnistImage) {
             return response()->json(['error' => 'No images available'], 404);
