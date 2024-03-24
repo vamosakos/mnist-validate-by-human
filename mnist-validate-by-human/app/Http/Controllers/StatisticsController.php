@@ -43,6 +43,7 @@ class StatisticsController extends Controller
     public function imageFrequencies()
     {
         return $this->fetchImageFrequencies('Statistics/ImageFrequencies');
+        
     }
 
     public function imageFrequenciesDataList()
@@ -112,6 +113,12 @@ class StatisticsController extends Controller
     {
         return $this->fetchResponses('Statistics/ResponsesDataList');
     }
+
+    public function responsesGraphsCharts()
+    {
+        return $this->fetchResponses('Statistics/ResponsesGraphsCharts');
+    }
+    
     
 
 }
