@@ -92,8 +92,26 @@ class StatisticsController extends Controller
         // Returning the base64-encoded image data
         return response()->json(['heatmap_base64' => $heatmap_base64]);
     }
-    
-    
+
+    public function fetchResponses($viewName)
+    {
+        // Fetch responses from the database
+        $responses = Response::all();
+        
+        // Alternatively, if you want to eager load related data (e.g., image data), you can use:
+        // $responses = Response::with('image')->get();
+
+        // Modify or process the responses data as needed
+
+        return Inertia::render($viewName, [
+            'responses' => $responses,
+        ]);
+    }
+
+    public function responsesDataList()
+    {
+        return $this->fetchResponses('Statistics/ResponsesDataList');
+    }
     
 
 }

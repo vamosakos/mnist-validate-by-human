@@ -55,7 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/statistics/image-frequencies', [StatisticsController::class, 'imageFrequencies'])->name('statistics.imageFrequencies');
-    Route::get('/data-listing', [StatisticsController::class, 'imageFrequenciesDataList'])->name('statistics.imageFrequenciesDataList');
+    Route::get('/image-frequencies-data-listing', [StatisticsController::class, 'imageFrequenciesDataList'])->name('statistics.imageFrequenciesDataList');
+    Route::get('/response-data-listing', [StatisticsController::class, 'responsesDataList'])->name('statistics.responsesDataList');
     Route::get('/overview', [OverviewController::class, 'index'])->name('overview.index');
     Route::get('/get-image/{imageId}', [StatisticsController::class, 'getImageById'])->name('get-image');
     Route::get('/statistics/heatmap', [StatisticsController::class, 'generateHeatmap']);
