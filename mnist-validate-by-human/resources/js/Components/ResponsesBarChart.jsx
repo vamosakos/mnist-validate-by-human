@@ -2,52 +2,67 @@ import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 
-const ResponsesBarChart = ({ responses }) => {
-  const [sessionCounts, setSessionCounts] = useState({});
-  const [chartView, setChartView] = useState('guest_response'); // 'guest_response' or 'response_time'
+const ResponsesBarChart = ({ responses, filteredId }) => {
+  const [responseCountsBySession, setResponseCountsBySession] = useState({});
+  const [averageResponseTimeByImage, setAverageResponseTimeByImage] = useState({});
+  const [chartView, setChartView] = useState('response_counts_by_session');
+  const [sortOrder, setSortOrder] = useState('ascending');
 
   useEffect(() => {
-    // Calculate session counts
-    const counts = {};
-    responses.forEach(response => {
-      const sessionId = response.session_id;
-      counts[sessionId] = counts[sessionId] ? counts[sessionId] + 1 : 1;
-    });
-    setSessionCounts(counts);
-  }, [responses]);
+    if (responses.length === 0) return;
 
-  const handleChartViewChange = (view) => {
-    setChartView(view);
+    // Create copies of the original data
+    const responsesCopy = [...responses];
+
+    // Log filteredId and responsesCopy for debugging purposes
+    console.log("Filtered ID:", filteredId);
+    console.log("Original Responses:", responsesCopy);
+
+    // Filter responses based on filteredId if it's provided
+    let filteredResponses = responsesCopy;
+    if (filteredId !== '') {
+      filteredResponses = responsesCopy.filter(response => response.session_id === filteredId);
+    }
+
+    // Log filteredResponses for debugging purposes
+    console.log("Filtered responses:", filteredResponses);
+
+    // Calculate response counts by session
+    const countsBySession = {};
+    filteredResponses.forEach(response => {
+      const sessionId = response.session_id;
+      countsBySession[sessionId] = countsBySession[sessionId] ? countsBySession[sessionId] + 1 : 1;
+    });
+    setResponseCountsBySession(countsBySession);
+
+    // Calculate average response time by image
+    const totalTimeByImage = {};
+    const countByImage = {};
+    filteredResponses.forEach(response => {
+      const imageId = response.image_id;
+      totalTimeByImage[imageId] = totalTimeByImage[imageId] ? totalTimeByImage[imageId] + response.response_time : response.response_time;
+      countByImage[imageId] = countByImage[imageId] ? countByImage[imageId] + 1 : 1;
+    });
+    const averageResponseTime = {};
+    Object.keys(totalTimeByImage).forEach(imageId => {
+      averageResponseTime[imageId] = totalTimeByImage[imageId] / countByImage[imageId];
+    });
+    setAverageResponseTimeByImage(averageResponseTime);
+  }, [responses, filteredId]);
+
+  const handleSortOrderChange = () => {
+    setSortOrder(sortOrder === 'ascending' ? 'descending' : 'ascending');
   };
 
-  let data;
-  if (chartView === 'guest_response') {
-    data = {
-      labels: Object.keys(sessionCounts), // Session ID-k
-      datasets: [
-        {
-          label: 'Number of Occurrences',
-          data: Object.values(sessionCounts), // Session előfordulásainak száma
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1,
-        },
-      ],
-    };
-  } else if (chartView === 'response_time') {
-    data = {
-      labels: responses.map(response => response.image_id), // Image ID-k
-      datasets: [
-        {
-          label: 'Response Time',
-          data: responses.map(response => response.response_time),
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 1,
-        },
-      ],
-    };
-  }
+  const sortData = (data) => {
+    return Object.entries(data).sort((a, b) => {
+      if (sortOrder === 'ascending') {
+        return a[1] - b[1];
+      } else {
+        return b[1] - a[1];
+      }
+    });
+  };
 
   return (
     <div className="relative">
@@ -57,16 +72,48 @@ const ResponsesBarChart = ({ responses }) => {
       </label>
       <select
         id="displayOption"
-        onChange={(e) => handleChartViewChange(e.target.value)}
-        className="w-full border-gray-300 rounded-md"
+        onChange={(e) => setChartView(e.target.value)}
+        value={chartView}
+        className="w-full border-gray-300 rounded-md mb-2"
       >
-        <option value="guest_response">Guest Response</option>
-        <option value="response_time">Response Time</option>
+        <option value="response_counts_by_session">Response Count by Session</option>
+        <option value="response_time_by_image">Response Time by Image</option>
       </select>
+      {/* Button to change sort order */}
+      <button onClick={handleSortOrderChange} className="mt-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded inline-flex items-center">
+        {sortOrder === 'ascending' ? 'Sort Descending' : 'Sort Ascending'}
+      </button>
       {/* Display the chart */}
-      <Bar data={data} />
-    </div>
-  );
-};
-
-export default ResponsesBarChart;
+      {chartView === 'response_counts_by_session' && (
+        <Bar
+          data={{
+            labels: sortData(responseCountsBySession).map(entry => entry[0]),
+            datasets: [{
+              label: 'Response Count',
+              data: sortData(responseCountsBySession).map(entry => entry[1]),
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+            }],
+          }}
+        />
+      )}
+      {chartView === 'response_time_by_image' && (
+        <Bar
+          data={{
+            labels: sortData(averageResponseTimeByImage).map(entry => entry[0]),
+            datasets: [{
+              label: 'Average Response Time',
+              data: sortData(averageResponseTimeByImage).map(entry => entry[1]),
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderColor: 'rgba(255, 99, 132, 1)',
+              borderWidth: 1,
+            }],
+          }}
+          />
+          )}
+        </div>
+      );
+    };
+    
+    export default ResponsesBarChart;

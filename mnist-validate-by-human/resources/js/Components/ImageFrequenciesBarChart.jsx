@@ -4,6 +4,7 @@ import 'chart.js/auto';
 
 const ImageFrequenciesBarChart = ({ imageFrequencies, filteredId }) => {
   const [chartView, setChartView] = useState('all'); // 'all', 'top10_response', 'top10_generation', or 'top10_misidentifications'
+  const [sortOrder, setSortOrder] = useState('ascending'); // 'ascending' or 'descending'
 
   useEffect(() => {
     // Reset chart view when filtered ID changes
@@ -12,6 +13,10 @@ const ImageFrequenciesBarChart = ({ imageFrequencies, filteredId }) => {
 
   const handleChartViewChange = (view) => {
     setChartView(view);
+  };
+
+  const handleSortOrderChange = () => {
+    setSortOrder(sortOrder === 'ascending' ? 'descending' : 'ascending');
   };
 
   let filteredData = [...imageFrequencies]; // Create a copy of the original data
@@ -32,7 +37,14 @@ const ImageFrequenciesBarChart = ({ imageFrequencies, filteredId }) => {
       filteredData = filteredData.sort((a, b) => b.misidentifications_count - a.misidentifications_count).slice(0, 10);
       break;
     default:
-      filteredData = filteredData.sort((a, b) => a.image_id - b.image_id); // Sort by image ID in increasing order for 'all' view
+      // Sort by count (Y axis) in descending order
+      filteredData = filteredData.sort((a, b) => b.response_count + b.generation_count + (b.misidentifications_count || 0) - (a.response_count + a.generation_count + (a.misidentifications_count || 0)));
+      break;
+  }
+
+  // Sort based on sortOrder
+  if (sortOrder === 'descending') {
+    filteredData.reverse();
   }
 
   // Extract image IDs from filtered data
@@ -92,6 +104,10 @@ const ImageFrequenciesBarChart = ({ imageFrequencies, filteredId }) => {
         <option value="top10_generation">Top 10 Generation Count</option>
         <option value="top10_misidentifications">Top 10 Misidentifications Count</option>
       </select>
+      {/* Button to change sort order */}
+      <button onClick={handleSortOrderChange} className="mt-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded inline-flex items-center">
+        {sortOrder === 'ascending' ? 'Sort Descending' : 'Sort Ascending'}
+      </button>
       {/* Display the filtered chart */}
       <Bar data={data} />
     </div>
@@ -99,3 +115,4 @@ const ImageFrequenciesBarChart = ({ imageFrequencies, filteredId }) => {
 };
 
 export default ImageFrequenciesBarChart;
+

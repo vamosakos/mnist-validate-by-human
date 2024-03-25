@@ -1,3 +1,4 @@
+// All.jsx
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
@@ -5,10 +6,10 @@ import ResponsesBarChart from '@/Components/ResponsesBarChart.jsx';
 
 
 export default function All({ auth, responses }) {
-  const [filteredId, setFilteredId] = useState(null);
+  const [filteredId, setFilteredId] = useState('');
 
   const handleFilterChange = (event) => {
-    setFilteredId(event.target.value ? parseInt(event.target.value) : null);
+    setFilteredId(event.target.value.trim());
   };
 
   return (
@@ -30,12 +31,12 @@ export default function All({ auth, responses }) {
                   name="searchInput"
                   id="searchInput"
                   className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                  value={filteredId || ''}
+                  value={filteredId}
                   onChange={handleFilterChange}
                 />
               </div>
             </div>
-            <div className="w-1/2 px-4">
+            <div className="w-1/2 px-12">
               <div className="chart-container" style={{ width: '150%', height: '550px' }}>
                 <ResponsesBarChart responses={responses} filteredId={filteredId} /> {/* Pass filteredId */}
               </div>
