@@ -14,41 +14,42 @@ const ResponsesBarChart = ({ responses, filteredId }) => {
     // Create copies of the original data
     const responsesCopy = [...responses];
 
-    // Log filteredId and responsesCopy for debugging purposes
-    console.log("Filtered ID:", filteredId);
-    console.log("Original Responses:", responsesCopy);
-
-    // Filter responses based on filteredId if it's provided
+    // Filter responses based on filteredId and chartView
     let filteredResponses = responsesCopy;
     if (filteredId !== '') {
-      filteredResponses = responsesCopy.filter(response => response.session_id === filteredId);
+      if (chartView === 'response_counts_by_session') {
+        filteredResponses = responsesCopy.filter(response => response.session_id === filteredId);
+      } else if (chartView === 'response_time_by_image') {
+        filteredResponses = responsesCopy.filter(response => response.image_id.toString() === filteredId);
+      }
+    }
+    
+    // Calculate response counts by session if chartView is 'response_counts_by_session'
+    if (chartView === 'response_counts_by_session') {
+      const countsBySession = {};
+      filteredResponses.forEach(response => {
+        const sessionId = response.session_id;
+        countsBySession[sessionId] = countsBySession[sessionId] ? countsBySession[sessionId] + 1 : 1;
+      });
+      setResponseCountsBySession(countsBySession);
     }
 
-    // Log filteredResponses for debugging purposes
-    console.log("Filtered responses:", filteredResponses);
-
-    // Calculate response counts by session
-    const countsBySession = {};
-    filteredResponses.forEach(response => {
-      const sessionId = response.session_id;
-      countsBySession[sessionId] = countsBySession[sessionId] ? countsBySession[sessionId] + 1 : 1;
-    });
-    setResponseCountsBySession(countsBySession);
-
-    // Calculate average response time by image
-    const totalTimeByImage = {};
-    const countByImage = {};
-    filteredResponses.forEach(response => {
-      const imageId = response.image_id;
-      totalTimeByImage[imageId] = totalTimeByImage[imageId] ? totalTimeByImage[imageId] + response.response_time : response.response_time;
-      countByImage[imageId] = countByImage[imageId] ? countByImage[imageId] + 1 : 1;
-    });
-    const averageResponseTime = {};
-    Object.keys(totalTimeByImage).forEach(imageId => {
-      averageResponseTime[imageId] = totalTimeByImage[imageId] / countByImage[imageId];
-    });
-    setAverageResponseTimeByImage(averageResponseTime);
-  }, [responses, filteredId]);
+    // Calculate average response time by image if chartView is 'response_time_by_image'
+    if (chartView === 'response_time_by_image') {
+      const totalTimeByImage = {};
+      const countByImage = {};
+      filteredResponses.forEach(response => {
+        const imageId = response.image_id;
+        totalTimeByImage[imageId] = totalTimeByImage[imageId] ? totalTimeByImage[imageId] + response.response_time : response.response_time;
+        countByImage[imageId] = countByImage[imageId] ? countByImage[imageId] + 1 : 1;
+      });
+      const averageResponseTime = {};
+      Object.keys(totalTimeByImage).forEach(imageId => {
+        averageResponseTime[imageId] = totalTimeByImage[imageId] / countByImage[imageId];
+      });
+      setAverageResponseTimeByImage(averageResponseTime);
+    }
+  }, [responses, filteredId, chartView]);
 
   const handleSortOrderChange = () => {
     setSortOrder(sortOrder === 'ascending' ? 'descending' : 'ascending');
@@ -110,10 +111,10 @@ const ResponsesBarChart = ({ responses, filteredId }) => {
               borderWidth: 1,
             }],
           }}
-          />
-          )}
-        </div>
-      );
-    };
-    
-    export default ResponsesBarChart;
+        />
+      )}
+    </div>
+  );
+};
+
+export default ResponsesBarChart;
