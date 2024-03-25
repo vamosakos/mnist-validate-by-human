@@ -27,7 +27,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::redirect('/', '/mnist-human-validation');
+Route::redirect('/', '/mnist-human-validation', 301);
 
 Route::get('/mnist-human-validation', function () {
     return Inertia::render('About/About');

@@ -64,7 +64,7 @@ class ImageController extends Controller
         ]);
     }
 
-    public function generateWeightedRandomImage(Request $request)
+    public function generateFrequencyWeightedImage(Request $request)
     {
         // Get the unique ID from the request header
         $uniqueId = $request->header('X-Client-Token');
@@ -73,14 +73,14 @@ class ImageController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        // Mérjük az időt az operáció előtt
+        $startTime = microtime(true);
+
         // Find the maximum generation count
         $maxGenerationCount = ImageFrequency::max('generation_count');
 
         // Calculate the threshold for generation count
         $threshold = ($maxGenerationCount > 0) ? ceil($maxGenerationCount / 2) : 0;
-
-        // Log the threshold value
-        \Illuminate\Support\Facades\Log::info("Threshold for generation count: $threshold");
 
         // Select images with weights based on frequency
         $belowThresholdImages = MnistImage::leftJoin('image_frequencies', 'mnist_images.image_id', '=', 'image_frequencies.image_id')
@@ -94,9 +94,6 @@ class ImageController extends Controller
                     ->where('uuid', $uniqueId);
             })
             ->get();
-
-        // Log the count of belowThresholdImages
-        \Illuminate\Support\Facades\Log::info("Number of below threshold images: " . $belowThresholdImages->count());
 
         // If there are images below or equals the treshold, select one randomly
         if ($belowThresholdImages->isNotEmpty()) {
@@ -114,6 +111,15 @@ class ImageController extends Controller
                 $mnistImage = $shuffledImages->first();
             } while (UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists());
         }
+
+        // Mérjük az időt az operáció után
+        $endTime = microtime(true);
+
+        // Kiszámoljuk az eltelt időt másodpercekben
+        $executionTime = ($endTime - $startTime);
+
+        // Logoljuk az eltelt időt
+        \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
 
         // Associate the selected image with the current session
         $this->associateImageWithSession($mnistImage->image_id, $uniqueId);
@@ -141,15 +147,15 @@ class ImageController extends Controller
         if (!$uniqueId) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        
+
+        // Mérjük az időt az operáció előtt
+        $startTime = microtime(true);
+
         // Find the maximum misidentification count
         $maxMisidentificationCount = Misidentification::max('count');
 
         // Calculate the threshold for misidentification count
         $threshold = ($maxMisidentificationCount > 0) ? ceil($maxMisidentificationCount / 2) : 0;
-
-        // Log the threshold value
-        \Illuminate\Support\Facades\Log::info("Threshold for misidentification count: $threshold");
 
         // Select images with weights based on misidentifications
         $aboveThresholdImages = MnistImage::leftJoin('misidentifications', 'mnist_images.image_id', '=', 'misidentifications.image_id')
@@ -198,6 +204,15 @@ class ImageController extends Controller
             }
         }
 
+        // Mérjük az időt az operáció után
+        $endTime = microtime(true);
+
+        // Kiszámoljuk az eltelt időt másodpercekben
+        $executionTime = ($endTime - $startTime);
+
+        // Logoljuk az eltelt időt
+        \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
+
         // Associate the selected image with the current session
         $this->associateImageWithSession($mnistImage->image_id, $uniqueId);
 
@@ -213,7 +228,7 @@ class ImageController extends Controller
         ]);
     }
 
-    public function generateRandomTrainImages(Request $request)
+    public function generateRandomTrainImage(Request $request)
     {
         // Get the unique ID from the request header
         $uniqueId = $request->header('X-Client-Token');
@@ -248,7 +263,7 @@ class ImageController extends Controller
         ]);
     }
     
-    public function generateRandomTestImages(Request $request)
+    public function generateRandomTestImage(Request $request)
     {
         // Get the unique ID from the request header
         $uniqueId = $request->header('X-Client-Token');
