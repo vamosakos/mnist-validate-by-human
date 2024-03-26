@@ -26,7 +26,6 @@ class ImageController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Mérjük az időt az operáció előtt
         $startTime = microtime(true);
 
         // Get all Mnist images
@@ -38,13 +37,10 @@ class ImageController extends Controller
         // Get the first image from the selected array
         $mnistImage = $shuffledImages->first();
 
-        // Mérjük az időt az operáció után
         $endTime = microtime(true);
 
-        // Kiszámoljuk az eltelt időt másodpercekben
         $executionTime = ($endTime - $startTime);
 
-        // Logoljuk az eltelt időt
         \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
 
         // If no record found, return the case when no images are available
@@ -73,7 +69,6 @@ class ImageController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Mérjük az időt az operáció előtt
         $startTime = microtime(true);
 
         // Find the maximum generation count
@@ -86,7 +81,7 @@ class ImageController extends Controller
         $belowThresholdImages = MnistImage::leftJoin('image_frequencies', 'mnist_images.image_id', '=', 'image_frequencies.image_id')
             ->select('mnist_images.*', DB::raw('COALESCE(image_frequencies.generation_count, 0) as generation_count'))
             ->where('generation_count', '<', $threshold)
-            ->orWhereNull('generation_count') // ahol a generation_count NULL vagy 0
+            ->orWhereNull('generation_count') // generation_count NULL or 0
             ->orderBy('generation_count', 'asc')
             ->whereNotIn('mnist_images.image_id', function ($query) use ($uniqueId) {
                 $query->select('image_id')
@@ -112,13 +107,10 @@ class ImageController extends Controller
             } while (UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists());
         }
 
-        // Mérjük az időt az operáció után
         $endTime = microtime(true);
 
-        // Kiszámoljuk az eltelt időt másodpercekben
         $executionTime = ($endTime - $startTime);
 
-        // Logoljuk az eltelt időt
         \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
 
         // Associate the selected image with the current session
@@ -148,7 +140,6 @@ class ImageController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Mérjük az időt az operáció előtt
         $startTime = microtime(true);
 
         // Find the maximum misidentification count
@@ -204,13 +195,10 @@ class ImageController extends Controller
             }
         }
 
-        // Mérjük az időt az operáció után
         $endTime = microtime(true);
 
-        // Kiszámoljuk az eltelt időt másodpercekben
         $executionTime = ($endTime - $startTime);
 
-        // Logoljuk az eltelt időt
         \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
 
         // Associate the selected image with the current session
@@ -343,11 +331,11 @@ class ImageController extends Controller
     }
 
 
-    public function generateImageOld()
+    public function generateRandomImageOld()
     {
         // Execute the Python script to generate a random MNIST image ID, label, dataset type, and base64-encoded image
         chdir(base_path());
-        $scriptPath = base_path('storage/scripts/random_mnist_script.py');
+        $scriptPath = base_path('storage/scripts/old_random_mnist_script.py');
         $output = shell_exec("python $scriptPath");
 
         // Process the output to extract the image ID, label, dataset type, and base64-encoded image
