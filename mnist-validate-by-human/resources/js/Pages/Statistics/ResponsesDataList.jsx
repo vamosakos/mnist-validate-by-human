@@ -2,20 +2,18 @@ import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable.jsx';
-import Dropdown from '@/Components/Dropdown.jsx';
+import Dropdown from '@/Components/Dropdown.jsx'; 
 
-const columns = ['image_id', 'generation_count', 'response_count', 'misidentifications_count'];
+const columns = ['image_id', 'guest_response', 'session_id', 'response_time'];
 
-export default function All({ auth, imageFrequencies }) {
-    const tableData = imageFrequencies.map((item) => ({
-        id: item.id, // Assuming there is an ID field in your data
-        image_id: item.image_id,
-        generation_count: item.generation_count,
-        response_count: item.response_count,
-        misidentifications_count: item.misidentifications_count,
+export default function ResponsesDataList({ auth, responses }) {
+    const tableData = responses.map((response) => ({
+        id: response.id, // Assuming there is an ID field in your data
+        image_id: response.image_id,
+        guest_response: response.guest_response,
+        session_id: response.session_id,
+        response_time: response.response_time,
     }));
-
-    const deleteRoute = '/statistics/delete-selected'; // Definiáljuk az útvonalat
 
     return (
         <AuthenticatedLayout
@@ -26,7 +24,7 @@ export default function All({ auth, imageFrequencies }) {
                         <Dropdown>
                             <Dropdown.Trigger>
                                 <span className="flex items-center">
-                                    Image Frequencies
+                                    Responses
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         className="h-4 w-4 ml-1 transition-transform duration-200 transform"
@@ -56,8 +54,7 @@ export default function All({ auth, imageFrequencies }) {
             <Head title="Dashboard" />
             <div className="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-8">
-                    {/* Adja át a deleteRoute propot a DataTable komponensnek */}
-                    <DataTable data={tableData} columns={columns} deleteRoute={deleteRoute} />
+                    <DataTable data={tableData} columns={columns} />
                 </div>
             </div>
         </AuthenticatedLayout>

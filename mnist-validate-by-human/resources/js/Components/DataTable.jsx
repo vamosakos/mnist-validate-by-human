@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import ImageDetailPopup from '@/Popups/ImageDetailPopup';
+import DeleteWarningPopup from '@/Popups/DeleteWarningPopup'; 
+import axios from 'axios'; // importáljuk az axios könyvtárat
 
-const DataTable = ({ data, columns }) => {
+const DataTable = ({ data, columns, deleteRoute }) => { // Új prop: deleteRoute
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'desc' });
   const [visibleRows, setVisibleRows] = useState(10);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [showDeleteWarning, setShowDeleteWarning] = useState(false);
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -12,6 +17,25 @@ const DataTable = ({ data, columns }) => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+  };
+
+  // Módosított függvény a backend új útvonalára
+  const handleDeleteSelected = () => {
+    if (selectedRows.length > 0) {
+      // Ha vannak kiválasztott sorok, akkor elküldjük a backendnek
+      axios.post(deleteRoute, { selectedRows }) // Új: deleteRoute használata
+        .then(response => {
+          console.log(response.data.message); // sikeres válasz logolása
+          // Törlés után frissítjük a megjelenített adatokat vagy bármi más művelet
+        })
+        .catch(error => {
+          console.error('Hiba történt a törlés során:', error); // hiba logolása
+          // Kezeljük a hibát, például hibaüzenet megjelenítése a felhasználónak
+        });
+    } else {
+      // Ha nincsenek kiválasztott sorok, akkor csak logoljuk a konzolra
+      console.log('Nincsenek kiválasztott sorok a törléshez.');
+    }
   };
 
   const sortedData = [...data].sort((a, b) => {
@@ -32,6 +56,35 @@ const DataTable = ({ data, columns }) => {
 
   const handleRowClick = (rowId) => {
     setSelectedRow(rowId);
+  };
+
+  const handleToggleSelect = (rowId) => {
+    const selectedIndex = selectedRows.indexOf(rowId);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selectedRows, rowId);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selectedRows.slice(1));
+    } else if (selectedIndex === selectedRows.length - 1) {
+      newSelected = newSelected.concat(selectedRows.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selectedRows.slice(0, selectedIndex),
+        selectedRows.slice(selectedIndex + 1),
+      );
+    }
+
+    setSelectedRows(newSelected);
+  };
+
+  const handleToggleSelectAll = () => {
+    if (selectAll) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(visibleData.map((item) => item.id));
+    }
+    setSelectAll(!selectAll);
   };
 
   const handleClosePopup = () => {
@@ -59,6 +112,9 @@ const DataTable = ({ data, columns }) => {
                   )}
                 </th>
               ))}
+              <th className="px-6 text-2xl py-3 text-white hover:bg-emerald-600">
+                <input type="checkbox" checked={selectAll} onChange={handleToggleSelectAll} />
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -75,6 +131,9 @@ const DataTable = ({ data, columns }) => {
                     {item[columnName]}
                   </td>
                 ))}
+                <td className="px-6 text-2xl py-4 text-black text-center align-middle">
+                  <input type="checkbox" checked={selectedRows.includes(item.id)} onChange={() => handleToggleSelect(item.id)} />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -84,6 +143,21 @@ const DataTable = ({ data, columns }) => {
         <button className="text-xl bg-green-custom text-white py-3 px-14 hover:bg-emerald-600" onClick={handleShowMore}>
           Show more
         </button>
+      )}
+      <div className="flex justify-end">
+      <button className="text-xl bg-green-custom text-white py-3 px-14 hover:bg-emerald-600" onClick={() => setShowDeleteWarning(true)}>
+        Delete
+      </button>
+      </div>
+      {showDeleteWarning && (
+        <DeleteWarningPopup
+          selectedRows={selectedRows}
+          onDeleteConfirm={() => {
+            setShowDeleteWarning(false);
+            handleDeleteSelected(); // Itt hívjuk meg a törlés funkciót, ha a felhasználó elfogadja
+          }}
+          onDeleteCancel={() => setShowDeleteWarning(false)}
+        />
       )}
       {selectedRow && (
         <ImageDetailPopup

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const ImageDisplay = ({ imageId }) => {
+const ImageDisplay = ({ imageId, showImage }) => {
   const [image, setImage] = useState(null);
 
   useEffect(() => {
-    if (imageId !== null) {
+    if (showImage && imageId !== null) {
       fetchImage(imageId);
     }
-  }, [imageId]);
+  }, [imageId, showImage]);
 
   const fetchImage = async (id) => {
     try {
@@ -24,7 +24,7 @@ const ImageDisplay = ({ imageId }) => {
 
   return (
     <div>
-      {image && <img src={image} alt="Filtered Image" />}
+      {showImage && image && <img src={image} alt="Filtered Image" />}
     </div>
   );
 };
