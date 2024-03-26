@@ -4,16 +4,16 @@ import matplotlib.pyplot as plt
 from keras.datasets import mnist
 from io import BytesIO
 
-# Betöltjük az adathalmazat
-dataset_type = 'train'
-(train_X, train_y), (test_X, test_y)  = mnist.load_data()
+# Load the dataset
+dataset_type = 'test'
+(train_X, train_y), (test_X, test_y) = mnist.load_data()
 
-# Véletlenszerűen válasszunk ki egy indexet a betanítási adatok közül
-random_index = random.randint(0, len(train_X) - 1)
+# Choose a random index from the test data
+random_index = random.randint(0, len(test_X) - 1)
 
-# A kiválasztott kép és annak etikettje
-random_image = train_X[random_index]
-label = train_y[random_index]
+# The selected image and its label
+random_image = test_X[random_index]
+label = test_y[random_index]
 
 # Create a plot with a white background
 plt.imshow(random_image, cmap='gray')

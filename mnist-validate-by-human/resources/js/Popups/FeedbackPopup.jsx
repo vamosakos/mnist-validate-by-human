@@ -66,20 +66,20 @@ export default function FeedbackPopup({ show, onClose }) {
             return;
         }
         setIsSubmitting(true);
-        setIsDisabled(true);
-
+        setIsDisabled(true); // Disable input field on submit
+    
         try {
             const sanitizedText = DOMPurify.sanitize(feedbackText);
             const feedbackData = {
                 comment: sanitizedText
             };
-
+    
             const response = await axios.post('/api/feedbacks', feedbackData, {
                 headers: {
                     'X-CSRF-TOKEN': csrfToken
                 }
             });
-
+    
             if (response.status === 201) {
                 setSuccessMessage('Thank you for your feedback!');
                 startRedirectCountdown();
@@ -90,9 +90,10 @@ export default function FeedbackPopup({ show, onClose }) {
             console.error('Error submitting feedback:', error);
         } finally {
             setIsSubmitting(false);
-            setIsDisabled(false); 
+            // Remove this line to keep the input field disabled after submission
+            // setIsDisabled(false); 
         }
-    };
+    };    
 
     const startRedirectCountdown = () => {
         setIsCountdownActive(true);

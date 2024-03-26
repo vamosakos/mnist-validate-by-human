@@ -28,7 +28,7 @@ export default function PrivacyPolicy() {
                                 <br/><br/>
                                 <strong>laravel_session:</strong> This cookie stores information collected during your current visit. Its validity extends for one year and is essential for the security and functionality of the site.
                                 <br/><br/>
-                                <strong>UUID:</strong> We generate a temporary unique identifier for each visitor when filling out surveys. The temporary UUID helps ensure that guests do not receive the same image multiple times. Temporary UUIDs are deleted within an hour at the end of the visit.
+                                <strong>UUID:</strong> We may generate a unique identifier for each visitor when filling out surveys. The UUID helps ensure that guests do not receive the same image multiple times within a certain period of time. You can delete them at any time in your browser settings.
                             </p>
                             <p className="text-xl mb-6">
                                 <strong>2. Purpose of Data Processing</strong><br/>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MnistImage;
 use App\Models\ImageFrequency;
 use App\Models\NumberFrequency;
+use App\Models\Misidentification;
 use App\Models\UuidImage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Response;
@@ -16,10 +17,31 @@ use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
-    public function generateRandomImage()
+    public function generateRandomImage(Request $request)
     {
-        // Randomly select a record from the database
-        $mnistImage = MnistImage::inRandomOrder()->first();
+        // Get the unique ID from the request header
+        $uniqueId = $request->header('X-Client-Token');
+
+        if (!$uniqueId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $startTime = microtime(true);
+
+        // Get all Mnist images
+        $allMnistImages = MnistImage::all();
+
+        // Shuffle the array of records
+        $shuffledImages = $allMnistImages->shuffle();
+
+        // Get the first image from the selected array
+        $mnistImage = $shuffledImages->first();
+
+        $endTime = microtime(true);
+
+        $executionTime = ($endTime - $startTime);
+
+        \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
 
         // If no record found, return the case when no images are available
         if (!$mnistImage) {
@@ -38,71 +60,146 @@ class ImageController extends Controller
         ]);
     }
 
-    public function generateWeightedRandomImage(Request $request)
+    public function generateFrequencyWeightedImage(Request $request)
     {
         // Get the unique ID from the request header
         $uniqueId = $request->header('X-Client-Token');
 
+        if (!$uniqueId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $startTime = microtime(true);
+
+        // Find the maximum generation count
+        $maxGenerationCount = ImageFrequency::max('generation_count');
+
+        // Calculate the threshold for generation count
+        $threshold = ($maxGenerationCount > 0) ? ceil($maxGenerationCount / 2) : 0;
+
         // Select images with weights based on frequency
-        $mnistImage = MnistImage::leftJoin('image_frequencies', 'mnist_images.image_id', '=', 'image_frequencies.image_id')
+        $belowThresholdImages = MnistImage::leftJoin('image_frequencies', 'mnist_images.image_id', '=', 'image_frequencies.image_id')
             ->select('mnist_images.*', DB::raw('COALESCE(image_frequencies.generation_count, 0) as generation_count'))
-            ->where('generation_count', '<', 5) // Azokat a képeket válassza ki, amelyeknek a generációszáma 5 alatt van
-            ->orderBy('generation_count', 'asc') // Növekvő sorrendben rendezze az alapján, hogy milyen gyakran jelennek meg
+            ->where('generation_count', '<', $threshold)
+            ->orWhereNull('generation_count') // generation_count NULL or 0
+            ->orderBy('generation_count', 'asc')
             ->whereNotIn('mnist_images.image_id', function ($query) use ($uniqueId) {
                 $query->select('image_id')
                     ->from('uuid_images')
                     ->where('uuid', $uniqueId);
             })
-            ->inRandomOrder() // Vegye figyelembe a véletlenszerű sorrendet
-            ->first();
-        
-        // Handle the case when no record is found
-        while (!$mnistImage || UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists()) {
-            $mnistImage = MnistImage::inRandomOrder()->first();
+            ->get();
+
+        // If there are images below or equals the treshold, select one randomly
+        if ($belowThresholdImages->isNotEmpty()) {
+            $mnistImage = $belowThresholdImages->random();
+        } else {
+            // If no such images, continue with the original logic
+            do {
+                // Get all Mnist images
+                $allMnistImages = MnistImage::all();
+
+                // Shuffle the array of records
+                $shuffledImages = $allMnistImages->shuffle();
+
+                // Get the first image from the selected array
+                $mnistImage = $shuffledImages->first();
+            } while (UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists());
         }
-    
+
+        $endTime = microtime(true);
+
+        $executionTime = ($endTime - $startTime);
+
+        \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
+
         // Associate the selected image with the current session
         $this->associateImageWithSession($mnistImage->image_id, $uniqueId);
 
         // Update 'image_frequencies' and 'number_frequencies' tables
         $this->updateImageFrequency($mnistImage->image_id);
         $this->updateNumberFrequency($mnistImage->image_label);
-    
+
+        // Log the selected image id
+        \Illuminate\Support\Facades\Log::info("Selected image id: $mnistImage->image_id");
+
         // Return the selected image to the frontend
         return response()->json([
             'image_id' => $mnistImage->image_id,
             'image_label' => $mnistImage->image_label,
             'image_base64' => $mnistImage->image_base64
         ]);
-    }    
+    }
 
     public function generateMisidentificationWeightedImage(Request $request)
     {
         // Get the unique ID from the request header
         $uniqueId = $request->header('X-Client-Token');
-        
+
+        if (!$uniqueId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $startTime = microtime(true);
+
+        // Find the maximum misidentification count
+        $maxMisidentificationCount = Misidentification::max('count');
+
+        // Calculate the threshold for misidentification count
+        $threshold = ($maxMisidentificationCount > 0) ? ceil($maxMisidentificationCount / 2) : 0;
+
         // Select images with weights based on misidentifications
-        $mnistImage = MnistImage::leftJoin('misidentifications', 'mnist_images.image_id', '=', 'misidentifications.image_id')
+        $aboveThresholdImages = MnistImage::leftJoin('misidentifications', 'mnist_images.image_id', '=', 'misidentifications.image_id')
             ->select('mnist_images.*', DB::raw('COALESCE(misidentifications.count, 0) as misidentification_count'))
-            ->where('misidentifications.count', '>', 0)
-            ->orderBy('misidentification_count', 'desc')
+            ->where('misidentifications.count', '>=', $threshold)
             ->whereNotIn('mnist_images.image_id', function ($query) use ($uniqueId) {
                 $query->select('image_id')
                     ->from('uuid_images')
                     ->where('uuid', $uniqueId);
             })
-            ->inRandomOrder()
-            ->first();
+            ->get();
 
-        // If no record is found or the selected image is already associated with the session, try again
-        while (!$mnistImage || UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists()) {
-            $mnistImage = MnistImage::inRandomOrder()->first();
+        // If there are images above or equals the treshold, select one randomly
+        if ($aboveThresholdImages->isNotEmpty()) {
+            $mnistImage = $aboveThresholdImages->random();
         }
 
-        // If still no record is found, handle the case when no images are available
-        if (!$mnistImage) {
-            return response()->json(['error' => 'No images available'], 404);
+        // If no record is found try to find a record with count below the threshold but above 0
+        if ($aboveThresholdImages->isEmpty()) {
+            $belowThresholdImages = MnistImage::leftJoin('misidentifications', 'mnist_images.image_id', '=', 'misidentifications.image_id')
+                ->select('mnist_images.*', DB::raw('COALESCE(misidentifications.count, 0) as misidentification_count'))
+                ->where('misidentifications.count', '>', 0)
+                ->where('misidentifications.count', '<', $threshold)
+                ->whereNotIn('mnist_images.image_id', function ($query) use ($uniqueId) {
+                    $query->select('image_id')
+                        ->from('uuid_images')
+                        ->where('uuid', $uniqueId);
+                })
+                ->get();
+
+            // If there are images below the threshold, select one randomly
+            if ($belowThresholdImages->isNotEmpty()) {
+                $mnistImage = $belowThresholdImages->random();
+            } else {
+                // If no such images, continue with the original logic
+                do {
+                    // Get all Mnist images
+                    $allMnistImages = MnistImage::all();
+
+                    // Shuffle the array of records
+                    $shuffledImages = $allMnistImages->shuffle();
+
+                    // Get the first image from the selected array
+                    $mnistImage = $shuffledImages->first();
+                } while (UuidImage::where('uuid', $uniqueId)->where('image_id', $mnistImage->image_id)->exists());
+            }
         }
+
+        $endTime = microtime(true);
+
+        $executionTime = ($endTime - $startTime);
+
+        \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
 
         // Associate the selected image with the current session
         $this->associateImageWithSession($mnistImage->image_id, $uniqueId);
@@ -119,11 +216,24 @@ class ImageController extends Controller
         ]);
     }
 
-    public function generateRandomTrainImages()
+    public function generateRandomTrainImage(Request $request)
     {
-        // Randomly select a record from the database where image_id is between 0 and 59999
-        $mnistImage = MnistImage::whereBetween('image_id', [0, 59999])->inRandomOrder()->first();
-    
+        // Get the unique ID from the request header
+        $uniqueId = $request->header('X-Client-Token');
+
+        if (!$uniqueId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Get all Mnist images
+        $allMnistImages = MnistImage::whereBetween('image_id', [0, 59999])->get();
+
+        // Shuffle the array of records
+        $shuffledImages = $allMnistImages->shuffle();
+
+        // Get the first image from the selected array
+        $mnistImage = $shuffledImages->first();
+
         // If no record found, return the case when no images are available
         if (!$mnistImage) {
             return response()->json(['error' => 'No images available'], 404);
@@ -141,11 +251,24 @@ class ImageController extends Controller
         ]);
     }
     
-    public function generateRandomTestImages()
+    public function generateRandomTestImage(Request $request)
     {
-        // Randomly select a record from the database where image_id is between 60000 and 69999
-        $mnistImage = MnistImage::whereBetween('image_id', [60000, 69999])->inRandomOrder()->first();
-    
+        // Get the unique ID from the request header
+        $uniqueId = $request->header('X-Client-Token');
+
+        if (!$uniqueId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Get all Mnist images
+        $allMnistImages = MnistImage::whereBetween('image_id', [60000, 69999])->get();
+
+        // Shuffle the array of records
+        $shuffledImages = $allMnistImages->shuffle();
+
+        // Get the first image from the selected array
+        $mnistImage = $shuffledImages->first();
+
         // If no record found, return the case when no images are available
         if (!$mnistImage) {
             return response()->json(['error' => 'No images available'], 404);
@@ -208,11 +331,11 @@ class ImageController extends Controller
     }
 
 
-    public function generateImageOld()
+    public function generateRandomImageOld()
     {
         // Execute the Python script to generate a random MNIST image ID, label, dataset type, and base64-encoded image
         chdir(base_path());
-        $scriptPath = base_path('storage/scripts/random_mnist_script.py');
+        $scriptPath = base_path('storage/scripts/old_random_mnist_script.py');
         $output = shell_exec("python $scriptPath");
 
         // Process the output to extract the image ID, label, dataset type, and base64-encoded image

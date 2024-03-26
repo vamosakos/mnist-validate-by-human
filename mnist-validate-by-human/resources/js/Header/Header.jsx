@@ -7,7 +7,7 @@ export default function Header() {
             <div className="container mx-auto flex justify-center items-center h-full text-white">
                 {/* Hozzáadunk egy Link komponenst az About oldalra */}
                 <Link href={route('about')} className="text-white">
-                    <h1 className="text-7xl font-bold cursor-pointer">MNIST Validation By Human</h1>
+                    <h1 className="text-7xl font-bold cursor-pointer">MNIST Validation by Human</h1>
                 </Link>
             </div>
         </header>

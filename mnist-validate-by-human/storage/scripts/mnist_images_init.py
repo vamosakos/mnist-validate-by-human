@@ -5,7 +5,7 @@ from keras.datasets import mnist
 from io import BytesIO
 from datetime import datetime
 
-# Kapcsolódás a MySQL adatbázishoz
+# Connect to the MySQL database
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -14,12 +14,12 @@ mydb = mysql.connector.connect(
 )
 mycursor = mydb.cursor()
 
-# Betöltjük az adathalmazat a kerasból
+# Load the dataset from keras
 (train_X, train_y), (test_X, test_y) = mnist.load_data()
 
-# Az első 60000 kép mentése az adatbázisba (train adatok)
+# Save the first 60000 images to the database (train data)
 for i in range(60000):
-    # Kép és címke kiválasztása
+    # Select image and label
     image = train_X[i]
     label = int(train_y[i])
 
@@ -36,17 +36,18 @@ for i in range(60000):
     # Convert the image to base64
     image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
 
-    # Adatok mentése az adatbázisba
-    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64) VALUES (%s, %s, %s)"
-    val = (i, label, image_base64)
+    # Save data to the database
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)"
+    val = (i, label, image_base64, now, now)  # Shift indexes after the train images
     mycursor.execute(sql, val)
     mydb.commit()
 
     print("Inserted train image with index:", i)
 
-# A következő 10000 kép mentése az adatbázisba (test adatok)
+# Save the next 10000 images to the database (test data)
 for i in range(10000):
-    # Kép és címke kiválasztása
+    # Select image and label
     image = test_X[i]
     label = int(test_y[i])
 
@@ -63,10 +64,10 @@ for i in range(10000):
     # Convert the image to base64
     image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
 
-    # Adatok mentése az adatbázisba
+    # Save data to the database
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64, created_at, updated_at) VALUES (%s, %s, %s)"
-    val = (i + 60000, label, image_base64, now, now)  # Az indexek eltolása a train képek után
+    sql = "INSERT INTO mnist_images (image_id, image_label, image_base64, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)"
+    val = (i + 60000, label, image_base64, now, now)  # Shift indexes after the train images
     mycursor.execute(sql, val)
     mydb.commit()
 
