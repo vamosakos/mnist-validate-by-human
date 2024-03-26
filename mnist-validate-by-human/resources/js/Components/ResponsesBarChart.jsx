@@ -68,9 +68,6 @@ const ResponsesBarChart = ({ responses, filteredId }) => {
   return (
     <div className="relative">
       {/* Dropdown menu to choose display option */}
-      <label htmlFor="displayOption" className="block text-xl font-medium text-gray-700 mb-2">
-        Display Option:
-      </label>
       <select
         id="displayOption"
         onChange={(e) => setChartView(e.target.value)}

@@ -72,27 +72,34 @@ export default function All({ auth, responses }) {
 
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg flex flex-wrap">
-            <div className="w-1/4 px-4">
-              <div>
-                {/* Search field */}
-                <label htmlFor="searchInput" className="block text-xl font-medium text-gray-700">Search by ID:</label>
-                <input
-                  type="text"
-                  name="searchInput"
-                  id="searchInput"
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                  value={filteredId}
-                  onChange={handleFilterChange}
-                />
-              </div>
+          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div className="p-4">
+              {/* Search field */}
+              <label htmlFor="searchInput" className="block text-xl font-medium text-gray-700">Search by ID:</label>
+              <input
+                type="text"
+                name="searchInput"
+                id="searchInput"
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                value={filteredId}
+                onChange={handleFilterChange}
+              />
             </div>
-            <div className="w-1/2 px-12">
-              <div className="chart-container" style={{ width: '150%', height: '550px' }}>
-                <ResponsesBarChart responses={responses} filteredId={filteredId} /> {/* Pass filteredId */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+              {/* Responses Bar Chart Card */}
+              <div className="p-4 bg-white border rounded-md">
+                <h3 className="text-lg font-semibold">Responses Bar Chart</h3>
+                <div className="chart-container">
+                  <ResponsesBarChart responses={responses} filteredId={filteredId} />
+                </div>
               </div>
-              <div className="chart-container" style={{ width: '125%', height: '500px' }}>
-                {heatmapImage && <img src={`data:image/png;base64,${heatmapImage}`} alt="Heatmap" />}
+
+              {/* Heatmap Image Card */}
+              <div className="p-4 bg-white border rounded-md">
+                <h3 className="text-lg font-semibold">Heatmap Image</h3>
+                <div className="chart-container">
+                  {heatmapImage && <img src={`data:image/png;base64,${heatmapImage}`} alt="Heatmap" />}
+                </div>
               </div>
             </div>
           </div>

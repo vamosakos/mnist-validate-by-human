@@ -73,35 +73,47 @@ export default function All({ auth, imageFrequencies }) {
 
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          {/* Search field */}
-          <div className="mb-4">
-            <InputLabel value="Search by ID:" className="text-xl font-medium text-gray-700" />
-            <TextInput
-              type="text"
-              name="searchInput"
-              id="searchInput"
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              value={filteredId !== null ? filteredId.toString() : ''}
-              onChange={handleFilterChange}
-              ref={inputRef}
-            />
-            <InputError message={error} />
-          </div>
-          <div className="flex">
-            <PrimaryButton className="ml-auto" disabled={filteredId === null} onClick={handleButtonClick}>
-              Get Image
-            </PrimaryButton>
-          </div>
           <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div className="grid grid-cols-2 gap-4 p-4">
-              <div className="chart-container" style={{ width: '100%', height: '500px' }}>
-                <ImageFrequenciesBarChart imageFrequencies={imageFrequencies} filteredId={filteredId} />
+            <div className="p-4">
+            {/* Search field */}
+              <InputLabel value="Search by ID:" className="text-xl font-medium text-gray-700 mr-2" />
+              <TextInput
+                type="text"
+                name="searchInput"
+                id="searchInput"
+                className="mt-1 p-2 border border-gray-300 rounded-md w-1/3"
+                value={filteredId !== null ? filteredId.toString() : ''}
+                onChange={handleFilterChange}
+                ref={inputRef}
+              />
+              <PrimaryButton className="ml-2" disabled={filteredId === null} onClick={handleButtonClick}>
+                Get Image
+              </PrimaryButton>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 p-4">
+              {/* Image Frequencies Bar Chart Card */}
+              <div className="p-4 bg-white border rounded-md">
+                <h3 className="text-lg font-semibold">Image Frequencies Bar Chart</h3>
+                <div className="chart-container">
+                  <ImageFrequenciesBarChart imageFrequencies={imageFrequencies} filteredId={filteredId} />
+                </div>
               </div>
-              <div className="chart-container flex justify-center" style={{ width: '100%', height: '500px' }}>
-                <ImageFrequenciesPieChart imageFrequencies={imageFrequencies} filteredId={filteredId} />
+
+              {/* Image Frequencies Pie Chart Card */}
+              <div className="p-4 bg-white border rounded-md">
+                <h3 className="text-lg font-semibold">Image Frequencies Pie Chart</h3>
+                <div className="chart-container flex justify-center">
+                  <ImageFrequenciesPieChart imageFrequencies={imageFrequencies} filteredId={filteredId} />
+                </div>
               </div>
-              <div className="chart-container" style={{ width: '100%', height: '700px' }}>
-                <ImageDisplay imageId={filteredId} showImage={showImage} />
+
+              {/* Image Display Card */}
+              <div className="p-4 bg-white border rounded-md">
+                <h3 className="text-lg font-semibold">Image Display</h3>
+                <div className="chart-container">
+                  <ImageDisplay imageId={filteredId} showImage={showImage} />
+                </div>
               </div>
             </div>
           </div>
