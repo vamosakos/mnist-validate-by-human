@@ -18,7 +18,7 @@ def generate_heatmap(label_counts):
             matrix[int(label)][guest_response] = count
 
     # Plot the heatmap
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(8, 6), tight_layout=True)  # Adjusted line with tight_layout
     plt.imshow(matrix, cmap='binary_r', interpolation='nearest')  # Invert the colormap
     plt.colorbar(label='Count')
     plt.xlabel('Predicted Number Label')

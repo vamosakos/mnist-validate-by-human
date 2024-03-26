@@ -115,6 +115,28 @@ class StatisticsController extends Controller
     {
         return $this->fetchResponses('Statistics/ResponsesGraphsCharts');
     }
+
+    public function deleteSelected(Request $request)
+    {
+        // Ellenőrizzük, hogy van-e kiválasztott elem
+        if (!$request->has('selectedRows')) {
+            return response()->json(['error' => 'Nincsenek kiválasztott elemek.'], 400);
+        }
+
+        // Kiválasztott elemek törlése
+        $selectedRows = $request->selectedRows;
+
+        try {
+            // Logikai törlés végrehajtása
+            ImageFrequency::whereIn('id', $selectedRows)->delete();
+
+            // Sikeres törlés esetén válasz küldése
+            return response()->json(['message' => 'Az elemek sikeresen törölve lettek.'], 200);
+        } catch (\Exception $e) {
+            // Hiba esetén hibaüzenet küldése
+            return response()->json(['error' => 'Hiba történt a törlés során.'], 500);
+        }
+    }
     
     
 

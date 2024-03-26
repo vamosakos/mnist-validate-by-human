@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import ResponsesBarChart from '@/Components/ResponsesBarChart.jsx';
@@ -6,9 +6,30 @@ import Dropdown from '@/Components/Dropdown.jsx';
 
 export default function All({ auth, responses }) {
   const [filteredId, setFilteredId] = useState('');
+  const [heatmapImage, setHeatmapImage] = useState(null);
 
   const handleFilterChange = (event) => {
     setFilteredId(event.target.value.trim());
+  };
+
+  useEffect(() => {
+    fetchHeatmapImage();
+  }, []);
+
+  const fetchHeatmapImage = async () => {
+    try {
+      // Fetch the JSON data from the backend
+      const response = await fetch('/statistics/heatmap');
+      if (!response.ok) {
+        throw new Error('Failed to fetch heatmap image');
+      }
+      const data = await response.json(); // Parse response as JSON
+      // Extract the base64-encoded image data from the JSON response
+      const heatmapBase64 = data.heatmap_base64;
+      setHeatmapImage(heatmapBase64);
+    } catch (error) {
+      console.error('Error fetching heatmap image:', error.message);
+    }
   };
 
   return (
@@ -69,6 +90,9 @@ export default function All({ auth, responses }) {
             <div className="w-1/2 px-12">
               <div className="chart-container" style={{ width: '150%', height: '550px' }}>
                 <ResponsesBarChart responses={responses} filteredId={filteredId} /> {/* Pass filteredId */}
+              </div>
+              <div className="chart-container" style={{ width: '125%', height: '500px' }}>
+                {heatmapImage && <img src={`data:image/png;base64,${heatmapImage}`} alt="Heatmap" />}
               </div>
             </div>
           </div>

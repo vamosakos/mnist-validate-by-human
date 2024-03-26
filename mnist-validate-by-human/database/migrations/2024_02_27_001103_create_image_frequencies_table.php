@@ -20,6 +20,7 @@ class CreateImageFrequenciesTable extends Migration
             $table->integer('generation_count')->default(0);
             $table->integer('response_count')->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
