@@ -6,6 +6,7 @@ use App\Models\ImageFrequency;
 use App\Models\MnistImage;
 use App\Models\Misidentification;
 use App\Models\Response;
+use App\Models\ImageGenerationSetting;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Response as FacadeResponse;
@@ -137,7 +138,24 @@ class StatisticsController extends Controller
             return response()->json(['error' => 'Hiba történt a törlés során.'], 500);
         }
     }
-    
-    
+
+    public function setActiveFunction(Request $request)
+    {
+        // Ellenőrizzük, hogy a kért funkció neve valóban létezik-e az adatbázisban
+        $validFunctions = ['generateRandomImage', 'generateFrequencyWeightedImage', 'generateMisidentificationWeightedImage', 'generateRandomTrainImage', 'generateRandomTestImage'];
+        if (!in_array($request->function_name, $validFunctions)) {
+            return response()->json(['message' => 'Invalid function name.'], 422);
+        }
+
+        // Frissítjük az adatbázist az új aktív funkcióval
+        ImageGenerationSetting::where('function_name', $request->function_name)
+            ->update(['active' => 1]);
+
+        // Minden más funkció inaktívvá válik
+        ImageGenerationSetting::where('function_name', '!=', $request->function_name)
+            ->update(['active' => 0]);
+
+        return response()->json(['message' => 'Active settings updated successfully.']);
+    }
 
 }

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import ImageDetailPopup from '@/Popups/ImageDetailPopup';
 import DeleteWarningPopup from '@/Popups/DeleteWarningPopup'; 
-import axios from 'axios'; // importáljuk az axios könyvtárat
+import axios from 'axios';
 
-const DataTable = ({ data, columns, deleteRoute }) => { // Új prop: deleteRoute
+const DataTable = ({ data, columns, deleteRoute }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'desc' });
   const [visibleRows, setVisibleRows] = useState(10);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -19,21 +19,16 @@ const DataTable = ({ data, columns, deleteRoute }) => { // Új prop: deleteRoute
     setSortConfig({ key, direction });
   };
 
-  // Módosított függvény a backend új útvonalára
   const handleDeleteSelected = () => {
     if (selectedRows.length > 0) {
-      // Ha vannak kiválasztott sorok, akkor elküldjük a backendnek
-      axios.post(deleteRoute, { selectedRows }) // Új: deleteRoute használata
+      axios.post(deleteRoute, { selectedRows })
         .then(response => {
-          console.log(response.data.message); // sikeres válasz logolása
-          // Törlés után frissítjük a megjelenített adatokat vagy bármi más művelet
+          console.log(response.data.message);
         })
         .catch(error => {
-          console.error('Hiba történt a törlés során:', error); // hiba logolása
-          // Kezeljük a hibát, például hibaüzenet megjelenítése a felhasználónak
+          console.error('Hiba történt a törlés során:', error);
         });
     } else {
-      // Ha nincsenek kiválasztott sorok, akkor csak logoljuk a konzolra
       console.log('Nincsenek kiválasztott sorok a törléshez.');
     }
   };
@@ -51,7 +46,7 @@ const DataTable = ({ data, columns, deleteRoute }) => { // Új prop: deleteRoute
   const visibleData = sortedData.slice(0, visibleRows);
 
   const handleShowMore = () => {
-    setVisibleRows((prevVisibleRows) => prevVisibleRows + 10);
+    setVisibleRows(prevVisibleRows => prevVisibleRows + 10);
   };
 
   const handleRowClick = (rowId) => {
@@ -71,7 +66,7 @@ const DataTable = ({ data, columns, deleteRoute }) => { // Új prop: deleteRoute
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selectedRows.slice(0, selectedIndex),
-        selectedRows.slice(selectedIndex + 1),
+        selectedRows.slice(selectedIndex + 1)
       );
     }
 
@@ -94,14 +89,14 @@ const DataTable = ({ data, columns, deleteRoute }) => { // Új prop: deleteRoute
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto max-h-100">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs uppercase bg-green-custom dark:bg-green-custom dark:text-gray-400 sticky top-0 text-center align-middle">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-400">
+          <thead className="text-xs uppercase bg-gray-800 dark:bg-gray-600 dark:text-gray-400 sticky top-0 text-center align-middle">
             <tr>
               {columns.map((columnName) => (
                 <th
                   key={columnName}
                   scope="col"
-                  className="cursor-pointer px-6 text-2xl py-3 text-white hover:bg-emerald-600"
+                  className="cursor-pointer px-6 py-3 text-white hover:bg-gray-700 dark:hover:bg-gray-400"
                   onClick={() => handleSort(columnName)}
                 >
                   {columnName}
@@ -112,7 +107,7 @@ const DataTable = ({ data, columns, deleteRoute }) => { // Új prop: deleteRoute
                   )}
                 </th>
               ))}
-              <th className="px-6 text-2xl py-3 text-white hover:bg-emerald-600">
+              <th className="px-6 py-3 text-white hover:bg-gray-700 dark:hover:bg-gray-400">
                 <input type="checkbox" checked={selectAll} onChange={handleToggleSelectAll} />
               </th>
             </tr>
@@ -121,17 +116,17 @@ const DataTable = ({ data, columns, deleteRoute }) => { // Új prop: deleteRoute
             {visibleData.map((item, index) => (
               <tr
                 key={item.id}
-                className={`border-b dark:border-gray-700 cursor-pointer group hover:bg-gray-500 ${
-                  index % 2 === 0 ? 'bg-gray-127' : 'bg-gray-194'
+                className={`border-b dark:border-gray-700 cursor-pointer group hover:bg-gray-300 dark:hover:bg-gray-500 ${
+                  index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-700' : 'bg-gray-100 dark:bg-gray-600'
                 }`}
                 onClick={() => handleRowClick(item.id)}
               >
                 {columns.map((columnName) => (
-                  <td key={columnName} className="px-6 text-2xl py-4 text-black text-center align-middle">
+                  <td key={columnName} className="px-6 py-4 text-black text-center align-middle">
                     {item[columnName]}
                   </td>
                 ))}
-                <td className="px-6 text-2xl py-4 text-black text-center align-middle">
+                <td className="px-6 py-4 text-black text-center align-middle">
                   <input type="checkbox" checked={selectedRows.includes(item.id)} onChange={() => handleToggleSelect(item.id)} />
                 </td>
               </tr>
@@ -140,21 +135,21 @@ const DataTable = ({ data, columns, deleteRoute }) => { // Új prop: deleteRoute
         </table>
       </div>
       {visibleRows < sortedData.length && (
-        <button className="text-xl bg-green-custom text-white py-3 px-14 hover:bg-emerald-600" onClick={handleShowMore}>
+        <button className="text-xl bg-gray-800 dark:bg-gray-600 text-white py-3 px-14 hover:bg-gray-700 dark:hover:bg-gray-400" onClick={handleShowMore}>
           Show more
         </button>
       )}
       <div className="flex justify-end">
-      <button className="text-xl bg-green-custom text-white py-3 px-14 hover:bg-emerald-600" onClick={() => setShowDeleteWarning(true)}>
-        Delete
-      </button>
+        <button className="text-xl bg-gray-800 dark:bg-gray-600 text-white py-3 px-14 hover:bg-gray-700 dark:hover:bg-gray-400" onClick={() => setShowDeleteWarning(true)}>
+          Delete
+        </button>
       </div>
       {showDeleteWarning && (
         <DeleteWarningPopup
           selectedRows={selectedRows}
           onDeleteConfirm={() => {
             setShowDeleteWarning(false);
-            handleDeleteSelected(); // Itt hívjuk meg a törlés funkciót, ha a felhasználó elfogadja
+            handleDeleteSelected();
           }}
           onDeleteCancel={() => setShowDeleteWarning(false)}
         />
