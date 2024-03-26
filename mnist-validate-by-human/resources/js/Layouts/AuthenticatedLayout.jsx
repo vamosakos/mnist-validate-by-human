@@ -33,6 +33,9 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink href={route('statistics.imageFrequenciesDataList')} active={route().current('statistics.imageFrequenciesDataList')}>
                                     Data Listing
                                 </NavLink>
+                                <NavLink href={route('generatingImageByWeightedRandom.weightedRandom')} active={route().current('generatingImageByWeightedRandom.weightedRandom')}>
+                                    Image Generation
+                                </NavLink>
                             </div>
                         </div>
 
