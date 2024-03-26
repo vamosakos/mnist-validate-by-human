@@ -13,7 +13,6 @@ import Dropdown from '@/Components/Dropdown'; // Import Dropdown component
 export default function All({ auth, imageFrequencies }) {
   const [filteredId, setFilteredId] = useState(null);
   const [showImage, setShowImage] = useState(false);
-  const [heatmapImage, setHeatmapImage] = useState(null);
   const [error, setError] = useState(null);
   const inputRef = useRef();
 
@@ -73,7 +72,7 @@ export default function All({ auth, imageFrequencies }) {
       <Head title="Dashboard" />
 
       <div className="py-12">
-        <div className="max-w-8xl mx-auto sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           {/* Search field */}
           <div className="mb-4">
             <InputLabel value="Search by ID:" className="text-xl font-medium text-gray-700" />
