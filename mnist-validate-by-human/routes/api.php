@@ -3,6 +3,7 @@
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ResponseController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\StatisticsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,7 +24,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // generateRandomImage / generateFrequencyWeightedImage / generateMisidentificationWeightedImage / generateRandomTrainImage / generateRandomTestImage
-Route::get('/generate-image', [ImageController::class, 'generateRandomImage']);
+Route::get('/generate-image', [ImageController::class, 'generateImage']);
+Route::post('/set-image-generation', [StatisticsController::class, 'setActiveFunction']);
 
 
 Route::group(['middleware' => ['web']], function () {

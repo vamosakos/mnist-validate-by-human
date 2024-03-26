@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\OverviewController;
+use App\Http\Controllers\ImageController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -62,6 +63,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-image/{imageId}', [StatisticsController::class, 'getImageById'])->name('get-image');
     Route::get('/statistics/heatmap', [StatisticsController::class, 'generateHeatmap']);
     Route::post('/statistics/delete-selected', [StatisticsController::class, 'deleteSelected'])->name('statistics.deleteSelected');
+
+    Route::get('/weighted-random', function () {
+        return Inertia::render('GeneratingImageByWeightedRandom/WeightedRandom');
+    })->name('generatingImageByWeightedRandom.weightedRandom');
 
     
 });

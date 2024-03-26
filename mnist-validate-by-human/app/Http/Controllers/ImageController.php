@@ -7,6 +7,7 @@ use App\Models\ImageFrequency;
 use App\Models\NumberFrequency;
 use App\Models\Misidentification;
 use App\Models\UuidImage;
+use App\Models\ImageGenerationSetting;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
@@ -17,6 +18,21 @@ use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
+
+    public function generateImage(Request $request)
+    {
+        // Lekérjük az aktív funkciót az adatbázisból
+        $activeFunction = ImageGenerationSetting::where('active', true)->value('function_name');
+        
+        // Ellenőrizzük, hogy a megadott aktív funkció létezik-e
+        if (!method_exists($this, $activeFunction)) {
+            return response()->json(['message' => 'Active function not found.'], 404);
+        }
+
+        // Hívjuk meg az aktív funkciót
+        return $this->{$activeFunction}($request);
+    }
+
     public function generateRandomImage(Request $request)
     {
         // Get the unique ID from the request header

@@ -113,7 +113,7 @@ export default function Overview({ auth,
             </div>
 
             {/* Most Misidentificated Image Id Card */}
-            <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostMisidentificatedImage') ? 'h-auto' : 'h-32'}`}>
+            <div className={`p-2 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostMisidentificatedImage') ? 'h-auto' : 'h-32'}`}>
                 <h3 className="text-lg font-semibold">Most Misidentificated Image Id:</h3>
                 <p className="text-xl font-bold">{mostMisidentificatedImageId}</p>
                 <p className="mt-2">{mostMisidentificatedImageCount} time(s)</p>
@@ -177,7 +177,7 @@ export default function Overview({ auth,
             </div>
 
             {/* Average response time Card */}
-            <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('averageResponseTime') ? 'h-auto' : 'h-32'}`}>
+            <div className={`p-2 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('averageResponseTime') ? 'h-auto' : 'h-32'}`}>
                 <h3 className="text-lg font-semibold">Average Response Time / Image</h3>
                 <p className="text-xl font-bold">{averageResponseTime} sec</p>
             </div>

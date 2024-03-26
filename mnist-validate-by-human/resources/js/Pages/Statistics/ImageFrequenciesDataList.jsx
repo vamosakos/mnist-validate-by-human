@@ -55,7 +55,7 @@ export default function All({ auth, imageFrequencies }) {
         >
             <Head title="Dashboard" />
             <div className="max-w-8xl mx-auto sm:px-6 lg:px-8">
-                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-8">
+                <div className="overflow-hidden mt-8">
                     {/* Adja át a deleteRoute propot a DataTable komponensnek */}
                     <DataTable data={tableData} columns={columns} deleteRoute={deleteRoute} />
                 </div>
