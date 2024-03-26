@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faForwardFast } from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faCircleHalfStroke } from '@fortawesome/free-solid-svg-icons';
 
 const Dashboard = ({ auth }) => {
     const [activeFunction, setActiveFunction] = useState('');
@@ -61,35 +61,48 @@ const Dashboard = ({ auth }) => {
                                     <p>Selects randomly from the entire dataset (70,000 images).</p>
                                     <div className="absolute right-0 bottom-0 flex items-center">
                                         <strong>Speed: </strong>
-                                        <FontAwesomeIcon icon={faForwardFast} size="lg" style={{ color: '#FFA500' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
                                     </div>
                                 </div>
                                 <div className="bg-gray-100 p-2 rounded-lg relative">
                                     <p>Selects randomly from the least generated images based on the weights of previously generated images. Users won't receive the same image twice within an hour.</p>
                                     <div className="absolute right-0 bottom-0 flex items-center">
                                         <strong>Speed: </strong>
-                                        <FontAwesomeIcon icon={faForwardFast} size="lg" style={{ color: '#FF0000' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
                                     </div>
                                 </div>
                                 <div className="bg-gray-100 p-2 rounded-lg relative">
                                     <p>Selects randomly from the images that were most often misidentified based on their weights. Users won't receive the same image twice within an hour.</p>
                                     <div className="absolute right-0 bottom-0 flex items-center">
                                         <strong>Speed: </strong>
-                                        <FontAwesomeIcon icon={faForwardFast} size="lg" style={{ color: '#ADFF2F' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircleHalfStroke} style={{ color: '#3b82f6' }} />
                                     </div>
                                 </div>
                                 <div className="bg-gray-100 p-2 rounded-lg relative">
-                                    <p>Selects randomly from the Training dataset (60,000 images).</p>
+                                    <p>Selects randomly from the Train dataset (60,000 images).</p>
                                     <div className="absolute right-0 bottom-0 flex items-center">
                                         <strong>Speed: </strong>
-                                        <FontAwesomeIcon icon={faForwardFast} size="lg" style={{ color: '#FFD700' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircleHalfStroke} style={{ color: '#3b82f6' }} />
                                     </div>
                                 </div>
                                 <div className="bg-gray-100 p-2 rounded-lg relative">
                                     <p>Selects randomly from the Test dataset (10,000 images).</p>
                                     <div className="absolute right-0 bottom-0 flex items-center">
                                         <strong>Speed: </strong>
-                                        <FontAwesomeIcon icon={faForwardFast} size="lg" style={{ color: '#008000' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
+                                        <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
                                     </div>
                                 </div>
                             </div>
