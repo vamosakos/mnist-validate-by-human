@@ -9,3 +9,10 @@
 .number-animation:hover {
 transform: scale(1.1);
 }
+
+.custom-icon {
+  color: #c23737; 
+}
+.custom-icon:hover {
+  color: #b32020;
+}
