@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import ImageDetailPopup from '@/Popups/ImageDetailPopup';
 import DeleteWarningPopup from '@/Popups/DeleteWarningPopup'; 
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 const DataTable = ({ data, columns, deleteRoute }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'desc' });
@@ -26,10 +28,10 @@ const DataTable = ({ data, columns, deleteRoute }) => {
           console.log(response.data.message);
         })
         .catch(error => {
-          console.error('Hiba történt a törlés során:', error);
+          console.error('Error occurred during deletion:', error);
         });
     } else {
-      console.log('Nincsenek kiválasztott sorok a törléshez.');
+      console.log('No selected rows for deletion.');
     }
   };
 
@@ -49,7 +51,9 @@ const DataTable = ({ data, columns, deleteRoute }) => {
     setVisibleRows(prevVisibleRows => prevVisibleRows + 10);
   };
 
-  const handleRowClick = (rowId) => {
+  const handleRowClick = (rowId, event) => {
+    if (event.target.type === 'checkbox') return;
+  
     setSelectedRow(rowId);
   };
 
@@ -89,14 +93,14 @@ const DataTable = ({ data, columns, deleteRoute }) => {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto max-h-100">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-400">
-          <thead className="text-xs uppercase bg-gray-800 dark:bg-gray-600 dark:text-gray-400 sticky top-0 text-center align-middle">
+        <table className="w-full text-sm text-left text-gray-700 bg-white border-gray-300 border">
+          <thead className="text-xs uppercase bg-gray-200">
             <tr>
               {columns.map((columnName) => (
                 <th
                   key={columnName}
                   scope="col"
-                  className="cursor-pointer px-6 py-3 text-white hover:bg-gray-700 dark:hover:bg-gray-400"
+                  className="px-6 py-3 border-b dark:text-gray-400"
                   onClick={() => handleSort(columnName)}
                 >
                   {columnName}
@@ -107,7 +111,8 @@ const DataTable = ({ data, columns, deleteRoute }) => {
                   )}
                 </th>
               ))}
-              <th className="px-6 py-3 text-white hover:bg-gray-700 dark:hover:bg-gray-400">
+              
+              <th className="px-6 py-3 border-b">
                 <input type="checkbox" checked={selectAll} onChange={handleToggleSelectAll} />
               </th>
             </tr>
@@ -116,17 +121,17 @@ const DataTable = ({ data, columns, deleteRoute }) => {
             {visibleData.map((item, index) => (
               <tr
                 key={item.id}
-                className={`border-b dark:border-gray-700 cursor-pointer group hover:bg-gray-300 dark:hover:bg-gray-500 ${
-                  index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-700' : 'bg-gray-100 dark:bg-gray-600'
+                className={`border-b cursor-pointer group hover:bg-gray-100 ${
+                  index % 2 === 0 ? 'bg-gray-50' : 'bg-gray-200'
                 }`}
-                onClick={() => handleRowClick(item.id)}
+                onClick={(event) => handleRowClick(item.id, event)}
               >
                 {columns.map((columnName) => (
-                  <td key={columnName} className="px-6 py-4 text-black text-center align-middle">
+                  <td key={columnName} className="px-6 py-4 text-black">
                     {item[columnName]}
                   </td>
                 ))}
-                <td className="px-6 py-4 text-black text-center align-middle">
+                <td className="px-6 py-4 text-black">
                   <input type="checkbox" checked={selectedRows.includes(item.id)} onChange={() => handleToggleSelect(item.id)} />
                 </td>
               </tr>
@@ -134,15 +139,18 @@ const DataTable = ({ data, columns, deleteRoute }) => {
           </tbody>
         </table>
       </div>
+      <div className="flex justify-between mt-2 text-sm text-gray-500">
+        <span>{visibleData.length} / {sortedData.length}</span>
+        <div className="flex justify-end">
+          <FontAwesomeIcon icon={faTrashCan} size="xl" className="custom-icon" onClick={() => setShowDeleteWarning(true)} />
+        </div>
+      </div>
+      <div className='flex justify-center mt-2'>
       {visibleRows < sortedData.length && (
-        <button className="text-xl bg-gray-800 dark:bg-gray-600 text-white py-3 px-14 hover:bg-gray-700 dark:hover:bg-gray-400" onClick={handleShowMore}>
-          Show more
-        </button>
-      )}
-      <div className="flex justify-end">
-        <button className="text-xl bg-gray-800 dark:bg-gray-600 text-white py-3 px-14 hover:bg-gray-700 dark:hover:bg-gray-400" onClick={() => setShowDeleteWarning(true)}>
-          Delete
-        </button>
+          <button className="text-gray-500 hover:text-gray-800" onClick={handleShowMore}>
+            Show more
+          </button>
+        )}
       </div>
       {showDeleteWarning && (
         <DeleteWarningPopup
