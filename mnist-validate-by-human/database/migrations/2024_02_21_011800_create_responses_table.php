@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('session_id');
             $table->unsignedBigInteger('response_time')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
     

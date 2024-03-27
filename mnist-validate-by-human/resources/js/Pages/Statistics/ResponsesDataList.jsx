@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable.jsx';
@@ -7,13 +7,19 @@ import Dropdown from '@/Components/Dropdown.jsx';
 const columns = ['image_id', 'guest_response', 'session_id', 'response_time'];
 
 export default function ResponsesDataList({ auth, responses }) {
-    const tableData = responses.map((response) => ({
-        id: response.id, // Assuming there is an ID field in your data
+    const [tableData, setTableData] = useState(responses.map((response) => ({
+        id: response.id,
         image_id: response.image_id,
         guest_response: response.guest_response,
         session_id: response.session_id,
         response_time: response.response_time,
-    }));
+    })));
+
+    const deleteRoute = '/statistics/delete-selected-responses';
+
+    const handleDataUpdate = (newData) => {
+        setTableData(newData);
+    };
 
     return (
         <AuthenticatedLayout
@@ -54,7 +60,7 @@ export default function ResponsesDataList({ auth, responses }) {
             <Head title="Dashboard" />
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="overflow-hidden mt-8">
-                    <DataTable data={tableData} columns={columns} />
+                    <DataTable data={tableData} columns={columns} deleteRoute={deleteRoute} onDataUpdate={handleDataUpdate}/>
                 </div>
             </div>
         </AuthenticatedLayout>

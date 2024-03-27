@@ -117,26 +117,36 @@ class StatisticsController extends Controller
         return $this->fetchResponses('Statistics/ResponsesGraphsCharts');
     }
 
-    public function deleteSelected(Request $request)
+    public function deleteSelectedItems(Request $request, $model)
     {
         // Ellenőrizzük, hogy van-e kiválasztott elem
         if (!$request->has('selectedRows')) {
             return response()->json(['error' => 'Nincsenek kiválasztott elemek.'], 400);
         }
-
+    
         // Kiválasztott elemek törlése
         $selectedRows = $request->selectedRows;
-
+    
         try {
             // Logikai törlés végrehajtása
-            ImageFrequency::whereIn('id', $selectedRows)->delete();
-
+            $model::whereIn('id', $selectedRows)->delete();
+    
             // Sikeres törlés esetén válasz küldése
             return response()->json(['message' => 'Az elemek sikeresen törölve lettek.'], 200);
         } catch (\Exception $e) {
             // Hiba esetén hibaüzenet küldése
             return response()->json(['error' => 'Hiba történt a törlés során.'], 500);
         }
+    }
+    
+    public function deleteSelectedImageFrequency(Request $request)
+    {
+        return $this->deleteSelectedItems($request, ImageFrequency::class);
+    }
+    
+    public function deleteSelectedResponse(Request $request)
+    {
+        return $this->deleteSelectedItems($request, Response::class);
     }
 
     public function setActiveFunction(Request $request)

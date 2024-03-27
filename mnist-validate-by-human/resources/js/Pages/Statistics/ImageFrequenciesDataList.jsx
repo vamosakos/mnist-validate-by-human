@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable.jsx';
@@ -6,16 +6,20 @@ import Dropdown from '@/Components/Dropdown.jsx';
 
 const columns = ['image_id', 'generation_count', 'response_count', 'misidentifications_count'];
 
-export default function All({ auth, imageFrequencies }) {
-    const tableData = imageFrequencies.map((item) => ({
+export default function ImageFrequenciesDataList({ auth, imageFrequencies }) {
+    const [tableData, setTableData] = useState(imageFrequencies.map((item) => ({
         id: item.id, // Assuming there is an ID field in your data
         image_id: item.image_id,
         generation_count: item.generation_count,
         response_count: item.response_count,
         misidentifications_count: item.misidentifications_count,
-    }));
+    })));
 
-    const deleteRoute = '/statistics/delete-selected'; // Definiáljuk az útvonalat
+    const deleteRoute = '/statistics/delete-selected-image-frequencies'; // Definiáljuk az útvonalat
+
+    const handleDataUpdate = (newData) => {
+        setTableData(newData);
+    };
 
     return (
         <AuthenticatedLayout
@@ -57,7 +61,7 @@ export default function All({ auth, imageFrequencies }) {
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="overflow-hidden mt-8">
                     {/* Adja át a deleteRoute propot a DataTable komponensnek */}
-                    <DataTable data={tableData} columns={columns} deleteRoute={deleteRoute} />
+                    <DataTable data={tableData} columns={columns} deleteRoute={deleteRoute} onDataUpdate={handleDataUpdate} />
                 </div>
             </div>
         </AuthenticatedLayout>
