@@ -21,4 +21,9 @@ class ImageFrequency extends Model
     {
         return $this->belongsTo(MnistImage::class, 'image_id');
     }
+
+    public function responses()
+    {
+        return $this->hasMany(Response::class, 'image_id', 'image_id');
+    }
 }

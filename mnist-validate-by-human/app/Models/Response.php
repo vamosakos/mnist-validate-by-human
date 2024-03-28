@@ -20,4 +20,9 @@ class Response extends Model
         return $this->belongsTo(MnistImage::class, 'image_id');
     }
 
+    public function imageFrequency()
+    {
+        return $this->belongsTo(ImageFrequency::class, 'image_id', 'image_id');
+    }
+
 }

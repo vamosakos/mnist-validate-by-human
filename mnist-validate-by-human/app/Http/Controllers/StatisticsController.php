@@ -141,13 +141,85 @@ class StatisticsController extends Controller
     
     public function deleteSelectedImageFrequency(Request $request)
     {
-        return $this->deleteSelectedItems($request, ImageFrequency::class);
+        if (!$request->has('selectedRows')) {
+            return response()->json(['error' => 'Nincsenek kiválasztott elemek.'], 400);
+        }
+    
+        $selectedRows = $request->selectedRows;
+    
+        try {
+            $imageFrequencies = ImageFrequency::whereIn('id', $selectedRows)->get();
+    
+            foreach ($imageFrequencies as $imageFrequency) {
+                // Töröljük a kapcsolódó válaszokat
+                $imageFrequency->responses()->delete();
+                // Töröljük az ImageFrequency-t
+                $imageFrequency->delete();
+            }
+    
+            return response()->json(['message' => 'Az elemek sikeresen törölve lettek.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Hiba történt a törlés során.'], 500);
+        }
     }
+    
     
     public function deleteSelectedResponse(Request $request)
     {
-        return $this->deleteSelectedItems($request, Response::class);
+        if (!$request->has('selectedRows')) {
+            return response()->json(['error' => 'Nincsenek kiválasztott elemek.'], 400);
+        }
+    
+        $selectedRows = $request->selectedRows;
+    
+        try {
+            $responses = Response::whereIn('id', $selectedRows)->get();
+    
+            foreach ($responses as $response) {
+                // Get the associated image frequency
+                $imageFrequency = $response->imageFrequency;
+    
+                // Check for misidentification
+                $misidentification = Misidentification::where('image_id', $response->image_id)
+                ->where('correct_label', '<>', $response->guest_response)
+                ->first();
+    
+                // Delete the response
+                $response->delete();
+    
+                // Decrease response_count
+                if ($imageFrequency->response_count > 0) {
+                    $imageFrequency->response_count--;
+                }
+    
+                // Decrease generation_count if necessary
+                if ($imageFrequency->generation_count > 1 && $imageFrequency->response_count < $imageFrequency->generation_count) {
+                    $imageFrequency->generation_count--;
+                }
+    
+                // Decrease misidentifications count if misidentification exists and guest_response doesn't match correct_label
+                if ($misidentification && $response->guest_response != $misidentification->correct_label) {
+                    if ($misidentification->count > 0) {
+                        $misidentification->count--;
+                        if ($misidentification->count == 0) {
+                            $misidentification->delete();
+                        } else {
+                            $misidentification->save();
+                        }
+                    }
+                }
+    
+                $imageFrequency->save();
+            }
+    
+            return response()->json(['message' => 'Az elemek sikeresen törölve lettek.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Hiba történt a törlés során: '.$e->getMessage()], 500);
+        }
     }
+    
+    
+    
 
     public function setActiveFunction(Request $request)
     {
