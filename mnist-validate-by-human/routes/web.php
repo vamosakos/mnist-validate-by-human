@@ -62,7 +62,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/overview', [OverviewController::class, 'index'])->name('overview.index');
     Route::get('/get-image/{imageId}', [StatisticsController::class, 'getImageById'])->name('get-image');
     Route::get('/statistics/heatmap', [StatisticsController::class, 'generateHeatmap']);
-    Route::post('/statistics/delete-selected', [StatisticsController::class, 'deleteSelected'])->name('statistics.deleteSelected');
+    Route::post('/statistics/delete-selected-image-frequencies', [StatisticsController::class, 'deleteSelectedImageFrequency']);
+    Route::post('/statistics/delete-selected-responses', [StatisticsController::class, 'deleteSelectedResponse']);
 
     Route::get('/weighted-random', function () {
         return Inertia::render('GeneratingImageByWeightedRandom/WeightedRandom');

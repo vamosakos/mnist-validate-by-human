@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ImageDetailPopup from '@/Popups/ImageDetailPopup';
 import DeleteWarningPopup from '@/Popups/DeleteWarningPopup'; 
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
-const DataTable = ({ data, columns, deleteRoute }) => {
+const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'desc' });
   const [visibleRows, setVisibleRows] = useState(10);
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [showDeleteWarning, setShowDeleteWarning] = useState(false);
+
+  useEffect(() => {
+    // Ez azért fontos, hogy a táblázat mindig az aktuális adatokat jelenítse meg
+    onDataUpdate(data);
+  }, [data, onDataUpdate]);
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -26,6 +31,8 @@ const DataTable = ({ data, columns, deleteRoute }) => {
       axios.post(deleteRoute, { selectedRows })
         .then(response => {
           console.log(response.data.message);
+          // Frissítsd az adatokat a sikeres törlés után
+          onDataUpdate(data.filter(item => !selectedRows.includes(item.id)));
         })
         .catch(error => {
           console.error('Error occurred during deletion:', error);
