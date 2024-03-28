@@ -20,7 +20,7 @@ export default function FeedbackPopup({ show, onClose }) {
     useEffect(() => {
         const fetchCsrfToken = async () => {
             try {
-                const response = await axios.get('/csrf-token');
+                const response = await axios.get('/api/csrf-token');
                 setCsrfToken(response.data.csrfToken);
             } catch (error) {
                 console.error('Error fetching CSRF token:', error);

@@ -23,7 +23,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// generateRandomImage / generateFrequencyWeightedImage / generateMisidentificationWeightedImage / generateRandomTrainImage / generateRandomTestImage
 Route::get('/generate-image', [ImageController::class, 'generateImage']);
 Route::post('/set-image-generation', [StatisticsController::class, 'setActiveFunction']);
 
@@ -31,6 +30,9 @@ Route::post('/set-image-generation', [StatisticsController::class, 'setActiveFun
 Route::group(['middleware' => ['web']], function () {
     Route::post('/save-response', [ResponseController::class, 'saveResponse']);
     Route::post('/feedbacks', [FeedbackController::class, 'store']);
+    Route::get('/csrf-token', function () {
+        return response()->json(['csrfToken' => csrf_token()]);
+    });
 });
 
 Route::get('/identifications/count', [ResponseController::class, 'getIdentificationsCount']);

@@ -32,6 +32,7 @@ export default function Survey() {
         if (captchaVerified) {
             handleTakeTest();
             setShowCaptchaPopup(false);
+            setShowWarning(false);
         }
     }, [captchaVerified]);
 

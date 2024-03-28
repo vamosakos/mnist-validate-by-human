@@ -71,11 +71,4 @@ Route::middleware('auth')->group(function () {
     
 });
 
-
-
-
-Route::get('/csrf-token', function () {
-    return response()->json(['csrfToken' => csrf_token()]);
-});
-
 require __DIR__.'/auth.php';
