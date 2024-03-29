@@ -23,10 +23,10 @@ export default function Survey() {
     const [progressBarVisible, setProgressBarVisible] = useState(false);
     const [captchaVerified, setCaptchaVerified] = useState(false);
     const [showCaptchaPopup, setShowCaptchaPopup] = useState(true);
-    const [startTime, setStartTime] = useState(null); 
-    const [timer, setTimer] = useState(null);
-    const [showWarning, setShowWarning] = useState(false); // Állapot a warning üzenet megjelenítéséhez
+    const [startTime, setStartTime] = useState(null);
+    const [showWarning, setShowWarning] = useState(false);
     const [feedbackPopupVisible, setFeedbackPopupVisible] = useState(false);
+    const [responseProcessed, setResponseProcessed] = useState(true); // Új állapot a válaszfeldolgozás nyomon követéséhez
 
     useEffect(() => {
         if (captchaVerified) {
@@ -37,48 +37,47 @@ export default function Survey() {
     }, [captchaVerified]);
 
     useEffect(() => {
-        if (startTime) {
-            const timer = setTimeout(() => {
-                handleNext(); 
-            }, 30000);
-            setTimer(timer);
-            // Ha elindult a timer, akkor beállítjuk a showWarning állapotot false-ra
+        setShowWarning(false);
+
+        if (!showFeedbackPopup && !feedbackPopupVisible) {
+            const warningTimer = setTimeout(() => {
+                setShowWarning(true);
+            }, Math.max(0, startTime ? 25000 - (Date.now() - startTime.getTime()) : 0));
+
+            return () => clearTimeout(warningTimer);
+        } else if (showFeedbackPopup && !feedbackPopupVisible) {
             setShowWarning(false);
         }
-    }, [startTime]);
-
-    useEffect(() => {
-        setShowWarning(false); // Alapértelmezésben ne jelenjen meg a figyelmeztetés
-    
-        if (!showFeedbackPopup && !feedbackPopupVisible) { // Ha nincs megjelenítve a feedback popup, és a felhasználó még nem nyomta meg a Submit gombot
-            const warningTimer = setTimeout(() => {
-                setShowWarning(true); // Mindenképp megjeleníti a figyelmeztető üzenetet az utolsó 5 másodpercben
-            }, Math.max(0, startTime ? 25000 - (Date.now() - startTime.getTime()) : 0)); // Kiszámolja a maradék időt a startTime-hoz képest
-    
-            return () => clearTimeout(warningTimer); // Tisztítja a warningTimert az effect megszűnésekor
-        } else if (showFeedbackPopup && !feedbackPopupVisible) { // Ha a felhasználó már beküldte a visszajelzést, de még mindig látszik a figyelmeztetés
-            setShowWarning(false); // Ne jelenjen meg a figyelmeztetés
-        }
     }, [startTime, showFeedbackPopup, feedbackPopupVisible]);
-    
+
     useEffect(() => {
         setShowWarning(!showFeedbackPopup && !feedbackPopupVisible);
     }, [showFeedbackPopup, feedbackPopupVisible]);
-    
+
+    useEffect(() => {
+        if (startTime && showWarning) {
+            const timeoutId = setTimeout(() => {
+                handleNext();
+            }, 5000); // 5 másodperces késleltetés
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [startTime, showWarning]);
+
     const handleTakeTest = async () => {
         try {
             if (loading) setLoading(false);
             if (imageCount >= 10) {
                 setSurveyEnded(true);
                 setShowFeedbackPopup(true);
-                setFeedbackPopupVisible(true); // Feedback popup megjelenítése
+                setFeedbackPopupVisible(true);
                 return;
             }
             setLoading(true);
-            const clientToken = localStorage.getItem('clientToken') || generateClientToken(); // Generáljunk vagy olvassunk be egy "client token"-t
+            const clientToken = localStorage.getItem('clientToken') || generateClientToken();
             const response = await axios.get('/api/generate-image', {
                 headers: {
-                    'X-Client-Token': clientToken // Küldjük el a "client token"-t a fejlécben
+                    'X-Client-Token': clientToken
                 }
             });
             const { image_id, image_label, image_base64 } = response.data;
@@ -91,6 +90,7 @@ export default function Survey() {
             setProgressBarVisible(true);
             setNextButtonDisabled(false);
             setNumberButtonsDisabled(false);
+            setResponseProcessed(true); // Az új kép generálása után jelölje meg, hogy a válaszfeldolgozás befejeződött
         } catch (error) {
             console.error('Error taking the test:', error);
         } finally {
@@ -98,10 +98,9 @@ export default function Survey() {
         }
     };
 
-    // Segédfüggvény a "client token" generálásához
     const generateClientToken = () => {
-        const token = generateRandomToken(); // Implementáld a random token generálását
-        localStorage.setItem('clientToken', token); // Tárold el a "client token"-t a localStorage-ban
+        const token = generateRandomToken();
+        localStorage.setItem('clientToken', token);
         return token;
     };
 
@@ -115,18 +114,19 @@ export default function Survey() {
 
     const handleNext = async () => {
         try {
-            if (selectedNumber === null && startTime) { 
+            if (selectedNumber === null && startTime) {
                 console.log('No response within the time limit.');
-                clearTimeout(timer); 
                 handleTakeTest();
                 return;
             }
 
-            if (selectedNumber !== null) {
+            if (selectedNumber !== null && responseProcessed) { // Ellenőrizzük, hogy a válaszfeldolgozás befejeződött-e már
                 const endTime = new Date();
                 const responseTime = endTime - startTime;
 
                 setLoading(true);
+                setResponseProcessed(false); // Jelölje meg, hogy a válaszfeldolgozás még nem fejeződött be
+
                 const response = await axios.post('/api/save-response', {
                     image_id: imageId,
                     guest_response: selectedNumber,
@@ -139,7 +139,6 @@ export default function Survey() {
         } catch (error) {
             console.error('Error handling next:', error);
         } finally {
-            clearTimeout(timer); 
             setNextButtonDisabled(true);
             setNumberButtonsDisabled(true);
         }
@@ -234,13 +233,13 @@ export default function Survey() {
                                     </div>
                                     <button
                                         className={`text-lg bg-green-custom text-white rounded-full py-2 px-4 hover:bg-emerald-600 ${
-                                            selectedNumber !== null && selectedNumber !== undefined && !surveyEnded
+                                            selectedNumber !== null && selectedNumber !== undefined && !surveyEnded && responseProcessed
                                                 ? ''
                                                 : 'opacity-50 cursor-not-allowed'
                                         }`}
                                         onClick={handleNext}
                                         disabled={
-                                            selectedNumber === null || selectedNumber === undefined || surveyEnded || nextButtonDisabled
+                                            selectedNumber === null || selectedNumber === undefined || surveyEnded || !responseProcessed
                                         }
                                     >
                                         {loading ? (
