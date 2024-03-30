@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGears } from '@fortawesome/free-solid-svg-icons';
 import StartPopup from '@/Popups/TakeTheTestPopup';
 import Footer from '@/Footer/Footer';
 import Header from '@/Header/Header';
+import SettingsPopup from '@/Popups/GuestSettingsPopup'; // Importáljuk a SettingsPopup komponenst
+import axios from 'axios'; // Importáljuk az Axios modult
 
 export default function About() {
     const [modalOpen, setModalOpen] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(false); // Állítsuk be az állapotot a beállítások megnyitásához
     const [identificationsCount, setIdentificationsCount] = useState(0);
+    const [showSettingsWarning, setShowSettingsWarning] = useState(false); // Állítsuk be az állapotot a figyelmeztetés megjelenítéséhez
+    const [existingRecord, setExistingRecord] = useState(null); // Adjunk hozzá egy állapotot az existingRecord-nek
 
     useEffect(() => {
         // Fetch identifications count initially
         fetchIdentificationsCountFromDatabase();
-    }, []);
+    
+        // Check session in guest settings only when settings popup is closed
+        if (!settingsOpen) {
+            checkSession();
+        }
+    }, [settingsOpen]);
 
     const fetchIdentificationsCountFromDatabase = async () => {
         try {
@@ -20,6 +32,19 @@ export default function About() {
             setIdentificationsCount(data.count);
         } catch (error) {
             console.error('Error fetching identifications count:', error);
+        }
+    };
+
+    const checkSession = async () => {
+        try {
+            const response = await axios.get('/api/check-session-in-guest-settings');
+            setShowSettingsWarning(!response.data.exists);
+            // Állítsuk be az existingRecord állapotot a válasz alapján
+            if (response.data.exists) {
+                setExistingRecord(response.data.record);
+            }
+        } catch (error) {
+            console.error('Error checking session in guest settings:', error);
         }
     };
 
@@ -76,9 +101,30 @@ export default function About() {
                 </div>
             </div>
 
+            {/* Settings Icon and Warning Bubble */}
+            <div 
+                style={{ position: 'fixed', right: '20px', bottom: '20px', zIndex: '1000', display: 'flex', alignItems: 'center' }} 
+                onClick={() => setSettingsOpen(true)} // Megnyitjuk a beállításokat, ha az ikonra kattintanak
+                className='number-animation'
+            >
+                <div style={{ backgroundColor: '#333', borderRadius: '50%', padding: '15px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)' }}>
+                    <FontAwesomeIcon icon={faGears} style={{ color: '#ffffff', fontSize: '24px' }} />
+                </div>
+                
+                {showSettingsWarning && (
+                    <div style={{ backgroundColor: 'red', color: 'white', borderRadius: '10px', padding: '5px 10px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', position: 'absolute', top: 0, left: '-150px' }}>
+                        Please set your data
+                    </div>
+                )}
+            </div>
+
             {/* Exit confirmation modal */}
             <StartPopup show={modalOpen} onClose={() => setModalOpen(false)} />
 
+            {/* Settings Popup */}
+            <SettingsPopup show={settingsOpen} onClose={() => setSettingsOpen(false)} setShowSettingsWarning={setShowSettingsWarning} existingRecord={existingRecord} /> 
+            {/* Adjuk hozzá a SettingsPopup komponenst a megjelenítéshez */}
+            
             <Footer />
         </div>
     );

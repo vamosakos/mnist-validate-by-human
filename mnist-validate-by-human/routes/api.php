@@ -4,6 +4,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ResponseController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\GuestSettingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,9 @@ Route::post('/set-image-generation', [StatisticsController::class, 'setActiveFun
 
 
 Route::group(['middleware' => ['web']], function () {
+    Route::get('/check-session-in-guest-settings', [GuestSettingController::class, 'getSessionData']);
+    Route::post('/guest-settings', [GuestSettingController::class, 'store']);
+    Route::put('/guest-settings/{id}', [GuestSettingController::class, 'update']);
     Route::post('/save-response', [ResponseController::class, 'saveResponse']);
     Route::post('/feedbacks', [FeedbackController::class, 'store']);
     Route::get('/csrf-token', function () {
