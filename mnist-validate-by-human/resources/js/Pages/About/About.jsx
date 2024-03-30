@@ -112,7 +112,7 @@ export default function About() {
                 </div>
                 
                 {showSettingsWarning && (
-                    <div style={{ backgroundColor: 'red', color: 'white', borderRadius: '10px', padding: '5px 10px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', position: 'absolute', top: 0, left: '-150px' }}>
+                    <div style={{ backgroundColor: 'rgb(239 68 68)', color: 'white', borderRadius: '10px', padding: '5px 10px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', position: 'absolute', top: 0, left: '-150px' }}>
                         Please set your data
                     </div>
                 )}

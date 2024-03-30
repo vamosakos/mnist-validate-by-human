@@ -25,7 +25,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/generate-image', [ImageController::class, 'generateImage']);
+Route::get('/get-active-image-generation', [StatisticsController::class, 'getActiveFunction']);
 Route::post('/set-image-generation', [StatisticsController::class, 'setActiveFunction']);
+
 
 
 Route::group(['middleware' => ['web']], function () {

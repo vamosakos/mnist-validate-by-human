@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->enum('function_name', ['generateRandomImage', 'generateFrequencyWeightedImage', 'generateMisidentificationWeightedImage', 'generateRandomTrainImage', 'generateRandomTestImage']);
             $table->boolean('active')->default(false);
+            $table->boolean('train')->default(true);
+            $table->boolean('test')->default(true);
             $table->timestamps();
         });
     }

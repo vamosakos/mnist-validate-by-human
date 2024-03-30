@@ -218,8 +218,24 @@ class StatisticsController extends Controller
         }
     }
     
-    
-    
+    public function getActiveFunction()
+    {
+        $activeSetting = ImageGenerationSetting::where('active', 1)->first();
+
+        if ($activeSetting) {
+            return response()->json([
+                'activeFunction' => $activeSetting->function_name,
+                'train' => $activeSetting->train,
+                'test' => $activeSetting->test
+            ]);
+        } else {
+            return response()->json([
+                'activeFunction' => null,
+                'train' => null,
+                'test' => null
+            ]);
+        }
+    }
 
     public function setActiveFunction(Request $request)
     {
@@ -228,16 +244,24 @@ class StatisticsController extends Controller
         if (!in_array($request->function_name, $validFunctions)) {
             return response()->json(['message' => 'Invalid function name.'], 422);
         }
-
-        // Frissítjük az adatbázist az új aktív funkcióval
+    
+        // Frissítjük az adatbázist az új aktív funkcióval és a train, test mezőkkel
         ImageGenerationSetting::where('function_name', $request->function_name)
-            ->update(['active' => 1]);
-
+            ->update([
+                'active' => 1,
+                'train' => $request->train ?? true,
+                'test' => $request->test ?? true 
+            ]);
+    
         // Minden más funkció inaktívvá válik
         ImageGenerationSetting::where('function_name', '!=', $request->function_name)
-            ->update(['active' => 0]);
-
+            ->update([
+                'active' => 0,
+                'train' => 0,
+                'test' => 0
+            ]);
+    
         return response()->json(['message' => 'Active settings updated successfully.']);
     }
-
+    
 }
