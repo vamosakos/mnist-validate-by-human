@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '@/Components/Modal';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 export default function GuestSettingsPopup({ show, onClose, existingRecord }) {
     const [major, setMajor] = useState('');
@@ -86,9 +88,7 @@ export default function GuestSettingsPopup({ show, onClose, existingRecord }) {
         <Modal show={show} onClose={onClose}>
             <div className="p-6">
                 <button onClick={onClose} className="absolute top-0 right-0 m-4 text-gray-600 hover:text-gray-900 focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <FontAwesomeIcon icon={faTimes} style={{ color: "#000000" }} className="fa-2x"/>
                 </button>
                 <h2 className="text-2xl font-bold mb-4 text-center">Settings</h2>
                 <div className="flex flex-col mb-4">

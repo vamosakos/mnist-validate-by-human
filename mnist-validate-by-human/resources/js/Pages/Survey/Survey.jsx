@@ -180,7 +180,7 @@ export default function Survey() {
                     <FontAwesomeIcon
                         icon={faTimes}
                         style={{ color: '#000000' }}
-                        className="absolute top-0 right-2 cursor-pointer fa-2x"
+                        className="absolute top-0 right-0 m-4 cursor-pointer fa-2x"
                         onClick={handleExit}
                     />
                     {captchaVerified && !imageBase64 && (

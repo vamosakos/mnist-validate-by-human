@@ -130,7 +130,7 @@ export default function FeedbackPopup({ show, onClose }) {
         <Modal show={show} onClose={onClose}>
             <div className="p-6">
                 <div className="text-center mb-4">
-                    <h2 className="text-xl font-bold">Feedback</h2>
+                    <h2 className="text-2xl font-bold text-center">Feedback</h2>
                     <FontAwesomeIcon icon={faStar} size="lg" style={{color: "#FFD43B",}} />
                     <FontAwesomeIcon icon={faStar} size="lg" style={{color: "#FFD43B",}} />
                     <FontAwesomeIcon icon={faStar} size="lg" style={{color: "#FFD43B",}} />

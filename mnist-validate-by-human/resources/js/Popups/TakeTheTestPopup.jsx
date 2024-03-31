@@ -12,6 +12,7 @@ export default function TakeTheTestPopup({ show, onClose }) {
     return (
         <Modal show={show} onClose={onClose}>
             <div className="p-6 text-center">
+                <h2 className="text-2xl font-bold mb-4 text-center">Take the Test</h2>
                 <p>You will see 10 pictures, decide what number you see.</p>
                 <p>Would you like to start?</p>
                 <div className="mt-4 flex justify-center flex-col items-center">
