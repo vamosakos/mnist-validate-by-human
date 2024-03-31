@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import Checkbox from '@/Components/Checkbox';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -75,24 +76,24 @@ const Dashboard = ({ auth }) => {
                         <div className="p-6 text-gray-900">
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div className="sm:col-span-1">
-                                    <button className={`border rounded-lg p-2 w-full ${activeFunction === 'generateRandomImage' ? 'bg-blue-500 text-white' : 'bg-white'}`} onClick={() => handleChange('generateRandomImage')}>
+                                    <button className={`border rounded-lg p-2 w-full ${activeFunction === 'generateRandomImage' ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-white hover:bg-slate-200'}`} onClick={() => handleChange('generateRandomImage')}>
                                         Random
                                     </button>
                                 </div>
                                 <div className="sm:col-span-1">
-                                    <button className={`border rounded-lg p-2 w-full ${activeFunction === 'generateFrequencyWeightedImage' ? 'bg-blue-500 text-white' : 'bg-white'}`} onClick={() => handleChange('generateFrequencyWeightedImage')}>
+                                    <button className={`border rounded-lg p-2 w-full ${activeFunction === 'generateFrequencyWeightedImage' ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-white hover:bg-slate-200'}`} onClick={() => handleChange('generateFrequencyWeightedImage')}>
                                         Balancing
                                     </button>
                                 </div>
                                 <div className="sm:col-span-1">
-                                    <button className={`border rounded-lg p-2 w-full ${activeFunction === 'generateMisidentificationWeightedImage' ? 'bg-blue-500 text-white' : 'bg-white'}`} onClick={() => handleChange('generateMisidentificationWeightedImage')}>
+                                    <button className={`border rounded-lg p-2 w-full ${activeFunction === 'generateMisidentificationWeightedImage' ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-white hover:bg-slate-200'}`} onClick={() => handleChange('generateMisidentificationWeightedImage')}>
                                         Most Often Misidentified
                                     </button>
                                 </div>
                             </div>
                             <div className="grid grid-cols-3 gap-4 mt-4">
                                 <div className="bg-gray-100 p-2 rounded-lg relative">
-                                    <p>Selects completely randomly. Image weighting is ignored.</p>
+                                    <p style={{ textAlign: 'justify' }}>Selects completely randomly. Image weighting is ignored.</p>
                                     <div className="absolute right-0 bottom-0 flex items-center">
                                         <strong>Speed: </strong>
                                         <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
@@ -101,7 +102,7 @@ const Dashboard = ({ auth }) => {
                                     </div>
                                 </div>
                                 <div className="bg-gray-100 p-2 rounded-lg relative">
-                                    <p>Selects randomly from the least generated images based on the weights of previously generated images. Users won't receive the same image twice within an hour.</p>
+                                    <p style={{ textAlign: 'justify' }}>Selects randomly from the least generated images based on the weights of previously generated images. Users won't receive the same image twice within an hour.</p>
                                     <div className="absolute right-0 bottom-0 flex items-center">
                                         <strong>Speed: </strong>
                                         <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
@@ -109,7 +110,7 @@ const Dashboard = ({ auth }) => {
                                     </div>
                                 </div>
                                 <div className="bg-gray-100 p-2 rounded-lg relative">
-                                    <p>Selects randomly from the images that were most often misidentified based on their weights. Users won't receive the same image twice within an hour.</p>
+                                    <p style={{ textAlign: 'justify' }}>Selects randomly from the images that were most often misidentified based on their weights. Users won't receive the same image twice within an hour.</p>
                                     <div className="absolute right-0 bottom-0 flex items-center">
                                         <strong>Speed: </strong>
                                         <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} />
@@ -120,15 +121,13 @@ const Dashboard = ({ auth }) => {
                                 </div>
                             </div>
                             <div className="flex justify-center mt-4">
-                                <input
-                                    type="checkbox"
+                                <Checkbox
                                     className="mr-2 cursor-pointer"
                                     checked={trainActive}
                                     onChange={handleTrainClick}
                                 />
                                 <label className="cursor-pointer">From Train dataset</label>
-                                <input
-                                    type="checkbox"
+                                <Checkbox
                                     className="ml-4 mr-2 cursor-pointer"
                                     checked={testActive}
                                     onChange={handleTestClick}
@@ -136,9 +135,12 @@ const Dashboard = ({ auth }) => {
                                 <label className="cursor-pointer">From Test dataset</label>
                             </div>
                             <div className="flex justify-center mt-4">
-                                <button className="ml-4 border rounded-lg p-2 bg-blue-500 text-white" onClick={handleSaveClick}>
+                                <button className="ml-4 border rounded-lg p-2 bg-blue-500 text-white hover:bg-blue-600"  style={{ width: '200px' }} onClick={handleSaveClick}>
                                     Save
                                 </button>
+                            </div>
+                            <div className="flex justify-end">
+                                <p style={{ fontStyle: 'italic' }}>More <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} /> = Faster</p>
                             </div>
                         </div>
                     </div>
