@@ -12,6 +12,13 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [showDeleteWarning, setShowDeleteWarning] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    // Automatically sort the data by image_id when the component mounts
+    handleSort('image_id');
+  }, []); // Empty dependency array ensures this effect runs only once after the initial render
+
 
   useEffect(() => {
     // Ez azért fontos, hogy a táblázat mindig az aktuális adatokat jelenítse meg
@@ -52,7 +59,11 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
     return 0;
   });
 
-  const visibleData = sortedData.slice(0, visibleRows);
+  const filteredData = sortedData.filter(item =>
+    Object.values(item).some(value => value.toString().toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const visibleData = filteredData.slice(0, visibleRows);
 
   const handleShowMore = () => {
     setVisibleRows(prevVisibleRows => prevVisibleRows + 10);
@@ -99,6 +110,16 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
 
   return (
     <div className="flex flex-col h-full">
+      <div className="flex items-center mb-4">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          maxLength={128} // Limit input length to 128 characters
+          className="p-2 border border-gray-300 rounded-md mr-2"
+        />
+      </div>
       <div className="flex-1 overflow-y-auto max-h-100">
         <table className="w-full text-sm text-left text-gray-700 bg-white border-gray-300 border">
           <thead className="text-xs uppercase bg-gray-200">

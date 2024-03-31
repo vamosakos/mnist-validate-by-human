@@ -105,7 +105,7 @@ const ImageFrequenciesBarChart = ({ imageFrequencies, filteredId }) => {
       </select>
       {/* Button to change sort order */}
       <button onClick={handleSortOrderChange} className="mt-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded inline-flex items-center">
-        {sortOrder === 'ascending' ? 'Sort Descending' : 'Sort Ascending'}
+        {sortOrder === 'ascending' ? 'Sort ↓' : 'Sort ↑'}
       </button>
       {/* Display the filtered chart */}
       <Bar data={data} />

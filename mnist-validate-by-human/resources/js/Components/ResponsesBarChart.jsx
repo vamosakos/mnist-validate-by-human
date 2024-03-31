@@ -75,11 +75,11 @@ const ResponsesBarChart = ({ responses, filteredId }) => {
         className="w-full border-gray-300 rounded-md mb-2"
       >
         <option value="response_counts_by_session">Response Count by Session</option>
-        <option value="response_time_by_image">Response Time by Image</option>
+        <option value="response_time_by_image">Average Response Time by Image</option>
       </select>
       {/* Button to change sort order */}
       <button onClick={handleSortOrderChange} className="mt-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded inline-flex items-center">
-        {sortOrder === 'ascending' ? 'Sort Descending' : 'Sort Ascending'}
+        {sortOrder === 'ascending' ? 'Sort ↓' : 'Sort ↑'}
       </button>
       {/* Display the chart */}
       {chartView === 'response_counts_by_session' && (
