@@ -3,12 +3,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import ImageFrequenciesBarChart from '@/Components/ImageFrequenciesBarChart.jsx';
 import ImageFrequenciesPieChart from '@/Components/ImageFrequenciesPieChart.jsx';
-import ImageDisplay from '@/Components/ImageDisplay';
+import ImageDetailPopup from '@/Popups/ImageDetailPopup';
 import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import InputError from '@/Components/InputError';
 import Dropdown from '@/Components/Dropdown'; // Import Dropdown component
+import axios from 'axios'; // Import axios for fetching image details
 
 export default function All({ auth, imageFrequencies }) {
   const [filteredId, setFilteredId] = useState(null);
@@ -23,14 +24,25 @@ export default function All({ auth, imageFrequencies }) {
       setFilteredId(inputValue !== '' ? parseInt(inputValue) : null);
       setError(null);
     } else {
-      setError("Please enter a positive number with maximum 5 digits.");
+      setError("Please enter a valid image ID (maximum value is 69.999).");
     }
     // Do not show the image when the input value changes
     setShowImage(false);
   };
-  
+
   const handleButtonClick = () => {
-    setShowImage(filteredId !== null);
+    if (filteredId <= 69999) {
+      // Fetch image details based on filteredId
+      axios.get(`/get-image/${filteredId}`, { responseType: 'blob' })
+        .then((response) => {
+          setShowImage(true); // Show the ImageDetailPopup
+        })
+        .catch((error) => {
+          console.error('Error fetching image:', error);
+        });
+    } else {
+      setError("Please enter a valid image ID (maximum value is 69.999).");
+    }
   };
 
   return (
@@ -75,7 +87,7 @@ export default function All({ auth, imageFrequencies }) {
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div className="p-4">
-            {/* Search field */}
+              {/* Search field */}
               <InputLabel value="Search by ID:" className="text-xl font-medium text-gray-700 mr-2" />
               <TextInput
                 type="text"
@@ -87,8 +99,9 @@ export default function All({ auth, imageFrequencies }) {
                 ref={inputRef}
               />
               <PrimaryButton className="ml-2" disabled={filteredId === null} onClick={handleButtonClick}>
-                Get Image
+                Show Image
               </PrimaryButton>
+              {error && <p className="text-red-500 mt-2">{error}</p>}
             </div>
 
             <div className="grid grid-cols-1 gap-4 p-4">
@@ -108,17 +121,20 @@ export default function All({ auth, imageFrequencies }) {
                 </div>
               </div>
 
-              {/* Image Display Card */}
-              <div className="p-4 bg-white border rounded-md">
-                <h3 className="text-lg font-semibold">Image Display</h3>
-                <div className="chart-container">
-                  <ImageDisplay imageId={filteredId} showImage={showImage} />
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Render ImageDetailPopup if showImage is true */}
+      {showImage && (
+        <ImageDetailPopup
+          show={showImage}
+          onClose={() => setShowImage(false)}
+          rowData={{ image_id: filteredId }} // Pass filteredId as image_id to fetch image details
+        />
+      )}
+      
     </AuthenticatedLayout>
   );
 }
