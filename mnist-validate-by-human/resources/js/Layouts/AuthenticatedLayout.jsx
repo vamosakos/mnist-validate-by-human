@@ -27,13 +27,13 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink href={route('overview.index')} active={route().current('overview.index')}>
                                     Overview
                                 </NavLink>
-                                <NavLink href={route('statistics.imageFrequencies')} active={route().current('statistics.imageFrequencies')}>
+                                <NavLink href={route('statistics.imageFrequenciesCharts')} active={route().current('statistics.imageFrequenciesCharts')}>
                                     Graphs & Charts
                                 </NavLink>
                                 <NavLink href={route('statistics.imageFrequenciesDataList')} active={route().current('statistics.imageFrequenciesDataList')}>
                                     Data Listing
                                 </NavLink>
-                                <NavLink href={route('generatingImageByWeightedRandom.weightedRandom')} active={route().current('generatingImageByWeightedRandom.weightedRandom')}>
+                                <NavLink href={route('ImageGenerationSettings.ImageGenerationSettings')} active={route().current('ImageGenerationSettings.ImageGenerationSettings')}>
                                     Image Generation
                                 </NavLink>
                                 <NavLink href={route('feedback.feedback')} active={route().current('feedback.feedback')}>

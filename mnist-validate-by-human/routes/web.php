@@ -56,24 +56,19 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/statistics/image-frequencies', [StatisticsController::class, 'imageFrequencies'])->name('statistics.imageFrequencies');
-    Route::get('/statistics/responses', [StatisticsController::class, 'responsesGraphsCharts'])->name('statistics.responsesGraphsCharts');
-    Route::get('/image-frequencies-data-listing', [StatisticsController::class, 'imageFrequenciesDataList'])->name('statistics.imageFrequenciesDataList');
-    Route::get('/response-data-listing', [StatisticsController::class, 'responsesDataList'])->name('statistics.responsesDataList');
+    Route::get('/statistics/image-frequencies-charts', [StatisticsController::class, 'imageFrequenciesCharts'])->name('statistics.imageFrequenciesCharts');
+    Route::get('/statistics/responses-charts', [StatisticsController::class, 'responsesCharts'])->name('statistics.responsesCharts');
+    Route::get('/statistics/image-frequencies-data-listing', [StatisticsController::class, 'imageFrequenciesDataList'])->name('statistics.imageFrequenciesDataList');
+    Route::get('/statistics/responses-data-listing', [StatisticsController::class, 'responsesDataList'])->name('statistics.responsesDataList');
     Route::get('/overview', [OverviewController::class, 'index'])->name('overview.index');
-    Route::get('/get-image/{imageId}', [StatisticsController::class, 'getImageById'])->name('get-image');
+    Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedback.feedback');
+    Route::get('/image-generation-settings', [ImageController::class, 'imageGenerationSettings'])->name('ImageGenerationSettings.ImageGenerationSettings');
+
+    //api routes
+    Route::get('/get-image/{imageId}', [StatisticsController::class, 'getImageById']);
     Route::get('/statistics/heatmap', [StatisticsController::class, 'generateHeatmap']);
     Route::post('/statistics/delete-selected-image-frequencies', [StatisticsController::class, 'deleteSelectedImageFrequency']);
     Route::post('/statistics/delete-selected-responses', [StatisticsController::class, 'deleteSelectedResponse']);
-    Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedback.feedback');
-    
-    Route::get('/weighted-random', function () {
-        return Inertia::render('GeneratingImageByWeightedRandom/WeightedRandom');
-    })->name('generatingImageByWeightedRandom.weightedRandom');
-
-
-
-    
 });
 
 require __DIR__.'/auth.php';

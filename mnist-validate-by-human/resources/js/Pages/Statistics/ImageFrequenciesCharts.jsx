@@ -1,67 +1,47 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import ResponsesBarChart from '@/Components/ResponsesBarChart.jsx';
-import Dropdown from '@/Components/Dropdown.jsx';
+import ImageFrequenciesBarChart from '@/Components/ImageFrequenciesBarChart.jsx';
+import ImageFrequenciesPieChart from '@/Components/ImageFrequenciesPieChart.jsx';
+import ImageDetailPopup from '@/Popups/ImageDetailPopup';
 import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import ImageDetailPopup from '@/Popups/ImageDetailPopup';
-import axios from 'axios';
+import InputError from '@/Components/InputError';
+import Dropdown from '@/Components/Dropdown'; // Import Dropdown component
+import axios from 'axios'; // Import axios for fetching image details
 
-export default function All({ auth, responses }) {
-  const [filteredId, setFilteredId] = useState('');
-  const [heatmapImage, setHeatmapImage] = useState(null);
+export default function All({ auth, imageFrequencies }) {
+  const [filteredId, setFilteredId] = useState(null);
   const [showImage, setShowImage] = useState(false);
   const [error, setError] = useState(null);
   const inputRef = useRef();
 
-
   const handleFilterChange = (event) => {
     const inputValue = event.target.value;
-    if (inputValue.length <= 60) {
-      setFilteredId(event.target.value.trim());
+    // Check if the input contains only numeric characters
+    if (/^\d*$/.test(inputValue) && inputValue.length <= 5) {
+      setFilteredId(inputValue !== '' ? parseInt(inputValue) : null);
       setError(null);
     } else {
-      setError("Please enter a session id or an image id with maximum 60 digits.");
+      setError("Please enter a valid image ID (maximum value is 69.999).");
     }
     // Do not show the image when the input value changes
     setShowImage(false);
   };
 
   const handleButtonClick = () => {
-    if (!isNaN(filteredId) && filteredId !== '') {
-      if (filteredId <= 69999) {
-        // Fetch image details based on filteredId
-        axios.get(`/get-image/${filteredId}`, { responseType: 'blob' })
-          .then((response) => {
-            setShowImage(true); // Show the ImageDetailPopup
-          })
-          .catch((error) => {
-            console.error('Error fetching image:', error);
-          });
-      } else {
-        setError("Please enter a valid image ID (maximum value is 69.999).");
-      }
+    if (filteredId <= 69999) {
+      // Fetch image details based on filteredId
+      axios.get(`/get-image/${filteredId}`, { responseType: 'blob' })
+        .then((response) => {
+          setShowImage(true); // Show the ImageDetailPopup
+        })
+        .catch((error) => {
+          console.error('Error fetching image:', error);
+        });
     } else {
-      setError("Please enter a valid image ID.");
-    }
-  };
-
-  useEffect(() => {
-    fetchHeatmapImage();
-  }, []);
-
-  const fetchHeatmapImage = async (filteredId = '') => {
-    try {
-      // Fetch the JSON data from the backend
-      const response = await axios.get(`/statistics/heatmap/${filteredId}`);
-      const { data } = response;
-      // Extract the base64-encoded image data from the JSON response
-      const heatmapBase64 = data.heatmap_base64;
-      setHeatmapImage(heatmapBase64);
-    } catch (error) {
-      console.error('Error fetching heatmap image:', error.message);
+      setError("Please enter a valid image ID (maximum value is 69.999).");
     }
   };
 
@@ -74,7 +54,7 @@ export default function All({ auth, responses }) {
             <Dropdown>
               <Dropdown.Trigger>
                 <span className="flex items-center">
-                  Responses
+                  Image Frequencies
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-4 w-4 ml-1 transition-transform duration-200 transform"
@@ -89,10 +69,10 @@ export default function All({ auth, responses }) {
                 </span>
               </Dropdown.Trigger>
               <Dropdown.Content align="left">
-                <Dropdown.Link href={route('statistics.imageFrequencies')}>
+                <Dropdown.Link href={route('statistics.imageFrequenciesCharts')}>
                   Image Frequencies
                 </Dropdown.Link>
-                <Dropdown.Link href={route('statistics.responsesGraphsCharts')}>
+                <Dropdown.Link href={route('statistics.responsesCharts')}>
                   Responses
                 </Dropdown.Link>
               </Dropdown.Content>
@@ -102,7 +82,7 @@ export default function All({ auth, responses }) {
       }
     >
       <Head title="Dashboard" />
-  
+
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -118,33 +98,34 @@ export default function All({ auth, responses }) {
                 onChange={handleFilterChange}
                 ref={inputRef}
               />
-              <PrimaryButton className="ml-2" disabled={!filteredId} onClick={handleButtonClick}>
+              <PrimaryButton className="ml-2" disabled={filteredId === null} onClick={handleButtonClick}>
                 Show Image
               </PrimaryButton>
               {error && <p className="text-red-500 mt-2">{error}</p>}
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-              {/* Responses Bar Chart Card */}
+
+            <div className="grid grid-cols-1 gap-4 p-4">
+              {/* Image Frequencies Bar Chart Card */}
               <div className="p-4 bg-white border rounded-md">
-                <h3 className="text-lg font-semibold">Responses Bar Chart</h3>
+                <h3 className="text-lg font-semibold">Image Frequencies Bar Chart</h3>
                 <div className="chart-container">
-                  <ResponsesBarChart responses={responses} filteredId={filteredId} />
+                  <ImageFrequenciesBarChart imageFrequencies={imageFrequencies} filteredId={filteredId} />
                 </div>
               </div>
-  
-              {/* Heatmap Image Card */}
+
+              {/* Image Frequencies Pie Chart Card */}
               <div className="p-4 bg-white border rounded-md">
-                <h3 className="text-lg font-semibold">Heatmap Image</h3>
-                <div className="chart-container">
-                  {heatmapImage && <img src={`data:image/png;base64,${heatmapImage}`} alt="Heatmap" />}
+                <h3 className="text-lg font-semibold">Image Frequencies Pie Chart</h3>
+                <div className="chart-container flex justify-center">
+                  <ImageFrequenciesPieChart imageFrequencies={imageFrequencies} filteredId={filteredId} />
                 </div>
               </div>
+
             </div>
           </div>
         </div>
       </div>
-  
+      
       {/* Render ImageDetailPopup if showImage is true */}
       {showImage && (
         <ImageDetailPopup
@@ -153,6 +134,7 @@ export default function All({ auth, responses }) {
           rowData={{ image_id: filteredId }} // Pass filteredId as image_id to fetch image details
         />
       )}
+      
     </AuthenticatedLayout>
   );
 }

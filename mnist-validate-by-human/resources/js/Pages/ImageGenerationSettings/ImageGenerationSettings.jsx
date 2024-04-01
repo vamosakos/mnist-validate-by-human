@@ -66,9 +66,9 @@ const Dashboard = ({ auth }) => {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Image Generation Manipulation</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Image Generation Settings</h2>}
         >
-            <Head title="Dashboard" />
+            <Head title="Image Generation Settings" />
     
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">

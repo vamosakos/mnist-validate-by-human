@@ -35,9 +35,9 @@ class OverviewController extends Controller
         $mostRespondedImageCount = $this->getImageCount($mostRespondedImageId);
         $mostRespondedImageData = $this->getImageData($mostRespondedImageId);
 
-        $mostMisidentificatedImageId = $this->getMostMisidentificatedImageId();
-        $mostMisidentificatedImageCount = $this->getMisidentificatedImageCount($mostMisidentificatedImageId);
-        $mostMisidentificatedImageData = $this->getImageData($mostMisidentificatedImageId);
+        $mostMisidentifiedImageId = $this->getMostMisidentifiedImageId();
+        $mostMisidentifiedImageCount = $this->getMisidentifiedImageCount($mostMisidentifiedImageId);
+        $mostMisidentifiedImageData = $this->getImageData($mostMisidentifiedImageId);
 
         $mostGeneratedNumber = $this->getMostGeneratedNumber();
         $mostGeneratedNumberCount = $this->getMostGeneratedNumberCount();
@@ -62,16 +62,16 @@ class OverviewController extends Controller
             'misidentificationsFromTest' => $misidentificationsFromTest,
             'mostGeneratedImageId' => $mostGeneratedImageId,
             'mostRespondedImageId' => $mostRespondedImageId,
-            'mostMisidentificatedImageId' => $mostMisidentificatedImageId,
+            'mostMisidentifiedImageId' => $mostMisidentifiedImageId,
             'mostGeneratedNumber' => $mostGeneratedNumber, 
             'mostMisidentifiedNumber' => $mostMisidentifiedNumber,
             'averageResponseTime' => $averageResponseTime,
             'averageResponsePerDay' => $averageResponsePerDay,
             'mostGeneratedImageData' => $mostGeneratedImageData,
             'mostRespondedImageData' => $mostRespondedImageData,
-            'mostMisidentificatedImageData' => $mostMisidentificatedImageData,
+            'mostMisidentifiedImageData' => $mostMisidentifiedImageData,
             'mostGeneratedImageCount' => $mostGeneratedImageCount,
-            'mostMisidentificatedImageCount' => $mostMisidentificatedImageCount,
+            'mostMisidentifiedImageCount' => $mostMisidentifiedImageCount,
             'mostRespondedImageCount' => $mostRespondedImageCount,
             'mostMisidentifiedNumberCount' => $mostMisidentifiedNumberCount,
             'mostGeneratedNumberCount' => $mostGeneratedNumberCount,
@@ -137,12 +137,12 @@ class OverviewController extends Controller
         return MnistImage::where('image_id', $imageId)->value('image_base64');
     }
 
-    private function getMostMisidentificatedImageId()
+    private function getMostMisidentifiedImageId()
     {
         return Misidentification::orderByDesc('count')->value('image_id');
     }
 
-    private function getMisidentificatedImageCount($imageId)
+    private function getMisidentifiedImageCount($imageId)
     {
         return Misidentification::where('image_id', $imageId)->value('count');
     }

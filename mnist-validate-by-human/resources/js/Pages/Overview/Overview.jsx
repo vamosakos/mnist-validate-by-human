@@ -17,16 +17,16 @@ export default function Overview({ auth,
      misidentificationsFromTest,
      mostGeneratedImageId,
      mostRespondedImageId,
-     mostMisidentificatedImageId,
+     mostMisidentifiedImageId,
      mostGeneratedNumber,
      mostMisidentifiedNumber,
      averageResponseTime,
      averageResponsePerDay,
      mostGeneratedImageData,
      mostRespondedImageData,
-     mostMisidentificatedImageData,
+     mostMisidentifiedImageData,
      mostGeneratedImageCount,
-     mostMisidentificatedImageCount,
+     mostMisidentifiedImageCount,
      mostRespondedImageCount,
      mostMisidentifiedNumberCount,
      mostGeneratedNumberCount }) {
@@ -112,20 +112,20 @@ export default function Overview({ auth,
 
             </div>
 
-            {/* Most Misidentificated Image Id Card */}
-            <div className={`p-2 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostMisidentificatedImage') ? 'h-auto' : 'h-32'}`}>
-                <h3 className="text-lg font-semibold">Most Misidentificated Image Id:</h3>
-                <p className="text-xl font-bold">{mostMisidentificatedImageId}</p>
-                <p className="mt-2">{mostMisidentificatedImageCount} time(s)</p>
-                {isCardExpanded('mostMisidentificatedImage') && (
+            {/* Most Misidentified Image Id Card */}
+            <div className={`p-2 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostMisidentifiedImage') ? 'h-auto' : 'h-32'}`}>
+                <h3 className="text-lg font-semibold">Most Misidentified Image Id:</h3>
+                <p className="text-xl font-bold">{mostMisidentifiedImageId}</p>
+                <p className="mt-2">{mostMisidentifiedImageCount} time(s)</p>
+                {isCardExpanded('mostMisidentifiedImage') && (
                   <div className="flex flex-col items-center">
-                    <ImageDetailPopup show={true} onClose={() => toggleExpandedCard('mostMisidentificatedImage')} rowData={{ image_id: mostMisidentificatedImageId }}/>
+                    <ImageDetailPopup show={true} onClose={() => toggleExpandedCard('mostMisidentifiedImage')} rowData={{ image_id: mostMisidentifiedImageId }}/>
                   </div>
                )}
-               {!isCardExpanded('mostMisidentificatedImage') && (
+               {!isCardExpanded('mostMisidentifiedImage') && (
                    <button
                        className="text-blue-500 underline mt-2"
-                       onClick={() => toggleExpandedCard('mostMisidentificatedImage')}
+                       onClick={() => toggleExpandedCard('mostMisidentifiedImage')}
                    >
                        Show image
                    </button>
@@ -133,8 +133,8 @@ export default function Overview({ auth,
             </div>
 
             {/* Most Generated Image Id Card */}
-            <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostMisidentificatedNumber') ? 'h-auto' : 'h-32'}`}>
-                <h3 className="text-lg font-semibold">Most Misidentificated Number:</h3>
+            <div className={`p-4 bg-white border rounded-md flex flex-col items-center justify-center ${isCardExpanded('mostMisidentifiedNumber') ? 'h-auto' : 'h-32'}`}>
+                <h3 className="text-lg font-semibold">Most Misidentified Number:</h3>
                 <p className="text-xl font-bold">{mostMisidentifiedNumber}</p>
                 <p className="mt-2">{mostMisidentifiedNumberCount} time(s)</p>
             </div>
