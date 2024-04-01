@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\FeedbackController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -64,10 +65,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/statistics/heatmap', [StatisticsController::class, 'generateHeatmap']);
     Route::post('/statistics/delete-selected-image-frequencies', [StatisticsController::class, 'deleteSelectedImageFrequency']);
     Route::post('/statistics/delete-selected-responses', [StatisticsController::class, 'deleteSelectedResponse']);
-
+    Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedback.feedback');
+    
     Route::get('/weighted-random', function () {
         return Inertia::render('GeneratingImageByWeightedRandom/WeightedRandom');
     })->name('generatingImageByWeightedRandom.weightedRandom');
+
+
 
     
 });
