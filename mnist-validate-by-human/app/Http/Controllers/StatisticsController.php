@@ -9,7 +9,6 @@ use App\Models\Response;
 use App\Models\ImageGenerationSetting;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Response as FacadeResponse;
 use Symfony\Component\Process\Process;
 
 class StatisticsController extends Controller
@@ -28,23 +27,9 @@ class StatisticsController extends Controller
         ]);
     }
 
-    public function getImageById($imageId)
+    public function imageFrequenciesCharts()
     {
-        $mnistImage = MnistImage::where('image_id', $imageId)->first();
-
-        if (!$mnistImage) {
-            return response()->json(['error' => 'Image not found.'], 404);
-        }
-
-        return FacadeResponse::make(base64_decode($mnistImage->image_base64), 200, [
-            'Content-Type' => 'image/png',
-        ]);
-    }
-
-    public function imageFrequencies()
-    {
-        return $this->fetchImageFrequencies('Statistics/ImageFrequencies');
-        
+        return $this->fetchImageFrequencies('Statistics/ImageFrequenciesCharts');
     }
 
     public function imageFrequenciesDataList()
@@ -52,7 +37,23 @@ class StatisticsController extends Controller
         return $this->fetchImageFrequencies('Statistics/ImageFrequenciesDataList');
     }
 
-    public function calculateLabelCounts()
+
+    public function getImageById($imageId)
+    {
+        $mnistImage = MnistImage::where('image_id', $imageId)->first();
+    
+        if (!$mnistImage) {
+            return response()->json(['error' => 'Image not found.'], 404);
+        }
+    
+        // Base64-kódolt kép adatának visszaadása
+        return response()->json([
+            'image_data' => $mnistImage->image_base64,
+            'image_label' => $mnistImage->image_label
+        ]);
+    }
+
+    private function calculateLabelCounts()
     {
         $responses = Response::join('mnist_images', 'responses.image_id', '=', 'mnist_images.image_id')
             ->select('mnist_images.image_label', 'responses.guest_response')
@@ -95,7 +96,7 @@ class StatisticsController extends Controller
         return response()->json(['heatmap_base64' => $heatmap_base64]);
     }
 
-    public function fetchResponses($viewName)
+    private function fetchResponses($viewName)
     {
         // Fetch responses from the database
         $responses = Response::all();
@@ -112,31 +113,9 @@ class StatisticsController extends Controller
         return $this->fetchResponses('Statistics/ResponsesDataList');
     }
 
-    public function responsesGraphsCharts()
+    public function responsesCharts()
     {
-        return $this->fetchResponses('Statistics/ResponsesGraphsCharts');
-    }
-
-    public function deleteSelectedItems(Request $request, $model)
-    {
-        // Ellenőrizzük, hogy van-e kiválasztott elem
-        if (!$request->has('selectedRows')) {
-            return response()->json(['error' => 'Nincsenek kiválasztott elemek.'], 400);
-        }
-    
-        // Kiválasztott elemek törlése
-        $selectedRows = $request->selectedRows;
-    
-        try {
-            // Logikai törlés végrehajtása
-            $model::whereIn('id', $selectedRows)->delete();
-    
-            // Sikeres törlés esetén válasz küldése
-            return response()->json(['message' => 'Az elemek sikeresen törölve lettek.'], 200);
-        } catch (\Exception $e) {
-            // Hiba esetén hibaüzenet küldése
-            return response()->json(['error' => 'Hiba történt a törlés során.'], 500);
-        }
+        return $this->fetchResponses('Statistics/ResponsesCharts');
     }
     
     public function deleteSelectedImageFrequency(Request $request)
@@ -192,9 +171,16 @@ class StatisticsController extends Controller
                     $imageFrequency->response_count--;
                 }
     
-                // Decrease generation_count if necessary
-                if ($imageFrequency->generation_count > 1 && $imageFrequency->response_count < $imageFrequency->generation_count) {
+                // Decrease generation_count
+                if ($imageFrequency->response_count == 0) {
+                    $imageFrequency->generation_count = 0;
+                } elseif ($imageFrequency->generation_count > 0) {
                     $imageFrequency->generation_count--;
+                }
+
+                // Delete the record if generation_count is zero
+                if ($imageFrequency->generation_count == 0) {
+                    $imageFrequency->delete();
                 }
     
                 // Decrease misidentifications count if misidentification exists and guest_response doesn't match correct_label

@@ -14,12 +14,18 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 
 class ImageController extends Controller
 {
     private $trainThreshold = 60000;
     private $testThreshold = 70000;
+
+    public function imageGenerationSettings()
+    {
+        return Inertia::render('ImageGenerationSettings/ImageGenerationSettings');
+    }
 
     public function generateImage(Request $request)
     {
