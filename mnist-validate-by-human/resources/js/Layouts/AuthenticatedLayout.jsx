@@ -36,6 +36,9 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink href={route('generatingImageByWeightedRandom.weightedRandom')} active={route().current('generatingImageByWeightedRandom.weightedRandom')}>
                                     Image Generation
                                 </NavLink>
+                                <NavLink href={route('feedback.feedback')} active={route().current('feedback.feedback')}>
+                                    Feedbacks
+                                </NavLink>
                             </div>
                         </div>
 

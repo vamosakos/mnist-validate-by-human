@@ -5,9 +5,24 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use App\Models\Feedback;
+use Carbon\Carbon;
+use Inertia\Inertia;
 
 class FeedbackController extends Controller
 {
+
+    public function index()
+    {
+        $feedbacks = Feedback::all()->map(function ($feedback) {
+            $feedback->formatted_created_at = Carbon::parse($feedback->created_at)->format('Y-m-d H:i:s');
+            return $feedback;
+        });
+        
+        return Inertia::render('Feedback/Feedback', [
+            'feedbacks' => $feedbacks
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -21,4 +36,5 @@ class FeedbackController extends Controller
 
         return response()->json(['message' => 'Feedback stored successfully'], 201);
     }
+    
 }
