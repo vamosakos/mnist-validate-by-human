@@ -4,17 +4,18 @@ import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable.jsx';
 import Dropdown from '@/Components/Dropdown.jsx';
 
-const columns = ['image_id', 'guest_response', 'session_id', 'response_time', 'hand', 'field_of_study']; // Added 'field_of_study' column
+const columns = ['image_id', 'response', 'session_id', 'time', 'hand', 'major', 'created_at']; // Added 'created_at' column
 
 export default function ResponsesDataList({ auth, responses }) {
     const [tableData, setTableData] = useState(responses.map((response) => ({
         id: response.id,
         image_id: response.image_id,
-        guest_response: response.guest_response,
+        response: response.guest_response,
         session_id: response.session_id,
-        response_time: response.response_time,
+        time: response.response_time,
         hand: response.hand, // Added 'hand' column
-        field_of_study: response.field_of_study // Added 'field_of_study' column
+        major: response.field_of_study, // Added 'field_of_study' column
+        created_at: new Date(response.created_at).toLocaleString() // Format 'created_at'
     })));
 
     const deleteRoute = '/statistics/delete-selected-responses';
