@@ -26,7 +26,7 @@ const ImageDetailPopup = ({ show, onClose, rowData }) => {
   return (
     <Modal show={show} onClose={onClose} maxWidth="md">
       <div className="p-6 text-center">
-        <p>Image</p>
+        <p>Image ID: {rowData.image_id}</p>
         {imageSrc && <img src={`data:image/png;base64,${imageSrc}`} alt="Image" className="max-w-full max-h-80 mx-auto my-4" />}
         {rowData && <p>Correct Label: {imageLabel}</p>}
         <div className="mt-4 flex justify-center flex-col items-center">

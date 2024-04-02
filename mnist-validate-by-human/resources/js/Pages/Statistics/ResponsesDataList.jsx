@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable.jsx';
-import Dropdown from '@/Components/Dropdown.jsx'; 
+import Dropdown from '@/Components/Dropdown.jsx';
 
 const columns = ['image_id', 'guest_response', 'session_id', 'response_time'];
 
@@ -19,6 +19,40 @@ export default function ResponsesDataList({ auth, responses }) {
 
     const handleDataUpdate = (newData) => {
         setTableData(newData);
+    };
+
+    // Function to export data as NumPy array
+    const exportAsNumPyArray = () => {
+        // Convert tableData to a NumPy array string
+        const numpyArrayString = '[' + tableData.map(row =>
+            '[' + Object.values(row).join(',') + ']'
+        ).join(',') + ']';
+    
+        // Create a temporary anchor element
+        const numpyArrayUri = encodeURI("data:text/plain;charset=utf-8," + numpyArrayString);
+        const link = document.createElement("a");
+        link.setAttribute("href", numpyArrayUri);
+        link.setAttribute("download", "responses_numpy_array.txt");
+        document.body.appendChild(link);
+        link.click();
+    };
+
+    // Function to export data as CSV
+    const exportAsCSV = () => {
+        // Convert tableData to a CSV string
+        const csvContent = "data:text/csv;charset=utf-8," +
+            columns.join(",") + "\n" +
+            tableData.map(row =>
+                columns.map(column => row[column]).join(",")
+            ).join("\n");
+
+        // Create a temporary anchor element
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "responses.csv");
+        document.body.appendChild(link);
+        link.click();
     };
 
     return (
@@ -60,6 +94,14 @@ export default function ResponsesDataList({ auth, responses }) {
             <Head title="Dashboard" />
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="overflow-hidden mt-8">
+                    <div className="flex justify-end mb-4">
+                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={exportAsCSV}>
+                            Export CSV
+                        </button>
+                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={exportAsNumPyArray}>
+                            Export as NumPy Array
+                        </button>
+                    </div>
                     <DataTable data={tableData} columns={columns} deleteRoute={deleteRoute} onDataUpdate={handleDataUpdate}/>
                 </div>
             </div>
