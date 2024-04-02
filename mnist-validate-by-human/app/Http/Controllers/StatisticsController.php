@@ -7,6 +7,7 @@ use App\Models\MnistImage;
 use App\Models\Misidentification;
 use App\Models\Response;
 use App\Models\ImageGenerationSetting;
+use App\Models\GuestSetting;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Symfony\Component\Process\Process;
@@ -100,9 +101,18 @@ class StatisticsController extends Controller
     {
         // Fetch responses from the database
         $responses = Response::all();
-    
+        
+        // Fetch guest settings based on session_id and add 'hand' and 'field_of_study' information to responses
+        $guestSettings = GuestSetting::all();
+        $settingMapping = $guestSettings->keyBy('session_id');
+        $responses->each(function ($response) use ($settingMapping) {
+            $guestSetting = $settingMapping->get($response->session_id);
+            $response->hand = optional($guestSetting)->hand ?? 'Unknown hand';
+            $response->field_of_study = optional($guestSetting)->field_of_study ?? 'Unknown major';
+        });
+        
         // Modify or process the responses data as needed
-    
+        
         return Inertia::render($viewName, [
             'responses' => $responses,
         ]);
