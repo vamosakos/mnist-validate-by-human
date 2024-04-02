@@ -135,7 +135,7 @@ export default function All({ auth, responses }) {
   
               {/* Heatmap Image Card */}
               <div className="p-4 bg-white border rounded-md">
-                <h3 className="text-lg font-semibold">Heatmap Image</h3>
+                <h3 className="text-lg font-semibold">Overall Response Heatmap</h3>
                 <div className="chart-container">
                   {heatmapImage && <img src={`data:image/png;base64,${heatmapImage}`} alt="Heatmap" />}
                 </div>
