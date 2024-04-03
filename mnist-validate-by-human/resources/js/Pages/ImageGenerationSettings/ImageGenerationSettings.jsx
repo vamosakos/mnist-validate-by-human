@@ -10,6 +10,8 @@ const Dashboard = ({ auth }) => {
     const [activeFunction, setActiveFunction] = useState('');
     const [trainActive, setTrainActive] = useState(true);
     const [testActive, setTestActive] = useState(true);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [clicked, setClicked] = useState(false); // Új állapot a kattintás nyomon követéséhez
 
     useEffect(() => {
         // Fetch active image generation settings from the database
@@ -28,14 +30,17 @@ const Dashboard = ({ auth }) => {
     const handleChange = (selectedFunction) => {
         setActiveFunction(selectedFunction);
         localStorage.setItem('activeFunction', selectedFunction);
+        setClicked(true); // Beállítjuk a kattintást, amikor másra kattintunk
     };
 
     const handleTrainClick = () => {
         setTrainActive(!trainActive);
+        setClicked(true); // Beállítjuk a kattintást
     };
     
     const handleTestClick = () => {
         setTestActive(!testActive);
+        setClicked(true); // Beállítjuk a kattintást
     };
 
     const handleSaveClick = () => {
@@ -57,11 +62,20 @@ const Dashboard = ({ auth }) => {
             setTrainActive(newTrainActive);
             setTestActive(newTestActive);
             setActiveFunction(activeFunction); // Az activeFunction beállítása a mentés után
+            setSuccessMessage('Settings saved successfully.'); // Állítsuk be a sikeres üzenetet
+            setClicked(false); // Visszaállítjuk a kattintást
         })
         .catch(error => {
             console.error('Error:', error.response.data);
         });
     };
+
+    // Az üzenet elrejtése, ha másra kattintunk
+    useEffect(() => {
+        if (clicked) {
+            setSuccessMessage('');
+        }
+    }, [clicked]);
 
     return (
         <AuthenticatedLayout
@@ -138,6 +152,11 @@ const Dashboard = ({ auth }) => {
                                 <button className="ml-4 border rounded-lg p-2 bg-blue-500 text-white hover:bg-blue-600"  style={{ width: '200px' }} onClick={handleSaveClick}>
                                     Save
                                 </button>
+                            </div>
+                            <div className="flex justify-center mt-4">
+                                {successMessage && (
+                                    <div className="text-center mt-4 text-blue-500">{successMessage}</div>
+                                )}
                             </div>
                             <div className="flex justify-end">
                                 <p style={{ fontStyle: 'italic' }}>More <FontAwesomeIcon icon={faCircle} style={{ color: '#3b82f6' }} /> = Faster</p>
