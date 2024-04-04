@@ -38,7 +38,37 @@ class StatisticsController extends Controller
         return $this->fetchImageFrequencies('Statistics/ImageFrequenciesDataList');
     }
 
+    private function fetchResponses($viewName)
+    {
+        // Fetch responses from the database
+        $responses = Response::all();
+        
+        // Fetch guest settings based on session_id and add 'hand' and 'field_of_study' information to responses
+        $guestSettings = GuestSetting::all();
+        $settingMapping = $guestSettings->keyBy('session_id');
+        $responses->each(function ($response) use ($settingMapping) {
+            $guestSetting = $settingMapping->get($response->session_id);
+            $response->hand = optional($guestSetting)->hand ?? 'Unknown hand';
+            $response->field_of_study = optional($guestSetting)->field_of_study ?? 'Unknown major';
+        });
+        
+        // Modify or process the responses data as needed
+        
+        return Inertia::render($viewName, [
+            'responses' => $responses,
+        ]);
+    }
+    
+    public function responsesDataList()
+    {
+        return $this->fetchResponses('Statistics/ResponsesDataList');
+    }
 
+    public function responsesCharts()
+    {
+        return $this->fetchResponses('Statistics/ResponsesCharts');
+    }
+    
     public function getImageById($imageId)
     {
         $mnistImage = MnistImage::where('image_id', $imageId)->first();
@@ -97,37 +127,6 @@ class StatisticsController extends Controller
         return response()->json(['heatmap_base64' => $heatmap_base64]);
     }
 
-    private function fetchResponses($viewName)
-    {
-        // Fetch responses from the database
-        $responses = Response::all();
-        
-        // Fetch guest settings based on session_id and add 'hand' and 'field_of_study' information to responses
-        $guestSettings = GuestSetting::all();
-        $settingMapping = $guestSettings->keyBy('session_id');
-        $responses->each(function ($response) use ($settingMapping) {
-            $guestSetting = $settingMapping->get($response->session_id);
-            $response->hand = optional($guestSetting)->hand ?? 'Unknown hand';
-            $response->field_of_study = optional($guestSetting)->field_of_study ?? 'Unknown major';
-        });
-        
-        // Modify or process the responses data as needed
-        
-        return Inertia::render($viewName, [
-            'responses' => $responses,
-        ]);
-    }
-    
-    public function responsesDataList()
-    {
-        return $this->fetchResponses('Statistics/ResponsesDataList');
-    }
-
-    public function responsesCharts()
-    {
-        return $this->fetchResponses('Statistics/ResponsesCharts');
-    }
-    
     public function deleteSelectedImageFrequency(Request $request)
     {
         if (!$request->has('selectedRows')) {

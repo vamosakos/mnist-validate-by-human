@@ -18,6 +18,7 @@ export default function ResponsesDataList({ auth, responses }) {
         created_at: new Date(response.created_at).toLocaleString() // Format 'created_at'
     })));
 
+    const [showExportSettings, setShowExportSettings] = useState(false); // State to manage visibility of export settings (changed default to true)
     const deleteRoute = '/statistics/delete-selected-responses';
 
     const handleDataUpdate = (newData) => {
@@ -26,9 +27,13 @@ export default function ResponsesDataList({ auth, responses }) {
 
     // Function to export data as NumPy array
     const exportAsNumPyArray = () => {
-        // Convert tableData to a NumPy array string
-        const numpyArrayString = '[' + tableData.map(row =>
-            '[' + Object.values(row).join(',') + ']'
+        const selectedColumns = columns.filter(column => document.getElementById(column).checked);
+        const exportedData = tableData.map(row =>
+            selectedColumns.map(column => row[column])
+        );
+        // Convert exportedData to a NumPy array string
+        const numpyArrayString = '[' + exportedData.map(row =>
+            '[' + row.join(',') + ']'
         ).join(',') + ']';
     
         // Create a temporary anchor element
@@ -42,11 +47,11 @@ export default function ResponsesDataList({ auth, responses }) {
 
     // Function to export data as CSV
     const exportAsCSV = () => {
-        // Convert tableData to a CSV string
+        const selectedColumns = columns.filter(column => document.getElementById(column).checked);
         const csvContent = "data:text/csv;charset=utf-8," +
-            columns.join(",") + "\n" +
+            selectedColumns.join(",") + "\n" +
             tableData.map(row =>
-                columns.map(column => row[column]).join(",")
+                selectedColumns.map(column => row[column]).join(",")
             ).join("\n");
 
         // Create a temporary anchor element
@@ -82,11 +87,11 @@ export default function ResponsesDataList({ auth, responses }) {
                                 </span>
                             </Dropdown.Trigger>
                             <Dropdown.Content align="left">
-                                <Dropdown.Link href={route('statistics.imageFrequenciesDataList')}>
-                                    Image Frequencies
-                                </Dropdown.Link>
                                 <Dropdown.Link href={route('statistics.responsesDataList')}>
                                     Responses
+                                </Dropdown.Link>
+                                <Dropdown.Link href={route('statistics.imageFrequenciesDataList')}>
+                                    Image Frequencies
                                 </Dropdown.Link>
                             </Dropdown.Content>
                         </Dropdown>
@@ -98,13 +103,36 @@ export default function ResponsesDataList({ auth, responses }) {
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="overflow-hidden mt-8">
                     <div className="flex justify-end mb-4">
-                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={exportAsCSV}>
-                            Export CSV
+                        {/* Button to toggle export settings visibility */}
+                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={() => setShowExportSettings(!showExportSettings)}>
+                            Export Settings
                         </button>
-                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={exportAsNumPyArray}>
-                            Export as NumPy Array
-                        </button>
+                        {/* Export buttons (conditionally rendered based on showExportSettings state) */}
+                        {showExportSettings && (
+                            <>
+                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={exportAsCSV}>
+                                    Export CSV
+                                </button>
+                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={exportAsNumPyArray}>
+                                    Export as NumPy Array
+                                </button>
+                            </>
+                        )}
                     </div>
+                    {/* Export settings section */}
+                    {showExportSettings && (
+                        <div className="mb-4">
+                            <h3 className="font-bold mb-2 ml-2">Export Settings</h3>
+                            <h3 className="ml-2 mb-2">tick the exported field(s):</h3>
+                            {columns.map(column => (
+                                <label key={column} className="inline-flex items-center">
+                                    <span className="ml-2">{column}</span>
+                                    <input type="checkbox" id={column} className="ml-2" defaultChecked /> {/* Checkboxes for each column */}
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                    {/* DataTable component */}
                     <DataTable data={tableData} columns={columns} deleteRoute={deleteRoute} onDataUpdate={handleDataUpdate}/>
                 </div>
             </div>

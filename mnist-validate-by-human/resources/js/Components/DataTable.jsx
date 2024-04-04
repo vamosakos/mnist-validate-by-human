@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ImageDetailPopup from '@/Popups/ImageDetailPopup';
-import DeleteWarningPopup from '@/Popups/DeleteWarningPopup'; 
+import DeleteWarningPopup from '@/Popups/DeleteWarningPopup';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faTrashCan, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 
 const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'desc' });
@@ -13,15 +13,25 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [showDeleteWarning, setShowDeleteWarning] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [scrolledDown, setScrolledDown] = useState(false);
 
   useEffect(() => {
     // Automatically sort the data by image_id when the component mounts
     handleSort('image_id');
-  }, []); // Empty dependency array ensures this effect runs only once after the initial render
 
+    const handleScroll = () => {
+      setScrolledDown(window.pageYOffset > 100); // Adjust 100 according to your preference
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
-    // Ez azért fontos, hogy a táblázat mindig az aktuális adatokat jelenítse meg
+    // Update the data when it changes
     onDataUpdate(data);
   }, [data, onDataUpdate]);
 
@@ -35,18 +45,23 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
 
   const handleDeleteSelected = () => {
     if (selectedRows.length > 0) {
-      axios.post(deleteRoute, { selectedRows })
-        .then(response => {
+      axios
+        .post(deleteRoute, { selectedRows })
+        .then((response) => {
           console.log(response.data.message);
-          // Frissítsd az adatokat a sikeres törlés után
-          onDataUpdate(data.filter(item => !selectedRows.includes(item.id)));
+          // Refresh the data after successful deletion
+          onDataUpdate(data.filter((item) => !selectedRows.includes(item.id)));
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error occurred during deletion:', error);
         });
     } else {
       console.log('No selected rows for deletion.');
     }
+  };
+
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const sortedData = [...data].sort((a, b) => {
@@ -59,19 +74,19 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
     return 0;
   });
 
-  const filteredData = sortedData.filter(item =>
-    Object.values(item).some(value => value.toString().toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredData = sortedData.filter((item) =>
+    Object.values(item).some((value) => value.toString().toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const visibleData = filteredData.slice(0, visibleRows);
 
   const handleShowMore = () => {
-    setVisibleRows(prevVisibleRows => prevVisibleRows + 10);
+    setVisibleRows((prevVisibleRows) => prevVisibleRows + 10);
   };
 
   const handleRowClick = (rowId, event) => {
     if (event.target.type === 'checkbox') return;
-  
+
     setSelectedRow(rowId);
   };
 
@@ -86,10 +101,7 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
     } else if (selectedIndex === selectedRows.length - 1) {
       newSelected = newSelected.concat(selectedRows.slice(0, -1));
     } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selectedRows.slice(0, selectedIndex),
-        selectedRows.slice(selectedIndex + 1)
-      );
+      newSelected = newSelected.concat(selectedRows.slice(0, selectedIndex), selectedRows.slice(selectedIndex + 1));
     }
 
     setSelectedRows(newSelected);
@@ -128,7 +140,7 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
                 <th
                   key={columnName}
                   scope="col"
-                  className="px-6 py-3 border-b dark:text-gray-400"
+                  className="px-6 py-3 border-b dark:text-gray-400 cursor-pointer"
                   onClick={() => handleSort(columnName)}
                 >
                   {columnName}
@@ -139,7 +151,6 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
                   )}
                 </th>
               ))}
-              
               <th className="px-6 py-3 border-b">
                 <input type="checkbox" checked={selectAll} onChange={handleToggleSelectAll} />
               </th>
@@ -173,8 +184,8 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
           <FontAwesomeIcon icon={faTrashCan} size="xl" className="custom-icon" onClick={() => setShowDeleteWarning(true)} />
         </div>
       </div>
-      <div className='flex justify-center mt-2'>
-      {visibleRows < sortedData.length && (
+      <div className="flex justify-center mt-2">
+        {visibleRows < sortedData.length && (
           <button className="text-gray-500 hover:text-gray-800" onClick={handleShowMore}>
             Show more
           </button>
@@ -196,6 +207,11 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
           onClose={handleClosePopup}
           rowData={sortedData.find((item) => item.id === selectedRow)}
         />
+      )}
+      {scrolledDown && (
+        <button className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-full shadow hover:bg-blue-600" onClick={handleScrollToTop}>
+          Back to Top
+        </button>
       )}
     </div>
   );

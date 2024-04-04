@@ -9,7 +9,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import ImageDetailPopup from '@/Popups/ImageDetailPopup';
 import axios from 'axios';
 
-export default function All({ auth, responses }) {
+export default function ResponsesCharts({ auth, responses }) {
   const [filteredId, setFilteredId] = useState('');
   const [heatmapImage, setHeatmapImage] = useState(null);
   const [showImage, setShowImage] = useState(false);
@@ -89,11 +89,11 @@ export default function All({ auth, responses }) {
                 </span>
               </Dropdown.Trigger>
               <Dropdown.Content align="left">
-                <Dropdown.Link href={route('statistics.imageFrequenciesCharts')}>
-                  Image Frequencies
-                </Dropdown.Link>
                 <Dropdown.Link href={route('statistics.responsesCharts')}>
                   Responses
+                </Dropdown.Link>
+                <Dropdown.Link href={route('statistics.imageFrequenciesCharts')}>
+                  Image Frequencies
                 </Dropdown.Link>
               </Dropdown.Content>
             </Dropdown>

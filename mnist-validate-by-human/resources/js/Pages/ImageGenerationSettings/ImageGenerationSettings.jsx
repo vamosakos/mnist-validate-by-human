@@ -6,7 +6,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faCircleHalfStroke } from '@fortawesome/free-solid-svg-icons';
 
-const Dashboard = ({ auth }) => {
+const ImageGenerationSettings = ({ auth }) => {
     const [activeFunction, setActiveFunction] = useState('');
     const [trainActive, setTrainActive] = useState(true);
     const [testActive, setTestActive] = useState(true);
@@ -169,4 +169,4 @@ const Dashboard = ({ auth }) => {
     );    
 };
 
-export default Dashboard;
+export default ImageGenerationSettings;
