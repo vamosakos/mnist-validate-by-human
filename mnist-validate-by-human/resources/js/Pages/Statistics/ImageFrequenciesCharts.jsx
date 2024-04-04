@@ -11,7 +11,7 @@ import InputError from '@/Components/InputError';
 import Dropdown from '@/Components/Dropdown'; // Import Dropdown component
 import axios from 'axios'; // Import axios for fetching image details
 
-export default function All({ auth, imageFrequencies }) {
+export default function ImageFrequenciesCharts({ auth, imageFrequencies }) {
   const [filteredId, setFilteredId] = useState(null);
   const [showImage, setShowImage] = useState(false);
   const [error, setError] = useState(null);
