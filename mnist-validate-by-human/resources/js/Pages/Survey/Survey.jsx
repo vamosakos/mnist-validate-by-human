@@ -27,6 +27,7 @@ export default function Survey() {
     const [showWarning, setShowWarning] = useState(false);
     const [feedbackPopupVisible, setFeedbackPopupVisible] = useState(false);
     const [responseProcessed, setResponseProcessed] = useState(true); // Új állapot a válaszfeldolgozás nyomon követéséhez
+    const [tempResponses, setTempResponses] = useState([]);
 
     useEffect(() => {
         if (captchaVerified) {
@@ -119,28 +120,51 @@ export default function Survey() {
                 handleTakeTest();
                 return;
             }
-
-            if (selectedNumber !== null && responseProcessed) { // Ellenőrizzük, hogy a válaszfeldolgozás befejeződött-e már
+    
+            if (selectedNumber !== null && responseProcessed) {
                 const endTime = new Date();
                 const responseTime = endTime - startTime;
-
+    
                 setLoading(true);
-                setResponseProcessed(false); // Jelölje meg, hogy a válaszfeldolgozás még nem fejeződött be
-
-                const response = await axios.post('/api/save-response', {
+                setResponseProcessed(false);
+    
+                const tempResponse = {
                     image_id: imageId,
                     guest_response: selectedNumber,
                     response_time: responseTime,
-                });
-                console.log('Response from server:', response.data);
+                };
+    
+                const updatedTempResponses = [...tempResponses, tempResponse];
+                console.log('Temporary responses:', updatedTempResponses);
+                setTempResponses(updatedTempResponses);
             }
-
+    
             handleTakeTest();
         } catch (error) {
             console.error('Error handling next:', error);
         } finally {
             setNextButtonDisabled(true);
             setNumberButtonsDisabled(true);
+        }
+    };
+
+    useEffect(() => {
+        if (showFeedbackPopup) {
+            // Az adatok mentése a FeedbackPopup megjelenésekor, ha van elég válasz
+            saveMultipleResponses(tempResponses);
+            setTempResponses([]); // Ürítsük az ideiglenes adatszerkezetet
+        }
+    }, [showFeedbackPopup]);
+
+
+    const saveMultipleResponses = async (responses) => {
+        try {
+            const response = await axios.post('/api/save-multiple-responses', {
+                responses: responses,
+            });
+            console.log('Response from server:', response.data);
+        } catch (error) {
+            console.error('Error saving multiple responses:', error);
         }
     };
 
@@ -171,9 +195,14 @@ export default function Survey() {
                 show={showExitModal}
                 onClose={() => setShowExitModal(false)}
                 onConfirm={handleExitConfirmed}
+                tempResponses={tempResponses} // Itt adjuk át a tempResponses állapotot
             />
 
-            <FeedbackPopup show={showFeedbackPopup} onClose={() => setShowFeedbackPopup(false)} />
+            <FeedbackPopup 
+                show={showFeedbackPopup} 
+                onClose={() => setShowFeedbackPopup(false)} 
+                tempResponses={tempResponses} 
+            />
 
             <div className="bg-gray-127 min-h-screen flex justify-center items-center">
                 <div className="container bg-gray-194 rounded-lg p-12 flex justify-center items-center relative">

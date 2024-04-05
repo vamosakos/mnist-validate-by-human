@@ -11,37 +11,38 @@ use App\Models\ImageFrequency;
 
 class ResponseController extends Controller
 {
-    public function saveResponse(Request $request)
+    public function saveMultipleResponses(Request $request)
     {
-        // Validate the request data if necessary
-        $response = new Response();
-        $response->image_id = $request->input('image_id');
-        $response->guest_response = $request->input('guest_response');
-        $response->session_id = $request->session()->getId();
-        $response->response_time = $request->input('response_time');
-        
-        $response->save();
+        $responses = $request->input('responses');
     
-
-        // Update 'image_frequencies' table
-        $imageFrequency = ImageFrequency::where('image_id', $response->image_id)->first();
-
-        if ($imageFrequency) {
-            // If 'image_frequencies' record exists, increment the response count
-            $imageFrequency->increment('response_count');
-        } else {
-            // If 'image_frequencies' record does not exist, create a new record
-            ImageFrequency::create([
-                'image_id' => $response->image_id,
-                'generation_count' => 1,
-                'response_count' => 1,
-            ]);
+        foreach ($responses as $responseItem) {
+            $response = new Response();
+            $response->image_id = $responseItem['image_id'];
+            $response->guest_response = $responseItem['guest_response']; // Helyes kulcs használata
+            $response->session_id = session()->getId();
+            $response->response_time = $responseItem['response_time'];
+            $response->save();
+    
+            // Update 'image_frequencies' table
+            $imageFrequency = ImageFrequency::where('image_id', $response->image_id)->first();
+    
+            if ($imageFrequency) {
+                // If 'image_frequencies' record exists, increment the response count
+                $imageFrequency->increment('response_count');
+            } else {
+                // If 'image_frequencies' record does not exist, create a new record
+                ImageFrequency::create([
+                    'image_id' => $response->image_id,
+                    'generation_count' => 1,
+                    'response_count' => 1,
+                ]);
+            }
+    
+            // Check if the guest response is a misidentification
+            $this->checkMisidentification($response);
         }
-
-        // Check if the guest response is a misidentification
-        $this->checkMisidentification($response);
     
-        return response()->json(['message' => 'Response saved successfully']);
+        return response()->json(['message' => 'Multiple responses saved successfully']);
     }
     
     private function checkMisidentification(Response $response)
