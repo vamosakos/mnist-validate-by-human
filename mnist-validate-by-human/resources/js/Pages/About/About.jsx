@@ -69,11 +69,11 @@ export default function About() {
                             {/* Highlighted and enlarged text */}
                             <p className="text-4xl font-bold mb-6">What is this?</p>
                             {/* Regular text */}
-                            <p className="text-xl mb-6">MNIST is a dataset consisting of handwritten digits. It is commonly used for training various image processing systems. The images in MNIST are grayscale and 28x28 pixels in size. This dataset is widely used for training and testing in the field of machine learning and computer vision.</p>
+                            <p className="text-xl mb-6">MNIST is a dataset of grayscale handwritten digits, commonly used to train image processing systems in machine learning and computer vision.   The dataset consists of 70,000 images, each 28x28 pixels in size.</p>
                             {/* Additional text */}
-                            <p className="text-xl mb-6">This site contains a test/survey where you need to decide what number you see, selecting from a total of 70,000 images using the entire MNIST database.</p>
+                            <p className="text-xl mb-6">This site includes a test/survey where you can select the number you see from the entire MNIST database.</p>
                             {/* Additional text for clarification */}
-                            <p className="text-xl mb-6">The website is developed as part of a thesis project, aiming to collect human responses for MNIST images. Your responses will be used for statistical analysis and research purposes.</p>
+                            <p className="text-xl mb-6">The website was developed as part of a thesis project with the aim of collecting human responses for MNIST images. Your responses will be used for statistical analysis and research purposes.</p>
                         </div>
                         
                         {/* Read more button */}
