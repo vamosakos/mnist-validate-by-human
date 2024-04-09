@@ -91,7 +91,7 @@ export default function About() {
                         className="text-xl bg-green-custom text-white rounded-full py-3 px-14 hover:bg-emerald-600"
                         onClick={() => setModalOpen(true)}
                     >
-                        Take the test
+                        Take the Test
                     </button>
                 </div>
 

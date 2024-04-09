@@ -18,32 +18,32 @@ export default function PrivacyPolicy() {
                             <Head title="Privacy Policy" />
                             <p className="text-4xl font-bold mb-6">Privacy Policy</p>
                             <p className="text-xl mb-6">
-                                Welcome to our website! Below you will find our privacy practices, which include details on data collection, handling, and protection. Please read this document carefully to understand what data we collect and how we manage it.
+                                Welcome to our website! Below you will find our Privacy Policy, which provides details of our data collection, handling and protection practices. Please read this document carefully to understand what information we collect and how we use it.
                             </p>
                             <p className="text-xl mb-6">
                                 <strong>1. Collected Data</strong><br/>
-                                We use three main types of cookies when visiting our website: XSRF-TOKEN, laravel_session, and UUID. These cookies help maintain the security and functionality of the site.
+                                    We use three main types of cookies when you visit our website: XSRF-TOKEN, laravel_session and UUID. These cookies help maintain the security and functionality of the site.
                                 <br/><br/>
-                                <strong>XSRF-TOKEN:</strong> This cookie helps protect the website against Cross-Site Request Forgery (CSRF) attacks.
+                                <strong>XSRF-TOKEN:</strong> This cookie helps to protect the site from Cross-Site Request Forgery (CSRF) attacks.
                                 <br/><br/>
-                                <strong>laravel_session:</strong> This cookie stores information collected during your current visit. Its validity extends for one year and is essential for the security and functionality of the site.
+                                <strong>laravel_session:</strong> This cookie stores information collected during your current visit. Its validity lasts for one year and is essential for the security and functionality of the site.
                                 <br/><br/>
-                                <strong>UUID:</strong> We may generate a unique identifier for each visitor when filling out surveys. The UUID helps ensure that guests do not receive the same image multiple times within a certain period of time. You can delete them at any time in your browser settings.
+                                <strong>UUID:</strong> A unique identifier may be generated for each visitor when filling out surveys. This UUID helps ensure that guests do not receive the same image multiple times within a certain period of time. These identifiers can be deleted at any time in your browser settings.
                             </p>
                             <p className="text-xl mb-6">
                                 <strong>2. Purpose of Data Processing</strong><br/>
-                                The data we collect is used solely to improve the security and functionality of the website. We do not sell or share any personal data with third parties.
+                                    The data collected is solely used to enhance the website's security and functionality. We do not share or sell any personal data with third parties.
                             </p>
                             <p className="text-xl mb-6">
                                 <strong>3. Cookie Management</strong><br/>
-                                Cookies can generally be managed in your browser settings. However, please note that disabling or deleting cookies may affect the functionality and security of the site.
+                                    You can usually manage cookies in your browser settings. However, keep in mind that disabling or deleting cookies may impact the site's functionality and security.
                             </p>
                             <p className="text-xl mb-6">
                                 <strong>4. Acceptance</strong><br/>
-                                By using our site and accepting cookies, you consent to the data processing practices described by us.
+                                By using our site, you agree to our data processing practices.
                             </p>
                             <p className="text-xl mb-6">
-                                This privacy policy took effect on March 8, 2024, and we reserve the right to make modifications if deemed necessary.
+                                The privacy policy was last updated on April 09, 2024 and may be modified if necessary.
                             </p>
                         </div>
                     </div>

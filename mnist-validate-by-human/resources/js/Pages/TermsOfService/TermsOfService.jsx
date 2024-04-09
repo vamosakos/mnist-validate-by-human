@@ -21,10 +21,10 @@ export default function TermsOfService() {
                                 Welcome to our website! Please read the following terms before continuing to use the site.
                             </p>
                             <p className="text-xl mb-6">
-                                Our website is a testing and survey platform, and the results obtained are used for statistical analysis and research purposes.
+                                Our website is a testing and survey platform. The results obtained are used for statistical analysis and research purposes.
                             </p>
                             <p className="text-xl mb-6">
-                                Visitors may only use the website in the manner specified by us, and any commercial or unethical activities are prohibited.
+                                Visitors may only use the website as specified by us. Commercial or unethical activities are prohibited.
                             </p>
                             <p className="text-xl mb-6">
                                 We reserve the right to modify or update these terms at any time.
