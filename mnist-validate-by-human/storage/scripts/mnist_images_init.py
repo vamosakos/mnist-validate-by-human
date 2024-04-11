@@ -10,12 +10,15 @@ mydb = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
-    database="mnist_validate_by_human"
+    database="mnist_validate_by_human_70k"
 )
 mycursor = mydb.cursor()
 
 # Load the dataset from keras
 (train_X, train_y), (test_X, test_y) = mnist.load_data()
+
+# Create a plot without a white background with size of 280x280
+fig, ax = plt.subplots(figsize=(2.8, 2.8), dpi=130) 
 
 # Save the first 60000 images to the database (train data)
 for i in range(60000):
@@ -23,14 +26,16 @@ for i in range(60000):
     image = train_X[i]
     label = int(train_y[i])
 
-    # Create a plot with a white background
+    # Release the previous ax
+    ax.clear()
+
+    # Create a plot with a transparent background
     plt.imshow(image, cmap='gray')
-    plt.gca().set_facecolor('none')  # Set background color to transparent
     plt.axis('off')
 
     # Save the plot to a buffer as PNG
     buffer = BytesIO()
-    plt.savefig(buffer, format='png', transparent=True)  # Set transparent=True
+    plt.savefig(buffer, format='png', transparent=True, bbox_inches='tight', pad_inches=0)
     buffer.seek(0)
 
     # Convert the image to base64
@@ -51,14 +56,16 @@ for i in range(10000):
     image = test_X[i]
     label = int(test_y[i])
 
-    # Create a plot with a white background
+    # Release the previous ax
+    ax.clear()
+
+    # Create a plot with a transparent background
     plt.imshow(image, cmap='gray')
-    plt.gca().set_facecolor('none')  # Set background color to transparent
     plt.axis('off')
 
     # Save the plot to a buffer as PNG
     buffer = BytesIO()
-    plt.savefig(buffer, format='png', transparent=True)  # Set transparent=True
+    plt.savefig(buffer, format='png', transparent=True, bbox_inches='tight', pad_inches=0)
     buffer.seek(0)
 
     # Convert the image to base64

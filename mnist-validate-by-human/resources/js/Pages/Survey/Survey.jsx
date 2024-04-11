@@ -234,11 +234,12 @@ export default function Survey() {
                                 )}
                             </div>
                             <div className="flex flex-col md:flex-row items-center">
-                                <div className="image-container mb-8 md:mb-0 mr-4">
+                                <div className="image-container mb-8 md:mb-8 mr-4">
                                     {imageBase64 && (
                                         <img src={imageBase64} alt="MNIST Image" className="max-w-3/4 max-h-3/4" />
                                     )}
                                 </div>
+                                <div className="w-8 md:w-20"></div>
                                 <div className="flex flex-col">
                                     <div className="number-buttons grid grid-cols-3 gap-4 mb-8">
                                         {[1, 2, 3, 4, 5, 6, 7, 8, 9, null, 0].map((number) =>
