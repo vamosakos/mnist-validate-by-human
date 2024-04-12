@@ -140,7 +140,7 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
                 <th
                   key={columnName}
                   scope="col"
-                  className="px-6 py-3 border-b dark:text-gray-400 cursor-pointer"
+                  className="px-6 py-3 border-b dark:text-gray-400 cursor-pointer table-cell-text"
                   onClick={() => handleSort(columnName)}
                 >
                   {columnName}
@@ -166,8 +166,8 @@ const DataTable = ({ data, columns, deleteRoute, onDataUpdate }) => {
                 onClick={(event) => handleRowClick(item.id, event)}
               >
                 {columns.map((columnName) => (
-                  <td key={columnName} className="px-6 py-4 text-black">
-                    {item[columnName]}
+                  <td key={columnName} className="px-6 py-4 text-black table-cell-text">
+                    {item[columnName].length > 21 ? `${item[columnName].slice(0, 21)}...` : item[columnName]}
                   </td>
                 ))}
                 <td className="px-6 py-4 text-black">

@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 
+// Írjuk meg az util függvényt a szöveg levágásához
+export const truncateText = (text, maxLength) => {
+  if (text.length > maxLength) {
+    return text.slice(0, maxLength) + '...';
+  }
+  return text;
+};
+
 const ResponsesBarChart = ({ responses, filteredId }) => {
   const [responseCountsBySession, setResponseCountsBySession] = useState({});
   const [averageResponseTimeByImage, setAverageResponseTimeByImage] = useState({});
@@ -85,7 +93,7 @@ const ResponsesBarChart = ({ responses, filteredId }) => {
       {chartView === 'response_counts_by_session' && (
         <Bar
           data={{
-            labels: sortData(responseCountsBySession).map(entry => entry[0]),
+            labels: sortData(responseCountsBySession).map(entry => truncateText(entry[0], 8)), // Az első 8 karakter megjelenítése
             datasets: [{
               label: 'Response Count',
               data: sortData(responseCountsBySession).map(entry => entry[1]),
@@ -99,7 +107,7 @@ const ResponsesBarChart = ({ responses, filteredId }) => {
       {chartView === 'response_time_by_image' && (
         <Bar
           data={{
-            labels: sortData(averageResponseTimeByImage).map(entry => entry[0]),
+            labels: sortData(averageResponseTimeByImage).map(entry => truncateText(entry[0], 8)), // Az első 8 karakter megjelenítése
             datasets: [{
               label: 'Average Response Time',
               data: sortData(averageResponseTimeByImage).map(entry => entry[1]),

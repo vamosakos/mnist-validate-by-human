@@ -16,3 +16,7 @@ transform: scale(1.1);
 .custom-icon:hover {
   color: #b32020;
 }
+
+.table-cell-text {
+  font-size: 1.1rem;
+}
