@@ -95,7 +95,7 @@ export default function ImageFrequenciesDataList({ auth, imageFrequencies }) {
                 </div>
             }
         >
-            <Head title="Dashboard" />
+            <Head title="Image Frequencies Table" />
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="overflow-hidden mt-8">
                     <div className="flex justify-end mb-4">

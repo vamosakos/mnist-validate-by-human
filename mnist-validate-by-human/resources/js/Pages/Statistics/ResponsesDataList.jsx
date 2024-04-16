@@ -99,7 +99,7 @@ export default function ResponsesDataList({ auth, responses }) {
                 </div>
             }
         >
-            <Head title="Dashboard" />
+            <Head title="Responses Table" />
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="overflow-hidden mt-8">
                     <div className="flex justify-end mb-4">

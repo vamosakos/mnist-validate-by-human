@@ -101,7 +101,7 @@ export default function ResponsesCharts({ auth, responses }) {
         </div>
       }
     >
-      <Head title="Dashboard" />
+      <Head title="Responses Charts" />
   
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">

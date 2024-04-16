@@ -81,7 +81,7 @@ export default function ImageFrequenciesCharts({ auth, imageFrequencies }) {
         </div>
       }
     >
-      <Head title="Dashboard" />
+      <Head title="Image Frequencies Charts" />
 
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
