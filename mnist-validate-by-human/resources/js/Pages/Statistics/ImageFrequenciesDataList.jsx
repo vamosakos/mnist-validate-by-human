@@ -22,25 +22,6 @@ export default function ImageFrequenciesDataList({ auth, imageFrequencies }) {
         setTableData(newData);
     };
 
-    const exportAsNumPyArray = () => {
-        const selectedColumns = columns.filter(column => document.getElementById(column).checked);
-        const exportedData = tableData.map(row =>
-            selectedColumns.map(column => row[column])
-        );
-        // Convert exportedData to a NumPy array string
-        const numpyArrayString = '[' + exportedData.map(row =>
-            '[' + row.join(',') + ']'
-        ).join(',') + ']';
-    
-        // Create a temporary anchor element
-        const numpyArrayUri = encodeURI("data:text/plain;charset=utf-8," + numpyArrayString);
-        const link = document.createElement("a");
-        link.setAttribute("href", numpyArrayUri);
-        link.setAttribute("download", "image_frequencies_numpy_array.txt");
-        document.body.appendChild(link);
-        link.click();
-    };
-
     const exportAsCSV = () => {
         const selectedColumns = columns.filter(column => document.getElementById(column).checked);
         // Convert tableData to a CSV string
@@ -108,9 +89,6 @@ export default function ImageFrequenciesDataList({ auth, imageFrequencies }) {
                             <>
                                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={exportAsCSV}>
                                     Export CSV
-                                </button>
-                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={exportAsNumPyArray}>
-                                    Export as NumPy Array
                                 </button>
                             </>
                         )}
