@@ -178,13 +178,11 @@ class StatisticsController extends Controller
                 // Decrease response_count
                 if ($imageFrequency->response_count > 0) {
                     $imageFrequency->response_count--;
-                }
-    
-                // Decrease generation_count
-                if ($imageFrequency->response_count == 0) {
-                    $imageFrequency->generation_count = 0;
-                } elseif ($imageFrequency->generation_count > 0) {
-                    $imageFrequency->generation_count--;
+                    
+                    // Decrease generation_count by the same amount as response_count
+                    if ($imageFrequency->generation_count > 0) {
+                        $imageFrequency->generation_count--;
+                    }
                 }
 
                 // Delete the record if generation_count is zero
