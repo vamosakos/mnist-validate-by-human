@@ -89,7 +89,7 @@ class ImageController extends Controller
 
         $executionTime = ($endTime - $startTime);
 
-        \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
+        \Illuminate\Support\Facades\Log::info("Execution time for RandomImage: $executionTime seconds");
 
         // If no record found, return the case when no images are available
         if (!$mnistImage) {
@@ -170,7 +170,7 @@ class ImageController extends Controller
         $endTime = microtime(true);
         $executionTime = ($endTime - $startTime);
     
-        \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
+        \Illuminate\Support\Facades\Log::info("Execution time for FrequencyWeightedImage: $executionTime seconds");
     
         // Associate the selected image with the current session
         $this->associateImageWithSession($mnistImage->image_id, $uniqueId);
@@ -269,7 +269,7 @@ class ImageController extends Controller
         $endTime = microtime(true);
         $executionTime = ($endTime - $startTime);
     
-        \Illuminate\Support\Facades\Log::info("Execution time for generateRandomImage: $executionTime seconds");
+        \Illuminate\Support\Facades\Log::info("Execution time for MisidentificationWeightedImage: $executionTime seconds");
     
         // Associate the selected image with the current session
         $this->associateImageWithSession($mnistImage->image_id, $uniqueId);

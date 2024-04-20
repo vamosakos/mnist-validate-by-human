@@ -22,13 +22,13 @@ export default function PrivacyPolicy() {
                             </p>
                             <p className="text-xl mb-6">
                                 <strong>1. Collected Data</strong><br/>
-                                    We use three main types of cookies when you visit our website: XSRF-TOKEN, laravel_session and UUID. These cookies help maintain the security and functionality of the site.
+                                    We use three main types of cookies when you visit our website: XSRF-TOKEN, laravel_session and X-Client-Token & UUId. These cookies help maintain the security and functionality of the site.
                                 <br/><br/>
-                                <strong>XSRF-TOKEN:</strong> This cookie helps to protect the site from Cross-Site Request Forgery (CSRF) attacks.
+                                <strong>XSRF-Token:</strong> This cookie helps to protect the site from Cross-Site Request Forgery (CSRF) attacks.
                                 <br/><br/>
                                 <strong>laravel_session:</strong> This cookie stores information collected during your current visit. Its validity lasts for one year and is essential for the security and functionality of the site.
                                 <br/><br/>
-                                <strong>UUID:</strong> A unique identifier may be generated for each visitor when filling out surveys. This UUID helps ensure that guests do not receive the same image multiple times within a certain period of time. These identifiers can be deleted at any time in your browser settings.
+                                <strong>X-Client-Token & UUId:</strong> A unique identifier is generated for each visitor when completing surveys. This ensures that visitors do not receive the same image more than once within a given time. These identifiers can be deleted at any time in the browser settings.
                             </p>
                             <p className="text-xl mb-6">
                                 <strong>2. Purpose of Data Processing</strong><br/>

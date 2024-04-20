@@ -16,10 +16,10 @@ export default function About() {
     const [existingRecord, setExistingRecord] = useState(null); // Adjunk hozzá egy állapotot az existingRecord-nek
 
     useEffect(() => {
-        // Fetch identifications count initially
+        // Fetch identifications count 
         fetchIdentificationsCountFromDatabase();
     
-        // Check session in guest settings only when settings popup is closed
+        // Check session in guest settings but only when settings popup is closed
         if (!settingsOpen) {
             checkSession();
         }
@@ -39,7 +39,7 @@ export default function About() {
         try {
             const response = await axios.get('/api/check-session-in-guest-settings');
             setShowSettingsWarning(!response.data.exists);
-            // Állítsuk be az existingRecord állapotot a válasz alapján
+
             if (response.data.exists) {
                 setExistingRecord(response.data.record);
             }
