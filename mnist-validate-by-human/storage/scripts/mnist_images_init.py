@@ -10,7 +10,7 @@ mydb = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
-    database="mnist_validate_by_human_70k"
+    database="mnist_validate_by_human"
 )
 mycursor = mydb.cursor()
 

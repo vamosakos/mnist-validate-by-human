@@ -39,3 +39,8 @@ Hozzon létre új MySQL adatbázist `mnist_validate_by_human` néven. Majd nyiss
 A parancsok sikeres lefutása után keresse meg a `./storage/scripts` mappában található `mnist_images_init.py` python szkriptet. Futtassa le a szkriptet. Ennek segítségével az MNIST adatbázis összes rekordját feltöltjük az adatbázisunkba. A szkript lefutása hosszabb ideig is eltarthat. Működéséhez az alábbi csomagokkal kell rendelkeznünk:
 
 `pip install matplotlib` | `pip install python-mnist` | `pip install mysql-connector-python` | `pip install keras` | `pip install tensorflow`
+
+# Adminisztrátori fiók:
+– Email : admin@validatebyhuman.com
+
+– Password : password

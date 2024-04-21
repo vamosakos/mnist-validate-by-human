@@ -13,12 +13,12 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(ImageGenerationSettingsSeeder::class);
-        \App\Models\User::factory(10)->create();
+        // \App\Models\User::factory(10)->create();
 
         \App\Models\User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@validatebyhuman.com',
-            'password' => bcrypt('zR6hT9sW'),
+            'password' => bcrypt('password'),
         ]);
     }
 }
