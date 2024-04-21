@@ -29,6 +29,8 @@ Route::get('/', function () {
     ]);
 });
 
+Route::redirect('register', '/mnist-human-validation', 301);
+
 Route::redirect('/', '/mnist-human-validation', 301);
 
 Route::get('/mnist-human-validation', function () {
