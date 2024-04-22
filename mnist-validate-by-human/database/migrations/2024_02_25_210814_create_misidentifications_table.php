@@ -19,7 +19,7 @@ class CreateMisidentificationsTable extends Migration
             $table->foreign('image_id')->references('image_id')->on('mnist_images')->onDelete('cascade');
             $table->integer('correct_label');
             $table->foreign('correct_label')->references('image_label')->on('mnist_images')->onDelete('cascade');
-            $table->integer('count')->default(1); // Count of misidentifications
+            $table->integer('count')->default(1);
             $table->timestamps();
         });
     }

@@ -12,14 +12,11 @@ export default function GuestSettingsPopup({ show, onClose, existingRecord }) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Fetch faculties data when component mounts
         fetch('/json/faculties.json')
             .then(response => response.json())
             .then(data => {
-                // Set faculties array
                 setFaculties(data);
 
-                // If there are faculties and no existing record, set the major to the first faculty
                 if (data.length > 0 && !existingRecord) {
                     setMajor(data[0]);
                 }

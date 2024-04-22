@@ -1,31 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGears } from '@fortawesome/free-solid-svg-icons';
 import StartPopup from '@/Popups/TakeTheTestPopup';
 import Footer from '@/Footer/Footer';
 import Header from '@/Header/Header';
-import SettingsPopup from '@/Popups/GuestSettingsPopup'; // Importáljuk a SettingsPopup komponenst
-import axios from 'axios'; // Importáljuk az Axios modult
+import SettingsPopup from '@/Popups/GuestSettingsPopup';
+import axios from 'axios';
 
 export default function About() {
     const [modalOpen, setModalOpen] = useState(false);
-    const [settingsOpen, setSettingsOpen] = useState(false); // Állítsuk be az állapotot a beállítások megnyitásához
+    const [settingsOpen, setSettingsOpen] = useState(false);
     const [identificationsCount, setIdentificationsCount] = useState(0);
-    const [showSettingsWarning, setShowSettingsWarning] = useState(false); // Állítsuk be az állapotot a figyelmeztetés megjelenítéséhez
-    const [existingRecord, setExistingRecord] = useState(null); // Adjunk hozzá egy állapotot az existingRecord-nek
+    const [showSettingsWarning, setShowSettingsWarning] = useState(false);
+    const [existingRecord, setExistingRecord] = useState(null);
 
     useEffect(() => {
-        // Fetch identifications count 
-        fetchIdentificationsCountFromDatabase();
+        fetchIdentificationsCount();
     
-        // Check session in guest settings but only when settings popup is closed
         if (!settingsOpen) {
             checkSession();
         }
     }, [settingsOpen]);
 
-    const fetchIdentificationsCountFromDatabase = async () => {
+    const fetchIdentificationsCount = async () => {
         try {
             const response = await fetch('/api/identifications/count');
             const data = await response.json();
@@ -50,33 +48,23 @@ export default function About() {
 
     return (
         <div>
-            {/* Header */}
             <Header />
 
-            {/* Main Content and Button Container */}
             <div className="bg-gray-127 min-h-screen flex flex-col justify-center items-center py-">
-                {/* Main Content */}
                 <div className="container mx-auto bg-gray-194 rounded-lg p-12 text-center mb-6 flex flex-wrap">
-                    {/* Image */}
                     <div className="w-full md:w-1/3 mb-2 md:mb-0">
                         <img src="/content-img.png" alt="Content" className="w-80 h-80 rounded-3xl" />
                     </div>
                     
-                    {/* Text and Read more button */}
                     <div className="w-full md:w-2/3 md:pl-6 flex flex-col justify-between text-left">
                         <div>
                             <Head title="About" />
-                            {/* Highlighted and enlarged text */}
                             <p className="text-4xl font-bold mb-6">What is this?</p>
-                            {/* Regular text */}
                             <p className="text-xl mb-6">MNIST is a dataset of grayscale handwritten digits, commonly used to train image processing systems in machine learning and computer vision.   The dataset consists of 70,000 images, each 28x28 pixels in size.</p>
-                            {/* Additional text */}
                             <p className="text-xl mb-6">This site includes a test/survey where you can select the number you see from the entire MNIST database.</p>
-                            {/* Additional text for clarification */}
                             <p className="text-xl mb-6">The website was developed as part of a thesis project with the aim of collecting human responses for MNIST images. Your responses will be used for statistical analysis and research purposes.</p>
                         </div>
                         
-                        {/* Read more button */}
                         <div className="flex justify-end">
                             <a href="https://en.wikipedia.org/wiki/MNIST_database" target="_blank" rel="noopener noreferrer" className="text-lg bg-gray-43 text-white rounded-full py-2 px-8 hover:bg-gray-127">
                                 Read more
@@ -85,7 +73,6 @@ export default function About() {
                     </div>
                 </div>
                 
-                {/* Button */}
                 <div className="bg-gray-127">
                     <button
                         className="text-xl bg-green-custom text-white rounded-full py-3 px-14 hover:bg-emerald-600"
@@ -95,16 +82,14 @@ export default function About() {
                     </button>
                 </div>
 
-                {/* Identifications Counter */}
                 <div className="text-4xl text-black mt-24 text-center number-animation">
                     A total of <span className="font-bold">{identificationsCount}</span> images identified so far
                 </div>
             </div>
 
-            {/* Settings Icon and Warning Bubble */}
             <div 
                 style={{ position: 'fixed', right: '20px', bottom: '20px', zIndex: '1000', display: 'flex', alignItems: 'center' }} 
-                onClick={() => setSettingsOpen(true)} // Megnyitjuk a beállításokat, ha az ikonra kattintanak
+                onClick={() => setSettingsOpen(true)}
                 className='number-animation'
             >
                 <div style={{ backgroundColor: '#333', borderRadius: '50%', padding: '15px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)' }}>
@@ -118,12 +103,9 @@ export default function About() {
                 )}
             </div>
 
-            {/* Exit confirmation modal */}
             <StartPopup show={modalOpen} onClose={() => setModalOpen(false)} />
 
-            {/* Settings Popup */}
-            <SettingsPopup show={settingsOpen} onClose={() => setSettingsOpen(false)} setShowSettingsWarning={setShowSettingsWarning} existingRecord={existingRecord} /> 
-            {/* Adjuk hozzá a SettingsPopup komponenst a megjelenítéshez */}
+            <SettingsPopup show={settingsOpen} onClose={() => setSettingsOpen(false)} setShowSettingsWarning={setShowSettingsWarning} existingRecord={existingRecord} />
             
             <Footer />
         </div>

@@ -3,7 +3,6 @@ import Modal from '@/Components/Modal';
 
 export default function ExitConfirmationPopup({ show, onClose, tempResponses, onConfirm }) {
     const handleConfirm = async () => {
-        // Itt történik az adatok mentése a tempből az adatbázisba
         await saveTempResponsesToDatabase();
         onConfirm();
     };

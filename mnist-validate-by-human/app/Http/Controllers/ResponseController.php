@@ -11,6 +11,12 @@ use App\Models\ImageFrequency;
 
 class ResponseController extends Controller
 {
+    public function getIdentificationsCount()
+    {
+        $identificationsCount = Response::count();
+        return response()->json(['count' => $identificationsCount]);
+    }
+
     public function saveMultipleResponses(Request $request)
     {
         $responses = $request->input('responses');
@@ -18,19 +24,16 @@ class ResponseController extends Controller
         foreach ($responses as $responseItem) {
             $response = new Response();
             $response->image_id = $responseItem['image_id'];
-            $response->guest_response = $responseItem['guest_response']; // Helyes kulcs használata
+            $response->guest_response = $responseItem['guest_response'];
             $response->session_id = session()->getId();
             $response->response_time = $responseItem['response_time'];
             $response->save();
     
-            // Update 'image_frequencies' table
             $imageFrequency = ImageFrequency::where('image_id', $response->image_id)->first();
     
             if ($imageFrequency) {
-                // If 'image_frequencies' record exists, increment the response count
                 $imageFrequency->increment('response_count');
             } else {
-                // If 'image_frequencies' record does not exist, create a new record
                 ImageFrequency::create([
                     'image_id' => $response->image_id,
                     'generation_count' => 1,
@@ -38,7 +41,6 @@ class ResponseController extends Controller
                 ]);
             }
     
-            // Check if the guest response is a misidentification
             $this->checkMisidentification($response);
         }
     
@@ -50,7 +52,6 @@ class ResponseController extends Controller
         $correctLabel = MnistImage::where('image_id', $response->image_id)->value('image_label');
     
         if ($correctLabel !== $response->guest_response) {
-            // It's a misidentification, insert or update count in misidentifications table
             $this->handleMisidentification($response->image_id, $correctLabel);
         }
     }
@@ -60,22 +61,14 @@ class ResponseController extends Controller
         $misidentification = Misidentification::where('image_id', $imageId)->first();
     
         if ($misidentification) {
-            // Misidentification record exists, update count
             $misidentification->count++;
             $misidentification->save();
         } else {
-            // Misidentification record doesn't exist, create a new one
             Misidentification::create([
                 'image_id' => $imageId,
                 'correct_label' => $correctLabel,
             ]);
         }
-    }
-
-    public function getIdentificationsCount()
-    {
-        $identificationsCount = Response::count();
-        return response()->json(['count' => $identificationsCount]);
     }
 
 }

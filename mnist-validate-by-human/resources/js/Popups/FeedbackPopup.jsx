@@ -15,7 +15,7 @@ export default function FeedbackPopup({ show, onClose }) {
     const [charCount, setCharCount] = useState(0);
     const [isDisabled, setIsDisabled] = useState(false);
     const [dangerousContentDetected, setDangerousContentDetected] = useState(false); 
-    const [urlDetected, setUrlDetected] = useState(false); // Állapot az észlelt URL-ekhez
+    const [urlDetected, setUrlDetected] = useState(false);
 
     useEffect(() => {
         const fetchCsrfToken = async () => {
@@ -32,26 +32,22 @@ export default function FeedbackPopup({ show, onClose }) {
     const handleFeedbackChange = (event) => {
         let inputText = event.target.value;
     
-        // Töröljük az URL-eket a szövegből
         inputText = inputText.replace(/(https?:\/\/[^\s]+)/g, '');
     
-        // Töröljük a veszélyes tartalmat is
         const sanitizedText = DOMPurify.sanitize(inputText);
     
         setFeedbackText(sanitizedText);
         setCharCount(sanitizedText.length);
     
-        // Ellenőrizzük, tartalmaz-e még mindig URL-t vagy linket a bemenet
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         if (urlRegex.test(sanitizedText)) {
-            setUrlDetected(true); // Ha találtunk URL-t, állítsuk az állapotot
-            setIsDisabled(true); // Tiltsuk le a küldés gombot
+            setUrlDetected(true);
+            setIsDisabled(true);
         } else {
             setUrlDetected(false);
             setIsDisabled(false);
         }
     
-        // Ellenőrizzük, tartalmaz-e veszélyes tartalmat
         if (sanitizedText !== inputText) {
             setDangerousContentDetected(true);
         } else {
@@ -66,7 +62,7 @@ export default function FeedbackPopup({ show, onClose }) {
             return;
         }
         setIsSubmitting(true);
-        setIsDisabled(true); // Disable input field on submit
+        setIsDisabled(true);
     
         try {
             const sanitizedText = DOMPurify.sanitize(feedbackText);
@@ -90,8 +86,6 @@ export default function FeedbackPopup({ show, onClose }) {
             console.error('Error submitting feedback:', error);
         } finally {
             setIsSubmitting(false);
-            // Remove this line to keep the input field disabled after submission
-            // setIsDisabled(false); 
         }
     };    
 
@@ -160,7 +154,7 @@ export default function FeedbackPopup({ show, onClose }) {
                             type="button"
                             className="bg-green-custom text-white rounded-full font-bold py-2 px-4 hover:bg-emerald-600 mr-4"
                             onClick={handleSubmit}
-                            disabled={isSubmitting || isCountdownActive || dangerousContentDetected || urlDetected} // Tiltsuk le a gombot, ha veszélyes tartalom vagy URL van
+                            disabled={isSubmitting || isCountdownActive || dangerousContentDetected || urlDetected}
                         >
                             Submit
                         </button>

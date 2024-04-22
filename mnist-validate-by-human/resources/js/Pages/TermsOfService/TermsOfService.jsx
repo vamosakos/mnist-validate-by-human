@@ -6,13 +6,10 @@ import Header from '@/Header/Header';
 export default function TermsOfService() {
     return (
         <div>
-            {/* Header */}
             <Header />
 
-            {/* Main Content */}
             <div className="bg-gray-127 min-h-screen flex flex-col justify-center items-center py-">
                 <div className="container mx-auto bg-gray-194 rounded-lg p-12 text-center mb-6 flex flex-wrap">
-                    {/* Text */}
                     <div className="w-full text-left">
                         <div>
                             <Head title="Terms of Service" />
@@ -34,7 +31,6 @@ export default function TermsOfService() {
                 </div>
             </div>
 
-            {/* Footer */}
             <Footer />
         </div>
     );

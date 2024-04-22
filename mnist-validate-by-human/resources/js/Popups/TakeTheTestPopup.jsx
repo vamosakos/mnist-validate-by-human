@@ -5,8 +5,7 @@ import { Link } from '@inertiajs/react';
 export default function TakeTheTestPopup({ show, onClose }) {
 
     const handleNoClick = () => {
-        // Handle No click action
-        onClose({ preserveScroll: true }); // Megtartja az aktuális scroll helyzetet
+        onClose({ preserveScroll: true });
     };
 
     return (

@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('guest_settings', function (Blueprint $table) {
             $table->id();
             $table->string('field_of_study');
-            $table->enum('hand', ['left', 'right']); // Hand mező enum értékkel ('left' vagy 'right')
-            $table->string('session_id'); // Session ID mező
+            $table->enum('hand', ['left', 'right']);
+            $table->string('session_id');
             $table->timestamps();
         });
     }

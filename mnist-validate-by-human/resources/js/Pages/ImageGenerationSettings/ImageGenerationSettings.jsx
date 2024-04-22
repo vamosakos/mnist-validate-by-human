@@ -11,10 +11,9 @@ const ImageGenerationSettings = ({ auth }) => {
     const [trainActive, setTrainActive] = useState(true);
     const [testActive, setTestActive] = useState(true);
     const [successMessage, setSuccessMessage] = useState('');
-    const [clicked, setClicked] = useState(false); // Új állapot a kattintás nyomon követéséhez
+    const [clicked, setClicked] = useState(false);
 
     useEffect(() => {
-        // Fetch active image generation settings from the database
         axios.get('/api/get-active-image-generation')
             .then(response => {
                 const { activeFunction, train, test } = response.data;
@@ -30,17 +29,17 @@ const ImageGenerationSettings = ({ auth }) => {
     const handleChange = (selectedFunction) => {
         setActiveFunction(selectedFunction);
         localStorage.setItem('activeFunction', selectedFunction);
-        setClicked(true); // Beállítjuk a kattintást, amikor másra kattintunk
+        setClicked(true);
     };
 
     const handleTrainClick = () => {
         setTrainActive(!trainActive);
-        setClicked(true); // Beállítjuk a kattintást
+        setClicked(true);
     };
     
     const handleTestClick = () => {
         setTestActive(!testActive);
-        setClicked(true); // Beállítjuk a kattintást
+        setClicked(true);
     };
 
     const handleSaveClick = () => {
@@ -61,16 +60,15 @@ const ImageGenerationSettings = ({ auth }) => {
             console.log(response.data);
             setTrainActive(newTrainActive);
             setTestActive(newTestActive);
-            setActiveFunction(activeFunction); // Az activeFunction beállítása a mentés után
-            setSuccessMessage('Settings saved successfully.'); // Állítsuk be a sikeres üzenetet
-            setClicked(false); // Visszaállítjuk a kattintást
+            setActiveFunction(activeFunction);
+            setSuccessMessage('Settings saved successfully.');
+            setClicked(false);
         })
         .catch(error => {
             console.error('Error:', error.response.data);
         });
     };
 
-    // Az üzenet elrejtése, ha másra kattintunk
     useEffect(() => {
         if (clicked) {
             setSuccessMessage('');

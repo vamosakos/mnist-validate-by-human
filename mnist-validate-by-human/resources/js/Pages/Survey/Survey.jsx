@@ -26,7 +26,7 @@ export default function Survey() {
     const [startTime, setStartTime] = useState(null);
     const [showWarning, setShowWarning] = useState(false);
     const [feedbackPopupVisible, setFeedbackPopupVisible] = useState(false);
-    const [responseProcessed, setResponseProcessed] = useState(true); // Új állapot a válaszfeldolgozás nyomon követéséhez
+    const [responseProcessed, setResponseProcessed] = useState(true);
     const [tempResponses, setTempResponses] = useState([]);
 
     useEffect(() => {
@@ -59,7 +59,7 @@ export default function Survey() {
         if (startTime && showWarning) {
             const timeoutId = setTimeout(() => {
                 handleNext();
-            }, 5000); // 5 másodperces késleltetés
+            }, 5000);
 
             return () => clearTimeout(timeoutId);
         }
@@ -91,7 +91,7 @@ export default function Survey() {
             setProgressBarVisible(true);
             setNextButtonDisabled(false);
             setNumberButtonsDisabled(false);
-            setResponseProcessed(true); // Az új kép generálása után jelölje meg, hogy a válaszfeldolgozás befejeződött
+            setResponseProcessed(true);
         } catch (error) {
             console.error('Error taking the test:', error);
         } finally {
@@ -150,9 +150,8 @@ export default function Survey() {
 
     useEffect(() => {
         if (showFeedbackPopup) {
-            // Az adatok mentése a FeedbackPopup megjelenésekor, ha van elég válasz
             saveMultipleResponses(tempResponses);
-            setTempResponses([]); // Ürítsük az ideiglenes adatszerkezetet
+            setTempResponses([]);
         }
     }, [showFeedbackPopup]);
 
@@ -195,7 +194,7 @@ export default function Survey() {
                 show={showExitModal}
                 onClose={() => setShowExitModal(false)}
                 onConfirm={handleExitConfirmed}
-                tempResponses={tempResponses} // Itt adjuk át a tempResponses állapotot
+                tempResponses={tempResponses}
             />
 
             <FeedbackPopup 

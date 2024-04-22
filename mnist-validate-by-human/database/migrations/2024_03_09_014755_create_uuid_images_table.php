@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('uuid');
             $table->unsignedBigInteger('image_id');
             $table->timestamps();
-            $table->unique(['uuid', 'image_id']); // Unique constraint for uuid and image_id combination
+            $table->unique(['uuid', 'image_id']);
         });
     }
 
