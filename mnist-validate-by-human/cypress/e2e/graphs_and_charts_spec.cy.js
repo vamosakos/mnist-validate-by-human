@@ -1,5 +1,5 @@
-describe('Charts & Graphs Test', () => {
-    it('should interact with the Charts & Graphs page and with different chart views also perform sorting and searching', () => {
+describe('Graphs & Charts Test', () => {
+    it('should interact with the Graphs & Charts page and with different chart views also perform sorting and searching', () => {
         cy.visit('http://127.0.0.1:8000/login');
         cy.get('#email').type('test1@test.com');
         cy.get('#password').type('12345678');
