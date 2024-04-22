@@ -40,6 +40,9 @@ A parancsok sikeres lefutása után keresse meg a `./storage/scripts` mappában 
 
 `pip install matplotlib` | `pip install python-mnist` | `pip install mysql-connector-python` | `pip install keras` | `pip install tensorflow`
 
+Amennyiben nem sikerült a szkript futtatása úgy a teljes `mnist_images` tábla tartalmát [itt](https://drive.google.com/file/d/1dWj4gTjfn2vhWxcfQnOBbfdjDvnErAAD/view?usp=drive_link) töltheti le.
+
+
 # Adminisztrátori fiók:
 – Email : admin@validatebyhuman.com
 
