@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable.jsx';
 import Dropdown from '@/Components/Dropdown.jsx';
 
-const columns = ['image_id', 'response', 'session_id', 'time', 'hand', 'major', 'created_at']; // Added 'created_at' column
+const columns = ['image_id', 'response', 'session_id', 'time', 'hand', 'major', 'created_at'];
 
 export default function ResponsesDataList({ auth, responses }) {
     const [tableData, setTableData] = useState(responses.map((response) => ({
@@ -13,19 +13,18 @@ export default function ResponsesDataList({ auth, responses }) {
         response: response.guest_response,
         session_id: response.session_id,
         time: response.response_time,
-        hand: response.hand, // Added 'hand' column
-        major: response.field_of_study, // Added 'field_of_study' column
-        created_at: new Date(response.created_at).toLocaleString() // Format 'created_at'
+        hand: response.hand,
+        major: response.field_of_study, 
+        created_at: new Date(response.created_at).toLocaleString() 
     })));
 
-    const [showExportSettings, setShowExportSettings] = useState(false); // State to manage visibility of export settings (changed default to true)
+    const [showExportSettings, setShowExportSettings] = useState(false);
     const deleteRoute = '/statistics/delete-selected-responses';
 
     const handleDataUpdate = (newData) => {
         setTableData(newData);
     };
 
-    // Function to export data as CSV
     const exportAsCSV = () => {
         const selectedColumns = columns.filter(column => document.getElementById(column).checked);
         const csvContent = "data:text/csv;charset=utf-8," +
@@ -34,7 +33,6 @@ export default function ResponsesDataList({ auth, responses }) {
                 selectedColumns.map(column => row[column]).join(",")
             ).join("\n");
 
-        // Create a temporary anchor element
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -83,11 +81,9 @@ export default function ResponsesDataList({ auth, responses }) {
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="overflow-hidden mt-8">
                     <div className="flex justify-end mb-4">
-                        {/* Button to toggle export settings visibility */}
                         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={() => setShowExportSettings(!showExportSettings)}>
                             Export Settings
                         </button>
-                        {/* Export buttons (conditionally rendered based on showExportSettings state) */}
                         {showExportSettings && (
                             <>
                                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={exportAsCSV}>
@@ -96,7 +92,6 @@ export default function ResponsesDataList({ auth, responses }) {
                             </>
                         )}
                     </div>
-                    {/* Export settings section */}
                     {showExportSettings && (
                         <div className="mb-4">
                             <h3 className="font-bold mb-2 ml-2">Export Settings</h3>
@@ -104,12 +99,11 @@ export default function ResponsesDataList({ auth, responses }) {
                             {columns.map(column => (
                                 <label key={column} className="inline-flex items-center">
                                     <span className="ml-2">{column}</span>
-                                    <input type="checkbox" id={column} className="ml-2" defaultChecked /> {/* Checkboxes for each column */}
+                                    <input type="checkbox" id={column} className="ml-2" defaultChecked />
                                 </label>
                             ))}
                         </div>
                     )}
-                    {/* DataTable component */}
                     <DataTable data={tableData} columns={columns} deleteRoute={deleteRoute} onDataUpdate={handleDataUpdate}/>
                 </div>
             </div>

@@ -18,7 +18,6 @@ class StatisticsController extends Controller
     {
         $imageFrequencies = ImageFrequency::all();
     
-        // Fetch misidentifications count for each image
         $imageFrequencies->each(function ($frequency) {
             $frequency->misidentifications_count = Misidentification::where('image_id', $frequency->image_id)->sum('count');
         });
@@ -40,10 +39,8 @@ class StatisticsController extends Controller
 
     private function fetchResponses($viewName)
     {
-        // Fetch responses from the database
         $responses = Response::all();
         
-        // Fetch guest settings based on session_id and add 'hand' and 'field_of_study' information to responses
         $guestSettings = GuestSetting::all();
         $settingMapping = $guestSettings->keyBy('session_id');
         $responses->each(function ($response) use ($settingMapping) {
@@ -51,8 +48,6 @@ class StatisticsController extends Controller
             $response->hand = optional($guestSetting)->hand ?? 'Unknown hand';
             $response->field_of_study = optional($guestSetting)->field_of_study ?? 'Unknown major';
         });
-        
-        // Modify or process the responses data as needed
         
         return Inertia::render($viewName, [
             'responses' => $responses,
@@ -76,8 +71,7 @@ class StatisticsController extends Controller
         if (!$mnistImage) {
             return response()->json(['error' => 'Image not found.'], 404);
         }
-    
-        // Base64-kódolt kép adatának visszaadása
+
         return response()->json([
             'image_data' => $mnistImage->image_base64,
             'image_label' => $mnistImage->image_label
@@ -108,22 +102,16 @@ class StatisticsController extends Controller
 
     public function generateHeatmap()
     {
-        // Data retrieval from the backend
         $labelCounts = $this->calculateLabelCounts();
     
-        // Data conversion to JSON format
         $jsonData = json_encode($labelCounts, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     
-        // Path to the Python script
         $scriptPath = base_path('storage/scripts/mnist_heatmap.py');
     
-        // Executing the Python script with shell_exec and passing data in JSON format
         $output = shell_exec("python $scriptPath \"$jsonData\"");
+
+        $heatmap_base64 = trim($output);
     
-        // Extract the base64-encoded image data from the Python script output
-        $heatmap_base64 = trim($output); // Remove any leading/trailing whitespace
-    
-        // Returning the base64-encoded image data
         return response()->json(['heatmap_base64' => $heatmap_base64]);
     }
 
@@ -139,9 +127,7 @@ class StatisticsController extends Controller
             $imageFrequencies = ImageFrequency::whereIn('id', $selectedRows)->get();
     
             foreach ($imageFrequencies as $imageFrequency) {
-                // Töröljük a kapcsolódó válaszokat
                 $imageFrequency->responses()->delete();
-                // Töröljük az ImageFrequency-t
                 $imageFrequency->delete();
             }
     
@@ -164,33 +150,26 @@ class StatisticsController extends Controller
             $responses = Response::whereIn('id', $selectedRows)->get();
     
             foreach ($responses as $response) {
-                // Get the associated image frequency
                 $imageFrequency = $response->imageFrequency;
-    
-                // Check for misidentification
+
                 $misidentification = Misidentification::where('image_id', $response->image_id)
                 ->where('correct_label', '<>', $response->guest_response)
                 ->first();
     
-                // Delete the response
                 $response->delete();
     
-                // Decrease response_count
                 if ($imageFrequency->response_count > 0) {
                     $imageFrequency->response_count--;
-                    
-                    // Decrease generation_count by the same amount as response_count
+
                     if ($imageFrequency->generation_count > 0) {
                         $imageFrequency->generation_count--;
                     }
                 }
 
-                // Delete the record if generation_count is zero
                 if ($imageFrequency->generation_count == 0) {
                     $imageFrequency->delete();
                 }
     
-                // Decrease misidentifications count if misidentification exists and guest_response doesn't match correct_label
                 if ($misidentification && $response->guest_response != $misidentification->correct_label) {
                     if ($misidentification->count > 0) {
                         $misidentification->count--;
@@ -232,13 +211,11 @@ class StatisticsController extends Controller
 
     public function setActiveFunction(Request $request)
     {
-        // Ellenőrizzük, hogy a kért funkció neve valóban létezik-e az adatbázisban
         $validFunctions = ['generateRandomImage', 'generateFrequencyWeightedImage', 'generateMisidentificationWeightedImage', 'generateRandomTrainImage', 'generateRandomTestImage'];
         if (!in_array($request->function_name, $validFunctions)) {
             return response()->json(['message' => 'Invalid function name.'], 422);
         }
     
-        // Frissítjük az adatbázist az új aktív funkcióval és a train, test mezőkkel
         ImageGenerationSetting::where('function_name', $request->function_name)
             ->update([
                 'active' => 1,
@@ -246,7 +223,6 @@ class StatisticsController extends Controller
                 'test' => $request->test ?? true 
             ]);
     
-        // Minden más funkció inaktívvá válik
         ImageGenerationSetting::where('function_name', '!=', $request->function_name)
             ->update([
                 'active' => 0,

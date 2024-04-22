@@ -75,7 +75,6 @@ class OverviewController extends Controller
             'mostRespondedImageCount' => $mostRespondedImageCount,
             'mostMisidentifiedNumberCount' => $mostMisidentifiedNumberCount,
             'mostGeneratedNumberCount' => $mostGeneratedNumberCount,
-            // Add more data as needed for other sections
         ];
 
         return Inertia::render('Overview/Overview', $data);
@@ -184,10 +183,10 @@ class OverviewController extends Controller
     private function getAverageResponsePerDay()
     {
         $firstDate = ImageFrequency::orderBy('created_at', 'asc')->value('created_at');
-        $lastDate = now(); // Aktuális dátum
+        $lastDate = now();
         
-        $totalDays = $lastDate->diffInDays($firstDate) + 1; // Összes nap száma
-        $totalResponses = ImageFrequency::sum('response_count'); // Összes válaszszám
+        $totalDays = $lastDate->diffInDays($firstDate) + 1;
+        $totalResponses = ImageFrequency::sum('response_count');
         
         if ($totalDays > 0) {
             return round($totalResponses / $totalDays, 2);

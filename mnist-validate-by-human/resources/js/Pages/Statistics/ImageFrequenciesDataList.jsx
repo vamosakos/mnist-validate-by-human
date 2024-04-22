@@ -8,7 +8,7 @@ const columns = ['image_id', 'generation_count', 'response_count', 'misidentific
 
 export default function ImageFrequenciesDataList({ auth, imageFrequencies }) {
     const [tableData, setTableData] = useState(imageFrequencies.map((item) => ({
-        id: item.id, // Assuming there is an ID field in your data
+        id: item.id,
         image_id: item.image_id,
         generation_count: item.generation_count,
         response_count: item.response_count,
@@ -16,7 +16,7 @@ export default function ImageFrequenciesDataList({ auth, imageFrequencies }) {
     })));
 
     const deleteRoute = '/statistics/delete-selected-image-frequencies';
-    const [showExportSettings, setShowExportSettings] = useState(false); // State to manage visibility of export settings
+    const [showExportSettings, setShowExportSettings] = useState(false);
 
     const handleDataUpdate = (newData) => {
         setTableData(newData);
@@ -24,14 +24,12 @@ export default function ImageFrequenciesDataList({ auth, imageFrequencies }) {
 
     const exportAsCSV = () => {
         const selectedColumns = columns.filter(column => document.getElementById(column).checked);
-        // Convert tableData to a CSV string
         const csvContent = "data:text/csv;charset=utf-8," +
             selectedColumns.join(",") + "\n" +
             tableData.map(row =>
                 selectedColumns.map(column => row[column]).join(",")
             ).join("\n");
 
-        // Create a temporary anchor element
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -80,11 +78,9 @@ export default function ImageFrequenciesDataList({ auth, imageFrequencies }) {
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="overflow-hidden mt-8">
                     <div className="flex justify-end mb-4">
-                        {/* Button to toggle export settings visibility */}
                         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={() => setShowExportSettings(!showExportSettings)}>
                             Export Settings
                         </button>
-                        {/* Export buttons (conditionally rendered based on showExportSettings state) */}
                         {showExportSettings && (
                             <>
                                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={exportAsCSV}>
@@ -93,7 +89,6 @@ export default function ImageFrequenciesDataList({ auth, imageFrequencies }) {
                             </>
                         )}
                     </div>
-                    {/* Export settings section */}
                     {showExportSettings && (
                         <div className="mb-4">
                             <h3 className="font-bold mb-2 ml-2">Export Settings</h3>
@@ -101,12 +96,11 @@ export default function ImageFrequenciesDataList({ auth, imageFrequencies }) {
                             {columns.map(column => (
                                 <label key={column} className="inline-flex items-center">
                                     <span className="ml-2">{column}</span>
-                                    <input type="checkbox" id={column} className="ml-2" defaultChecked /> {/* Checkboxes for each column */}
+                                    <input type="checkbox" id={column} className="ml-2" defaultChecked />
                                 </label>
                             ))}
                         </div>
                     )}
-                    {/* DataTable component */}
                     <DataTable data={tableData} columns={columns} deleteRoute={deleteRoute} onDataUpdate={handleDataUpdate} />
                 </div>
             </div>
